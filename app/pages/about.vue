@@ -1,5 +1,7 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8">
+  <div
+    class="max-w-4xl mx-auto px-4 py-8 bg-black bg-opacity-70 rounded-lg shadow-lg"
+  >
     <h1 class="text-3xl font-bold text-yellow-300 mb-6">About Me</h1>
     <div class="flex flex-col md:flex-row items-start gap-8">
       <img

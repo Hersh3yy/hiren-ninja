@@ -11,5 +11,5 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  modules: ['@vueuse/sound/nuxt']
+  compatibilityDate: "2024-10-12"
 });
