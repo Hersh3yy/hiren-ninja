@@ -1,10 +1,19 @@
 <template>
   <div class="bg-black min-h-screen flex flex-col relative">
-    <FractalClockBackground ref="fractalClock" />
-    <!-- <HeaderMenu v-if="!isIndexPage" class="z-10" /> -->
-    <div class="max-w-screen-xl w-full mx-auto my-8 flex-grow z-10">
+    <FractalClockBackground />
+    <header
+      class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-20"
+    >
+      <h1
+        class="text-3xl font-bold text-yellow-300 sixtyfour-convergence-title"
+      >
+        HIREN DEVS
+      </h1>
+      <MenuComponent v-if="$route.path !== '/'" :defaultOpen="false" />
+    </header>
+    <main class="flex-grow flex justify-center items-center z-10 mt-16">
       <NuxtPage />
-    </div>
+    </main>
     <div class="fixed bottom-4 left-4 z-10">
       <MusicControls />
     </div>
@@ -12,31 +21,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const isIndexPage = computed(() => route.path === "/");
-const fractalClock = ref(null);
-
-onMounted(() => {
-  if (fractalClock.value) {
-    let direction = 1;
-    const animate = () => {
-      if (fractalClock.value.fractalClock) {
-        fractalClock.value.fractalClock.settings.scale += 0.01 * direction;
-        if (
-          fractalClock.value.fractalClock.settings.scale >= 1.5 ||
-          fractalClock.value.fractalClock.settings.scale <= 0.5
-        ) {
-          direction *= -1;
-        }
-      }
-      requestAnimationFrame(animate);
-    };
-    animate();
-  }
-});
 </script>
 
 <style>

@@ -1,26 +1,23 @@
 <template>
-  <div class="flex flex-col space-y-2">
+  <div class="fixed bottom-4 right-4 flex space-x-2">
     <button
       v-for="sound in sounds"
       :key="sound.name"
       @click="toggleSound(sound)"
-      class="px-4 py-2 font-semibold text-white rounded-lg shadow-md transition-colors duration-300 w-24"
-      :class="
-        sound.isPlaying
-          ? 'bg-purple-600 hover:bg-purple-500'
-          : 'bg-gray-700 hover:bg-gray-600'
-      "
+      class="w-10 h-10 rounded-full bg-white text-black font-bold flex items-center justify-center transition-colors duration-300"
+      :class="sound.isPlaying ? 'bg-yellow-300' : 'hover:bg-gray-200'"
     >
-      {{ sound.name }}
-      <span class="ml-2">{{ sound.isPlaying ? "🔊" : "🔇" }}</span>
+      {{ sound.label }}
     </button>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 
 interface Sound {
   name: string;
+  label: string;
   audioSrc: string;
   audio?: HTMLAudioElement;
   isPlaying: boolean;
@@ -29,17 +26,20 @@ interface Sound {
 const sounds = ref<Sound[]>([
   {
     name: "Bass",
+    label: "L",
     audioSrc: "/sounds/bass.mp3",
     isPlaying: false,
   },
   {
-    name: "Treble",
-    audioSrc: "/sounds/hi-hat.mp3",
+    name: "Mids",
+    label: "M",
+    audioSrc: "/sounds/arp.mp3",
     isPlaying: false,
   },
   {
-    name: "Mids",
-    audioSrc: "/sounds/arp.mp3",
+    name: "Treble",
+    label: "H",
+    audioSrc: "/sounds/hi-hat.mp3",
     isPlaying: false,
   },
 ]);
@@ -57,7 +57,6 @@ const toggleSound = (sound: Sound) => {
   }
 };
 
-// Set up audio objects and looping on client-side only
 onMounted(() => {
   sounds.value.forEach((sound) => {
     sound.audio = new Audio(sound.audioSrc);
@@ -65,7 +64,6 @@ onMounted(() => {
   });
 });
 
-// Clean up audio objects when component is unmounted
 onUnmounted(() => {
   sounds.value.forEach((sound) => {
     if (sound.audio) {
