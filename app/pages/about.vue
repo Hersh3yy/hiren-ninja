@@ -3,13 +3,15 @@
     class="max-w-4xl mx-auto px-4 py-8 bg-black bg-opacity-70 rounded-lg shadow-lg"
   >
     <h1 class="text-3xl font-bold text-yellow-300 mb-6">About Me</h1>
-    <div class="flex flex-col md:flex-row items-start gap-8">
-      <img
-        src="/mugshot.jpg"
-        alt="Hiren"
-        class="w-64 h-64 object-cover rounded-lg shadow-lg"
-      />
-      <div class="text-white">
+    <div class="flex flex-col md:flex-row items-center gap-8">
+      <div class="w-full md:w-1/3 flex justify-center">
+        <img
+          src="/mugshot.jpg"
+          alt="Hiren"
+          class="w-64 h-64 object-cover rounded-lg shadow-lg"
+        />
+      </div>
+      <div class="w-full md:w-2/3 text-white">
         <p class="mb-4">
           Hello! I'm Hiren, a developer originally from the beautiful island of
           Sint Maarten, now living and working in the vibrant city of Amsterdam.

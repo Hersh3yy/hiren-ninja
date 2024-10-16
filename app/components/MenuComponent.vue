@@ -24,7 +24,7 @@
       v-if="isMenuOpen"
       :class="[
         'bg-black text-white p-4 rounded shadow-lg',
-        isHomePage ? 'w-full' : 'absolute top-full right-0 mt-2',
+        isHomePage ? 'w-full text-center' : 'absolute top-full right-0 mt-2',
       ]"
     >
       <NuxtLink
