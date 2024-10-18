@@ -1,16 +1,20 @@
 <template>
-  <div class="projects-page">
-    <h1 class="text-3xl font-bold text-yellow-300 mb-6">My Projects</h1>
+  <div class="projects-page px-4 sm:px-6 py-4 sm:py-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-yellow-300 mb-4 sm:mb-6">
+      My Projects
+    </h1>
 
     <!-- Filters -->
-    <div class="mb-6 overflow-x-auto whitespace-nowrap pb-2 mx-[-1rem] px-4">
+    <div
+      class="mb-4 sm:mb-6 overflow-x-auto whitespace-nowrap pb-2 mx-[-1rem] px-4"
+    >
       <div class="inline-flex space-x-2">
         <button
           v-for="tag in tags"
           :key="tag"
           @click="toggleFilter(tag)"
           :class="[
-            'px-3 py-1 rounded-full text-sm flex-shrink-0',
+            'px-3 py-1 rounded-full text-xs sm:text-sm flex-shrink-0',
             activeFilters.includes(tag)
               ? 'bg-yellow-300 text-black'
               : 'bg-gray-700 text-white',
@@ -22,12 +26,12 @@
     </div>
 
     <!-- Projects Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       <div
         v-for="project in filteredProjects"
         :key="project.id"
         @click="openModal(project)"
-        class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer transition-transform hover:scale-105"
+        class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer transition-transform hover:scale-105 w-4/5 sm:w-full mx-auto"
       >
         <div class="aspect-w-16 aspect-h-9">
           <img
@@ -37,12 +41,14 @@
             class="w-full h-full object-cover"
           />
         </div>
-        <div class="p-4">
-          <h2 class="text-xl font-semibold text-white mb-2">
+        <div class="p-3 sm:p-4">
+          <h2 class="text-lg sm:text-xl font-semibold text-white mb-1 sm:mb-2">
             {{ project.name }}
           </h2>
-          <p class="text-gray-400 text-sm mb-2">{{ project.year }}</p>
-          <p class="text-gray-300 text-sm truncate">
+          <p class="text-gray-400 text-xs sm:text-sm mb-1 sm:mb-2">
+            {{ project.year }}
+          </p>
+          <p class="text-gray-300 text-xs sm:text-sm truncate">
             {{ project.description }}
           </p>
         </div>

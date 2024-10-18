@@ -60,8 +60,8 @@ const links = [
   { to: "/", text: "Home" },
   { to: "/about", text: "About" },
   { to: "/projects", text: "Projects" },
-  { to: "/blog", text: "Blog" },
-  { to: "/contact", text: "Contact" },
+  // { to: "/blog", text: "Blog" },
+  // { to: "/contact", text: "Contact" },
 ];
 
 const toggleMenu = () => {
