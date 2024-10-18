@@ -8,7 +8,7 @@
         <img
           src="/mugshot.jpg"
           alt="Hiren"
-          class="w-64 h-64 object-cover rounded-lg shadow-lg"
+          class="w-64 h-auto object-cover rounded-lg shadow-lg"
         />
       </div>
       <div class="w-full md:w-2/3 text-white">
@@ -32,6 +32,10 @@
           grow both professionally and personally. The city's thriving tech
           scene and vibrant nightlife create the perfect backdrop for my dual
           interests in development and electronic music.
+        </p>
+        <p>
+          Feel free to get in touch if you need a website, want to discuss tech, or just
+          want to exchange ideas. I am open to conversation.
         </p>
       </div>
     </div>

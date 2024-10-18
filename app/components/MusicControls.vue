@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-4 right-4 flex space-x-2">
+  <div class="fixed bottom-4 right-4 flex space-x-2 z-50">
     <button
       @click="toggleMute"
       class="w-10 h-10 rounded-full bg-white text-black font-bold flex items-center justify-center transition-colors duration-300 hover:bg-gray-200"
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 interface Sound {
   name: string;
@@ -72,17 +72,37 @@ const sounds = ref<Sound[]>([
 ]);
 
 const isMuted = ref(false);
+let audioContext: AudioContext | null = null;
 
-const toggleSound = (sound: Sound) => {
-  if (!sound.audio) return;
+const initAudioContext = () => {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
+  }
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+};
+
+const toggleSound = async (sound: Sound) => {
+  initAudioContext(); // Try to init/resume AudioContext on user gesture
+
+  if (!sound.audio) {
+    sound.audio = new Audio(sound.audioSrc);
+    sound.audio.loop = true;
+  }
 
   if (sound.isPlaying) {
     sound.audio.pause();
-    sound.audio.currentTime = 0;
     sound.isPlaying = false;
   } else {
-    sound.audio.play();
-    sound.isPlaying = true;
+    try {
+      await sound.audio.play();
+      sound.isPlaying = true;
+    } catch (error) {
+      console.error("Playback failed:", error);
+      // Handle the error (e.g., show a message to the user)
+    }
   }
 };
 
@@ -91,23 +111,9 @@ const toggleMute = () => {
   sounds.value.forEach((sound) => {
     if (sound.audio) {
       sound.audio.muted = isMuted.value;
-      if (isMuted.value) {
-        sound.audio.pause();
-        sound.isPlaying = false;
-      }
     }
   });
 };
-
-watch(isMuted, (newValue) => {
-  if (!newValue) {
-    sounds.value.forEach((sound) => {
-      if (sound.audio && sound.isPlaying) {
-        sound.audio.play();
-      }
-    });
-  }
-});
 
 onMounted(() => {
   sounds.value.forEach((sound) => {
@@ -123,5 +129,8 @@ onUnmounted(() => {
       sound.audio.src = "";
     }
   });
+  if (audioContext) {
+    audioContext.close();
+  }
 });
 </script>

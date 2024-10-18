@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-black min-h-screen flex flex-col relative">
+  <div class="bg-black min-h-screen flex flex-col relative overflow-x-hidden">
     <FractalClockBackground />
     <header
       class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-20"
@@ -11,7 +11,9 @@
       </h1>
       <MenuComponent v-if="$route.path !== '/'" :defaultOpen="false" />
     </header>
-    <main class="flex-grow flex justify-center items-center z-10 mt-16">
+    <main
+      class="flex-grow flex justify-center items-start z-10 mt-16 w-full max-w-full overflow-x-hidden"
+    >
       <NuxtPage />
     </main>
     <div class="fixed bottom-4 left-4 z-10">
@@ -35,5 +37,9 @@ const route = useRoute();
   font-weight: 400;
   font-style: normal;
   font-variation-settings: "BLED" 0, "SCAN" -16, "XELA" 60, "YELA" -94;
+}
+
+body {
+  overflow-x: hidden;
 }
 </style>
