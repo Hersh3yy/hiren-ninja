@@ -46,7 +46,9 @@ interface Sound {
   name: string;
   label: string;
   audioSrc: string;
-  audio?: HTMLAudioElement;
+  buffer?: AudioBuffer;
+  source?: AudioBufferSourceNode;
+  gainNode?: GainNode;
   isPlaying: boolean;
 }
 
@@ -73,60 +75,83 @@ const sounds = ref<Sound[]>([
 
 const isMuted = ref(false);
 let audioContext: AudioContext | null = null;
+let startTime: number | null = null;
 
 const initAudioContext = () => {
   if (!audioContext) {
-    audioContext = new (window.AudioContext ||
-      (window as any).webkitAudioContext)();
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
   }
   if (audioContext.state === "suspended") {
     audioContext.resume();
   }
 };
 
-const toggleSound = async (sound: Sound) => {
-  initAudioContext(); // Try to init/resume AudioContext on user gesture
-
-  if (!sound.audio) {
-    sound.audio = new Audio(sound.audioSrc);
-    sound.audio.loop = true;
+const loadAudioBuffers = async () => {
+  for (const sound of sounds.value) {
+    const response = await fetch(sound.audioSrc);
+    const arrayBuffer = await response.arrayBuffer();
+    sound.buffer = await audioContext!.decodeAudioData(arrayBuffer);
   }
+};
+
+const startAudio = () => {
+  if (!startTime) {
+    startTime = audioContext!.currentTime;
+  }
+};
+
+const toggleSound = (sound: Sound) => {
+  initAudioContext();
+  startAudio();
 
   if (sound.isPlaying) {
-    sound.audio.pause();
+    if (sound.gainNode) {
+      sound.gainNode.gain.setValueAtTime(0, audioContext!.currentTime);
+    }
     sound.isPlaying = false;
   } else {
-    try {
-      await sound.audio.play();
-      sound.isPlaying = true;
-    } catch (error) {
-      console.error("Playback failed:", error);
-      // Handle the error (e.g., show a message to the user)
+    if (!sound.source && sound.buffer) {
+      sound.source = audioContext!.createBufferSource();
+      sound.source.buffer = sound.buffer;
+      sound.source.loop = true;
+
+      sound.gainNode = audioContext!.createGain();
+      sound.source.connect(sound.gainNode);
+      sound.gainNode.connect(audioContext!.destination);
+
+      const loopDuration = sound.buffer.duration;
+      const currentTime = audioContext!.currentTime;
+      const timeSinceStart = currentTime - startTime!;
+      const offset = timeSinceStart % loopDuration;
+
+      sound.source.start(0, offset);
     }
+
+    if (sound.gainNode) {
+      sound.gainNode.gain.setValueAtTime(1, audioContext!.currentTime);
+    }
+    sound.isPlaying = true;
   }
 };
 
 const toggleMute = () => {
   isMuted.value = !isMuted.value;
   sounds.value.forEach((sound) => {
-    if (sound.audio) {
-      sound.audio.muted = isMuted.value;
+    if (sound.gainNode) {
+      sound.gainNode.gain.setValueAtTime(isMuted.value ? 0 : (sound.isPlaying ? 1 : 0), audioContext!.currentTime);
     }
   });
 };
 
-onMounted(() => {
-  sounds.value.forEach((sound) => {
-    sound.audio = new Audio(sound.audioSrc);
-    sound.audio.loop = true;
-  });
+onMounted(async () => {
+  initAudioContext();
+  await loadAudioBuffers();
 });
 
 onUnmounted(() => {
   sounds.value.forEach((sound) => {
-    if (sound.audio) {
-      sound.audio.pause();
-      sound.audio.src = "";
+    if (sound.source) {
+      sound.source.stop();
     }
   });
   if (audioContext) {
