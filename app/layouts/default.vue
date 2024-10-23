@@ -2,10 +2,10 @@
   <div class="bg-black min-h-screen flex flex-col relative overflow-x-hidden">
     <FractalClockBackground />
     <header
-      class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-20"
+      class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-20 bg-opacity-80 backdrop-blur-md"
     >
       <h1
-        class="text-3xl font-bold text-yellow-300 sixtyfour-convergence-title"
+        class="text-4xl font-bold text-yellow-300 sixtyfour-convergence-title"
       >
         HIREN DEVS
       </h1>

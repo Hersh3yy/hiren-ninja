@@ -1,14 +1,14 @@
 <template>
   <div
-    class="max-w-4xl mx-auto px-4 py-8 bg-black bg-opacity-70 rounded-lg shadow-lg"
+    class="max-w-4xl mx-auto px-6 py-8 bg-black bg-opacity-70 rounded-lg shadow-lg"
   >
-    <h1 class="text-3xl font-bold text-yellow-300 mb-6">About Me</h1>
+    <h1 class="text-4xl font-bold text-yellow-300 mb-6">About Me</h1>
     <div class="flex flex-col md:flex-row items-center gap-8">
       <div class="w-full md:w-1/3 flex justify-center">
         <img
           src="/mugshot.jpg"
           alt="Hiren"
-          class="w-64 h-auto object-cover rounded-lg shadow-lg"
+          class="w-64 h-auto object-cover rounded-lg shadow-lg border-2 border-yellow-300"
         />
       </div>
       <div class="w-full md:w-2/3 text-white">

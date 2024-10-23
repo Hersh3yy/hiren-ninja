@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-full">
-    <MenuComponent :defaultOpen="true" class="w-64 mb-24" />
+  <div class="flex flex-col items-center justify-center h-full bg-gray-900">
+    <MenuComponent :defaultOpen="true" class="w-64 mb-12" />
     <div class="text-center">
-      <h2 class="text-xl font-semibold text-yellow-300 mb-4">Get in touch</h2>
+      <h2 class="text-2xl font-semibold text-yellow-300 mb-4">Get in touch</h2>
       <div class="flex items-center justify-center space-x-6">
         <a
-          href="hirenbudhrani@gmail.com"
+          href="mailto:hirenbudhrani@gmail.com"
           class="text-white hover:text-yellow-300 transition-colors duration-300 flex items-center"
         >
           <svg
