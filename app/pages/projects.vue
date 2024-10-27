@@ -1,140 +1,44 @@
 <template>
-  <div class="projects-page px-4 sm:px-6 py-4 sm:py-6">
-    <div class="max-w-[2000px] mx-auto">
-      <h1 class="text-2xl sm:text-3xl font-bold text-yellow-300 mb-4 sm:mb-6">
-        My Projects
-      </h1>
-
-      <!-- Filters -->
-      <div
-        class="mb-4 sm:mb-6 overflow-x-auto whitespace-nowrap pb-2 mx-[-1rem] px-4"
-      >
-        <div class="inline-flex space-x-2">
-          <button
-            v-for="tag in tags"
-            :key="tag"
-            @click="toggleFilter(tag)"
-            :class="[
-              'px-3 py-1 rounded-full text-xs sm:text-sm flex-shrink-0',
-              activeFilters.includes(tag)
-                ? 'bg-yellow-300 text-black'
-                : 'bg-gray-700 text-white',
-            ]"
-          >
-            {{ tag }}
-          </button>
-        </div>
+  <section class="min-h-screen bg-gradient-to-r from-gray-900 to-black">
+    <!-- Outer container with padding -->
+    <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-[90vw]">
+      <!-- Header section -->
+      <div class="mb-8 sm:mb-12">
+        <h1
+          class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-400 text-transparent bg-clip-text"
+        >
+          My Projects
+        </h1>
       </div>
 
-      <!-- Projects Grid -->
+      <!-- Filters -->
+      <ProjectFilters
+        :tags="tags"
+        :active-filters="activeFilters"
+        @toggle-filter="toggleFilter"
+        class="mb-8"
+      />
+
+      <!-- Projects grid with max width constraint -->
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6"
       >
-        <div
+        <ProjectCard
           v-for="project in filteredProjects"
           :key="project.id"
+          :project="project"
           @click="openModal(project)"
-          class="bg-gray-800 rounded-lg overflow-hidden shadow-lg cursor-pointer transition-transform hover:scale-105 w-full mx-auto"
-        >
-          <div class="aspect-w-16 aspect-h-9 max-h-[300px]">
-            <img
-              v-if="project.image_urls && project.image_urls.length > 0"
-              :src="project.image_urls[0]"
-              :alt="project.name"
-              class="w-full h-full object-cover"
-            />
-          </div>
-          <div class="p-3 sm:p-4">
-            <h2
-              class="text-lg sm:text-xl font-semibold text-white mb-1 sm:mb-2 truncate"
-            >
-              {{ project.name }}
-            </h2>
-            <p class="text-gray-400 text-xs sm:text-sm mb-1 sm:mb-2">
-              {{ project.year }}
-            </p>
-            <p class="text-gray-300 text-xs sm:text-sm line-clamp-2">
-              {{ project.description }}
-            </p>
-          </div>
-        </div>
+        />
       </div>
 
-      <!-- Modal -->
-      <div
+      <ProjectModal
+        :project="selectedProject"
+        @close="closeModal"
         v-if="selectedProject"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-      >
-        <div
-          class="bg-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-        >
-          <div class="p-6 relative">
-            <button
-              @click="closeModal"
-              class="absolute top-2 right-2 text-gray-400 hover:text-white"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-            <h2 class="text-2xl font-bold text-white mb-4">
-              {{ selectedProject.name }}
-            </h2>
-            <p class="text-gray-300 mb-4">{{ selectedProject.description }}</p>
-            <p class="text-gray-400 mb-4">Year: {{ selectedProject.year }}</p>
-            <div
-              v-if="
-                selectedProject.tech_tags &&
-                selectedProject.tech_tags.length > 0
-              "
-              class="mb-4"
-            >
-              <h3 class="text-lg font-semibold text-white mb-2">
-                Technologies:
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="tag in selectedProject.tech_tags"
-                  :key="tag.id"
-                  class="bg-gray-700 text-white px-2 py-1 rounded-full text-sm"
-                >
-                  {{ tag.name }}
-                </span>
-              </div>
-            </div>
-            <div
-              v-if="
-                selectedProject.image_urls &&
-                selectedProject.image_urls.length > 0
-              "
-              class="mb-4"
-            >
-              <img
-                v-for="(url, index) in selectedProject.image_urls"
-                :key="index"
-                :src="url"
-                :alt="`${selectedProject.name} image ${index + 1}`"
-                class="w-full h-auto mb-2 rounded max-h-[600px] object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      />
     </div>
-  </div>
+  </section>
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { createClient } from "@supabase/supabase-js";
@@ -182,12 +86,13 @@ async function getProjects() {
 
   if (error) {
     console.error("Error fetching projects:", error);
-  } else {
-    projects.value = data.map((project) => ({
-      ...project,
-      tech_tags: project.tech_tags.map((tt) => tt.tech_tags),
-    }));
+    return;
   }
+
+  projects.value = data.map((project) => ({
+    ...project,
+    tech_tags: project.tech_tags.map((tt) => tt.tech_tags),
+  }));
 }
 
 function openModal(project) {
