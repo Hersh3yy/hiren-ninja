@@ -24,4 +24,5 @@ const route = useRoute();
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap");
 </style>

@@ -6,7 +6,7 @@
       class="flex flex-col items-center justify-center w-80 sm:w-96"
     >
       <div
-        class="w-full rounded-xl shadow-2xl overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black"
+        class="w-full rounded-xl shadow-2xl overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black font-[Space_Grotesk]"
       >
         <div class="py-6">
           <NuxtLink
@@ -54,7 +54,7 @@
       <!-- Dropdown menu -->
       <div
         v-if="isMenuOpen"
-        class="absolute top-full right-0 mt-2 w-48 rounded-lg shadow-lg overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black"
+        class="absolute top-full right-0 mt-2 w-48 rounded-lg shadow-lg overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black font-[Space_Grotesk]"
       >
         <NuxtLink
           v-for="(link, index) in links"
