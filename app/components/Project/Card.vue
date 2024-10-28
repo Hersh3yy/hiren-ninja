@@ -16,13 +16,6 @@
       >
         <span class="text-gray-500">No Image</span>
       </div>
-
-      <div
-        v-if="project.for_employer"
-        class="absolute top-2 right-2 px-2 py-1 text-xs font-medium bg-blue-500/90 text-white rounded-full"
-      >
-        Professional
-      </div>
     </div>
 
     <div class="p-4 flex flex-col flex-grow">
