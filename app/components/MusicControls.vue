@@ -3,6 +3,7 @@
     <button
       @click="toggleMute"
       class="w-10 h-10 rounded-full bg-white text-black font-bold flex items-center justify-center transition-colors duration-300 hover:bg-gray-200"
+      :class="{ 'highlight-animation': showInitialAnimation }"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -27,12 +28,17 @@
       </svg>
     </button>
     <button
-      v-for="sound in sounds"
+      v-for="(sound, index) in sounds"
       :key="sound.name"
       v-show="!isMuted"
       @click="toggleSound(sound)"
       class="w-10 h-10 rounded-full bg-white text-black font-bold flex items-center justify-center transition-colors duration-300"
-      :class="sound.isPlaying ? 'bg-yellow-300' : 'hover:bg-gray-200'"
+      :class="{
+        'bg-yellow-300': sound.isPlaying,
+        'hover:bg-gray-200': !sound.isPlaying,
+        'highlight-animation': showInitialAnimation,
+        [`highlight-delay-${index + 1}`]: showInitialAnimation,
+      }"
     >
       {{ sound.label }}
     </button>
@@ -79,7 +85,8 @@ let startTime: number | null = null;
 
 const initAudioContext = () => {
   if (!audioContext) {
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContext = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
   }
   if (audioContext.state === "suspended") {
     audioContext.resume();
@@ -138,14 +145,29 @@ const toggleMute = () => {
   isMuted.value = !isMuted.value;
   sounds.value.forEach((sound) => {
     if (sound.gainNode) {
-      sound.gainNode.gain.setValueAtTime(isMuted.value ? 0 : (sound.isPlaying ? 1 : 0), audioContext!.currentTime);
+      sound.gainNode.gain.setValueAtTime(
+        isMuted.value ? 0 : sound.isPlaying ? 1 : 0,
+        audioContext!.currentTime
+      );
     }
   });
 };
 
+const showInitialAnimation = ref(false);
+
 onMounted(async () => {
   initAudioContext();
   await loadAudioBuffers();
+
+  // Start animation after a short delay
+  setTimeout(() => {
+    showInitialAnimation.value = true;
+  }, 1000);
+
+  // Remove animation class after it's done
+  setTimeout(() => {
+    showInitialAnimation.value = false;
+  }, 4000); // Adjust timing based on your animation duration
 });
 
 onUnmounted(() => {
@@ -159,3 +181,36 @@ onUnmounted(() => {
   }
 });
 </script>
+<style scoped>
+@keyframes highlightButton {
+  0%,
+  100% {
+    background-color: white;
+  }
+  25%,
+  75% {
+    background-color: #fde047; /* Tailwind yellow-300 */
+  }
+}
+
+.highlight-animation {
+  animation: highlightButton 1s ease-in-out 2;
+}
+
+.highlight-delay-1 {
+  animation-delay: 0.4s;
+}
+
+.highlight-delay-2 {
+  animation-delay: 0.8s;
+}
+
+.highlight-delay-3 {
+  animation-delay: 1.2s;
+}
+
+/* Optional: Add transitions for smoother color changes */
+button {
+  transition: background-color 0.2s ease-in-out;
+}
+</style>

@@ -6,22 +6,14 @@
       class="flex flex-col items-center justify-center w-80 sm:w-96"
     >
       <div
-        class="w-full rounded-xl shadow-2xl overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black font-[Space_Grotesk]"
+        class="w-full rounded-xl shadow-2xl overflow-hidden bg-black/20 backdrop-blur-xl font-[Space_Grotesk]"
       >
         <div class="py-6">
           <NuxtLink
             v-for="(link, index) in links"
             :key="link.to"
             :to="link.to"
-            class="block px-8 py-5 text-2xl sm:text-3xl text-center transition-colors duration-200"
-            :class="[
-              'hover:bg-white/10',
-              index === 0
-                ? 'text-black'
-                : index === links.length - 1
-                ? 'text-white'
-                : 'text-gray-100',
-            ]"
+            class="block px-8 py-5 text-2xl sm:text-3xl text-center transition-all duration-200 text-white hover:text-black hover:bg-yellow-300"
           >
             {{ link.text }}
           </NuxtLink>
@@ -89,7 +81,7 @@ const isHomePage = computed(() => route.path === "/");
 const links = [
   { to: "/about", text: "About" },
   { to: "/projects", text: "Projects" },
-  { to: "/blog", text: "Blog" },
+  // { to: "/blog", text: "Blog" },
   { to: "/contact", text: "Contact" },
 ];
 
@@ -113,3 +105,8 @@ watch(
   }
 );
 </script>
+<style scoped>
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+}
+</style>

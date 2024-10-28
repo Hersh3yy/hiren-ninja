@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-black min-h-screen flex flex-col relative">
+  <div
+    class="bg-black min-h-screen flex flex-col relative font-[Space_Grotesk]"
+  >
     <FractalClockBackground />
     <Header />
 
@@ -17,12 +19,11 @@
   </div>
 </template>
 
-<script setup>
-import { useRoute } from "vue-router";
-const route = useRoute();
-</script>
-
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+
+:root {
+  font-family: "Space Grotesk", sans-serif;
+}
 </style>
