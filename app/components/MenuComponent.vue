@@ -46,7 +46,7 @@
       <!-- Dropdown menu -->
       <div
         v-if="isMenuOpen"
-        class="absolute top-full right-0 mt-2 w-48 rounded-lg shadow-lg overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black font-[Space_Grotesk]"
+        class="absolute top-full right-0 mt-2 w-48 rounded-lg shadow-lg overflow-hidden bg-gradient-to-b from-white via-gray-500 to-black font-[Space_Grotesk] z-[100]"
       >
         <NuxtLink
           v-for="(link, index) in links"
@@ -82,7 +82,8 @@ const links = [
   { to: "/about", text: "About" },
   { to: "/projects", text: "Projects" },
   // { to: "/blog", text: "Blog" },
-  { to: "/contact", text: "Contact" },
+  // { to: "/contact", text: "Contact" },
+  { to: "/services", text: "Services" },
 ];
 
 const toggleMenu = () => {

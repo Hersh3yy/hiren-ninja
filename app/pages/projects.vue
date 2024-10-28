@@ -1,5 +1,5 @@
 <template>
-  <section class="min-h-screen bg-gradient-to-r from-gray-900 to-black">
+  <section class="min-h-screen">
     <!-- Outer container with padding -->
     <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-[90vw]">
       <!-- Header section -->
