@@ -10,7 +10,7 @@
       ]"
     >
       <h1
-        class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 whitespace-nowrap font-['Sixtyfour_Convergence'] font-[400] antialiased"
+        class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 whitespace-nowrap font-['Sixtyfour_Convergence'] font-[400 antialiased"
         style="
           font-variation-settings: 'BLED' 0, 'SCAN' -16, 'XELA' 60, 'YELA' -94;
         "

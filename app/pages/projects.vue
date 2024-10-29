@@ -98,10 +98,12 @@ async function getProjects() {
 
 function openModal(project) {
   selectedProject.value = project;
+  document.body.style.overflow = "hidden"; // Disable scrolling
 }
 
 function closeModal() {
   selectedProject.value = null;
+  document.body.style.overflow = ""; // Re-enable scrolling
 }
 
 function toggleFilter(tag) {

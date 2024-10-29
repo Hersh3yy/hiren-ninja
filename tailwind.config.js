@@ -8,7 +8,12 @@ export default {
     "./app/error.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "space-grotesk": ["Space Grotesk", "sans-serif"],
+        sixtyfour: ["Sixtyfour Convergence", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

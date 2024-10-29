@@ -23,7 +23,7 @@
       <p class="mb-8">
         Now based in Amsterdam's dynamic tech scene, I've grown into a versatile
         full-stack developer. I continue to expand my toolkit, recently
-        mastering Next.js and exploring new technologies that push the
+        learning Next.js and exploring new technologies that push the
         boundaries of web development.
       </p>
     </div>
@@ -33,44 +33,30 @@
       <div
         v-for="(category, index) in categories"
         :key="index"
-        class="bg-black/30 p-4 rounded-lg"
+        class="bg-black/30 p-6 rounded-lg"
       >
-        <h4 class="text-yellow-300 font-bold mb-3">{{ category.name }}</h4>
-        <ul class="text-white text-sm space-y-2">
-          <li
-            v-for="skill in category.skills"
-            :key="skill"
-            class="cursor-pointer hover:text-yellow-300 transition-colors"
-            @click="navigateToProjects(skill)"
+        <h4 class="text-yellow-300 font-bold mb-4">{{ category.name }}</h4>
+        <div class="flex flex-wrap gap-4">
+          <div
+            v-for="tech in category.tech"
+            :key="tech.name"
+            class="flex flex-col items-center group"
+            :class="{
+              'hover:scale-105 transition-transform cursor-pointer': tech.linkToProjects,
+            }"
+            @click="tech.linkToProjects && navigateToProjects(tech.name)"
           >
-            {{ skill }}
-          </li>
-        </ul>
+            <img
+              :src="`/icons/${tech.icon}`"
+              :alt="tech.name"
+              class="h-8 w-8 mb-2"
+              loading="lazy"
+            />
+            <span class="text-xs text-white text-center">{{ tech.name }}</span>
+          </div> 
+        </div>
       </div>
     </div>
-
-    <!-- Skills Icons -->
-    <h3 class="text-xl font-bold text-yellow-300 mb-4">Tech Stack</h3>
-    <ul class="w-full flex flex-wrap items-center gap-4">
-      <li
-        v-for="(skill, index) in skills"
-        :key="index"
-        class="group relative flex items-center cursor-pointer"
-        @click="navigateToProjects(skill.name)"
-      >
-        <div
-          class="flex flex-col items-center transition duration-200 hover:scale-110"
-        >
-          <img
-            :src="`/svg/${skill.icon}.svg`"
-            :alt="skill.name"
-            class="h-8 w-8"
-            loading="lazy"
-          />
-          <span class="text-xs text-white mt-2">{{ skill.name }}</span>
-        </div>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -82,26 +68,45 @@ const router = useRouter();
 const categories = [
   {
     name: "Frontend",
-    skills: ["Vue.js", "Nuxt", "Next.js", "Tailwind", "TypeScript"],
+    tech: [
+      { name: "Vue.js", icon: "vue.svg", linkToProjects: true },
+      { name: "Nuxt", icon: "nuxt.svg", linkToProjects: false },
+      { name: "TypeScript", icon: "typescript.svg", linkToProjects: true },
+      { name: "Tailwind", icon: "tailwindcss.svg", linkToProjects: true },
+      { name: "HTML", icon: "html.svg", linkToProjects: false },
+      { name: "CSS", icon: "css.svg", linkToProjects: false },
+      { name: "Jest", icon: "jest.svg", linkToProjects: false },
+      { name: "Pinia", icon: "pinia.png", linkToProjects: false },
+      { name: "NextJs", icon: "next.svg", linkToProjects: false },
+    ],
   },
   {
     name: "Backend",
-    skills: ["Laravel", "PHP", "Node.js", "Nest.js", "Python", "Microservices"],
+    tech: [
+      { name: "Node.js", icon: "nodejs.svg", linkToProjects: true },
+      { name: "NestJS", icon: "nest.svg", linkToProjects: true },
+      { name: "Laravel", icon: "laravel.svg", linkToProjects: true },
+      { name: "PHP", icon: "php.svg", linkToProjects: true },
+      { name: "Python", icon: "python.svg", linkToProjects: true },
+      { name: "Flask", icon: "flask.svg", linkToProjects: true },
+      { name: "GraphQL", icon: "graphql.svg", linkToProjects: true },
+      { name: "MySQL", icon: "database.svg", linkToProjects: true },
+    ],
   },
   {
-    name: "Tools & Platforms",
-    skills: ["Google Cloud Platform", "Git", "GitHub", "Figma", "Agile/Scrum"],
+    name: "Tools & Infrastructure",
+    tech: [
+      { name: "Figma", icon: "figma.svg", linkToProjects: false },
+      { name: "GCP", icon: "gcp.svg", linkToProjects: false },
+      { name: "Git", icon: "git.svg", linkToProjects: false },
+      { name: "GitLab", icon: "gitlab.svg", linkToProjects: false },
+      { name: "VS Code", icon: "vscode.svg", linkToProjects: false },
+      { name: "Netlify", icon: "netlify.svg", linkToProjects: false },
+      { name: "npm", icon: "npm.svg", linkToProjects: false },
+      { name: "Yarn", icon: "yarn.svg", linkToProjects: false },
+      { name: "Yaml", icon: "yaml.svg", linkToProjects: false },
+    ],
   },
-];
-
-const skills = [
-  { name: "Vue.js", icon: "vuejs" },
-  { name: "Nuxt", icon: "nuxtjs" },
-  { name: "Next.js", icon: "nextjs" },
-  { name: "Laravel", icon: "laravel" },
-  { name: "PHP", icon: "php" },
-  { name: "Node.js", icon: "nodejs" },
-  // ... rest of your skills
 ];
 
 const navigateToProjects = (skillName) => {

@@ -1,5 +1,5 @@
 <template>
-  <footer class="w-full py-8 backdrop-blur-sm">
+  <footer class="w-full py-8 backdrop-blur-xl">
     <div class="container mx-auto px-4">
       <div class="text-center">
         <h2 class="text-xl sm:text-2xl font-semibold text-yellow-300 mb-4">
@@ -34,17 +34,8 @@
             rel="noopener noreferrer"
             class="text-white hover:text-yellow-300 transition-colors duration-300 flex items-center group"
           >
-            <svg
-              class="w-5 h-5 sm:w-6 sm:h-6 mr-2 group-hover:scale-110 transition-transform"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"
-              />
-            </svg>
-            <span class="text-sm sm:text-base">Instagram</span>
+            <img width="22px" src="/icons/instagram.svg" />
+            <span class="pl-2 text-sm sm:text-base">Instagram</span>
           </a>
         </div>
       </div>
