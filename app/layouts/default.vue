@@ -19,11 +19,11 @@
       <NuxtPage />
     </main>
 
-    <div class="fixed bottom-4 left-4 z-10">
+    <div class="fixed bottom-4 left-4 z-30">
       <MusicControls />
     </div>
 
-    <Footer class="mt-auto z-20" />
+    <Footer class="mt-auto z-10" />
   </div>
 </template>
 
