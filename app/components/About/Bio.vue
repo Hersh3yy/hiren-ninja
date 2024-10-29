@@ -14,29 +14,37 @@
       </div>
       <div class="w-full md:w-2/3 text-white text-sm sm:text-base">
         <p class="mb-3 sm:mb-4">
-          Hello! I'm Hiren, a developer originally from the beautiful island of
-          Sint Maarten, now living and working in the vibrant city of Amsterdam.
+          Hi, I’m Hiren! Originally from the beautiful island of Sint Maarten, 
+          I’m now based in the vibrant tech scene of Amsterdam. As a full-stack 
+          developer, I’m dedicated to making life easier through technology—whether 
+          that’s by reducing repetitive work, building intuitive UX/UI, or 
+          designing seamless experiences.
         </p>
         <p class="mb-3 sm:mb-4">
-          My journey in tech has been an exciting one, and I'm constantly
-          exploring new technologies and pushing the boundaries of what's
-          possible in web development.
+          I’m passionate about all aspects of web development, from backend to 
+          frontend, and I enjoy connecting with people from all backgrounds. 
+          Explaining technical concepts in a clear way for non-technical clients 
+          is something I value.
         </p>
         <p class="mb-3 sm:mb-4">
-          When I'm not coding, you can find me immersed in my other passion:
-          music. I'm currently learning music production and enjoy being a
-          hobbyist techno DJ. The pulsating rhythms and innovative sounds of
-          techno inspire both my musical endeavors and my approach to coding.
+          Outside of coding, you can find me immersed in my other passion: music. 
+          I’m currently learning music production and enjoy being a hobbyist 
+          techno DJ. I’m especially drawn to the rhythm, structure, and minimalism 
+          of techno, which inspire both my musical projects and my approach to 
+          development.
         </p>
         <p class="mb-3 sm:mb-4">
-          Living in Amsterdam has provided me with incredible opportunities to
-          grow both professionally and personally. The city's thriving tech
-          scene and vibrant nightlife create the perfect backdrop for my dual
-          interests in development and electronic music.
+          Living in Amsterdam offers incredible opportunities to grow both professionally 
+          and personally. The city’s thriving tech scene, creative community, and 
+          love for electronic music provide the perfect backdrop for my dual interests 
+          in development and music. I love the city’s people, biking culture, art, museums, 
+          and nightlife —- and the chance to experiment and collaborate with great people
+          but also be independent and dancing to my own beat. Wat een mooie stad!
         </p>
         <p>
-          Feel free to get in touch if you need a website, want to discuss tech,
-          or just want to exchange ideas. I am open to conversation.
+          If you’re looking for a website, need help with a project, or want to 
+          chat about tech, feel free to reach out! I’m open to freelance 
+          opportunities and always up for a good conversation.
         </p>
       </div>
     </div>
