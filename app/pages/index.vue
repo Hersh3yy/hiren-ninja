@@ -4,7 +4,7 @@
     class="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] gap-12"
   >
     <!-- Introduction Text -->
-    <div class="max-w-4xl text-center px-4">
+    <div class="max-w-4xl text-center px-4 font-space-grotesk">
       <h1 class="text-2xl md:text-3xl lg:text-4xl text-white leading-relaxed pt-10">
         I am <em class="fire-text font-bold">Hiren</em>, a web developer who
         enjoys <em class="fire-text font-bold">absorbing</em> ideas,
