@@ -6,25 +6,17 @@
     <!-- Skills Narrative -->
     <div class="text-white mb-8">
       <p class="mb-4">
-        Growing up on Sint Maarten sparked my interest in connecting people
-        through technology. My foundation began with C++ and C# in school, where
-        I discovered my passion for problem-solving.
+        My programming journey began with foundational languages like C, C++, and C#, 
+        sparking my interest in development. I started my career as a backend web 
+        developer, primarily using PHP, and over time, I absorbed frontend development 
+        as well, working extensively with Vue.js. This full-stack perspective allowed 
+        me to become a developer who enjoys seeing projects through from start to finish.
       </p>
-
       <p class="mb-4">
-        My professional journey started with PHP and Java web development,
-        quickly evolving into more complex territory with PHP Symfony and
-        microservices. The startup world opened new doors, introducing me to
-        Vue.js and modern frontend development. Experience with GCP broadened my
-        cloud infrastructure knowledge, while Nest.js and Node.js enhanced my
-        backend capabilities.
-      </p>
-
-      <p class="mb-8">
-        Now based in Amsterdam's dynamic tech scene, I've grown into a versatile
-        full-stack developer. I continue to expand my toolkit, recently
-        learning Next.js and exploring new technologies that push the
-        boundaries of web development.
+        I’m now working at a higher level, where I can contribute strategically by 
+        automating processes and delivering clean, efficient code. I’ve also begun 
+        delegating to junior developers and value collaboration to accomplish business 
+        goals while improving workflow with smart, sustainable solutions.
       </p>
     </div>
 
@@ -91,6 +83,7 @@ const categories = [
       { name: "Flask", icon: "flask.svg", linkToProjects: true },
       { name: "GraphQL", icon: "graphql.svg", linkToProjects: true },
       { name: "MySQL", icon: "database.svg", linkToProjects: true },
+      { name: "PostgreSQL", icon: "postgresql.svg", linkToProjects: true },
     ],
   },
   {
