@@ -3,7 +3,7 @@
     <!-- Homepage centered menu -->
     <div
       v-if="isHomePage"
-      class="flex flex-col items-center justify-center w-80 sm:w-96"
+      class="flex flex-col items-center justify-center w-40 sm:w-64"
     >
       <div
         class="w-full rounded-xl shadow-2xl overflow-hidden bg-black/20 backdrop-blur-xl"

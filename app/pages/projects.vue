@@ -67,16 +67,21 @@ const tags = computed(() => {
 });
 
 const filteredProjects = computed(() => {
-  if (activeFilters.value.length === 0) return projects.value;
-  return projects.value.filter((project) =>
-    activeFilters.value.some(
-      (filter) =>
-        project.year.toString() === filter ||
-        (filter === "Employer" && project.for_employer) ||
-        (filter === "Personal" && !project.for_employer) ||
-        project.tech_tags?.some((tag) => tag.name === filter)
-    )
-  );
+  let filtered =
+    activeFilters.value.length === 0
+      ? projects.value
+      : projects.value.filter((project) =>
+          activeFilters.value.some(
+            (filter) =>
+              project.year.toString() === filter ||
+              (filter === "Employer" && project.for_employer) ||
+              (filter === "Personal" && !project.for_employer) ||
+              project.tech_tags?.some((tag) => tag.name === filter)
+          )
+        );
+
+  // Sort by year in descending order (newest first)
+  return filtered.sort((a, b) => b.year - a.year);
 });
 
 async function getProjects() {
