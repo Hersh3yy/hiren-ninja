@@ -1,8 +1,12 @@
-<!-- components/AnimatedIntro.vue -->
 <template>
   <div class="max-w-4xl text-center px-4 font-space-grotesk">
+    <div
+      class="text-3xl text-yellow-400 mb-4 animate-bounce"
+    >
+      Happy <span class="fire-text" :class="{ 'scale-up': activeIndex === 4 }">Diwali</span>! 🪔
+    </div>
     <h1
-      class="text-2xl md:text-3xl lg:text-4xl text-white leading-relaxed pt-10"
+      class="text-lg md:text-3xl lg:text-4xl text-white leading-relaxed pt-10"
     >
       I am
       <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }"
@@ -28,7 +32,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const activeIndex = ref(-1);
-const totalElements = 4;
+const totalElements = 5;
 let intervalId;
 
 const animate = () => {
@@ -36,13 +40,10 @@ const animate = () => {
 };
 
 onMounted(() => {
-  // Start the animation immediately
   animate();
-
-  // Set up the interval
   intervalId = setInterval(() => {
     animate();
-  }, 1337); // 2.5s per element, complete cycle in 10s
+  }, 1337);
 });
 
 onUnmounted(() => {
