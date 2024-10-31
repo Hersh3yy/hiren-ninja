@@ -17,7 +17,7 @@
           Hi, I’m Hiren! Originally from the beautiful island of Sint Maarten, 
           I’m now based in the vibrant tech scene of Amsterdam. As a full-stack 
           developer, I’m dedicated to making life easier through technology—whether 
-          that’s by reducing repetitive work, building intuitive UX/UI, or 
+          that’s by reducing repetitive work, building intuitive interfaces, or 
           designing seamless experiences.
         </p>
         <p class="mb-3 sm:mb-4">
