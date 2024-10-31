@@ -79,7 +79,7 @@ const sounds = ref<Sound[]>([
   },
 ]);
 
-const isMuted = ref(false);
+const isMuted = ref(true);
 let audioContext: AudioContext | null = null;
 let startTime: number | null = null;
 
