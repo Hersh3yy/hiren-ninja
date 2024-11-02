@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-4xl text-center px-4 font-space-grotesk">
-    <div
+    <!-- <div
       class="text-2xl md:text-3xl text-yellow-400 mb-4 animate-bounce"
     >
       Happy <span class="fire-text" :class="{ 'scale-up': activeIndex === 4 }">Diwali</span>! 🪔
-    </div>
+    </div> -->
     <h1
       class="text-xl md:text-3xl lg:text-2xl text-white leading-relaxed pt-10"
     >

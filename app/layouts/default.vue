@@ -5,10 +5,14 @@
       class="fixed inset-0 bg-grid-pattern opacity-50"
       style="z-index: 1"
     ></div>
+    <!-- Choose which background to show -->
+    <!-- <BackgroundFlames /> -->
+    <!-- or -->
+    <!-- <BackgroundFireworks /> -->
     <!-- Fractal background -->
-    <!-- <BackgroundFractalClock /> -->
+    <BackgroundFractalClock />
     <!-- Fireworks background -->
-    <BackgroundFireworks />
+    <!-- <BackgroundFlames /> -->
     <!-- Rest of the content with higher z-index -->
     <Header class="z-20" />
     <main
