@@ -1,28 +1,14 @@
 <template>
   <div class="max-w-4xl text-center px-4 font-space-grotesk">
-    <!-- <div
-      class="text-2xl md:text-3xl text-yellow-400 mb-4 animate-bounce"
-    >
-      Happy <span class="fire-text" :class="{ 'scale-up': activeIndex === 4 }">Diwali</span>! 🪔
-    </div> -->
-    <h1
-      class="text-xl md:text-3xl lg:text-2xl text-white leading-relaxed pt-10"
-    >
+    <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-10 min-h-[50vh]">
       I am
-      <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }"
-        >Hiren</strong
-      >, a web developer who enjoys
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 1 }"
-        >absorbing</span
-      >
+      <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }">Hiren</strong>,
+      a web developer who enjoys
+      <span class="fire-text" :class="{ 'scale-up': activeIndex === 1 }">absorbing</span>
       ideas,
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }"
-        >visualizing</span
-      >
+      <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }">visualizing</span>
       them, and
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 3 }"
-        >planning</span
-      >
+      <span class="fire-text" :class="{ 'scale-up': activeIndex === 3 }">planning</span>
       their completion
     </h1>
   </div>

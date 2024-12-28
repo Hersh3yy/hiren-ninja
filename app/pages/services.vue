@@ -27,7 +27,7 @@
               <span class="price">€100</span>
               <span class="duration">3 hours</span>
             </div>
-            <button @click="openWizard('Discovery Session')" class="service-button">Inquire</button>
+            <button @click="openInquiryForm('Discovery Session')" class="service-button">Inquire</button>
           </div>
         </div>
 
@@ -100,23 +100,61 @@
         </div>
       </div>
 
+      <!-- Inquiry Form Modal -->
+      <div v-if="showInquiryForm" class="inquiry-form-modal">
+        <h2 class="text-yellow-300">Inquiry Form</h2>
+        <form @submit.prevent="submitInquiry">
+          <label for="name">Name:</label>
+          <input type="text" v-model="inquiryData.name" required />
+
+          <label for="email">Email:</label>
+          <input type="email" v-model="inquiryData.email" required />
+
+          <label for="service">Service:</label>
+          <input type="text" v-model="inquiryData.service" readonly />
+
+          <label for="message">Message:</label>
+          <textarea v-model="inquiryData.message" required></textarea>
+
+          <button type="submit" class="submit-button">Send Inquiry</button>
+          <button @click="showInquiryForm = false" type="button" class="cancel-button">Cancel</button>
+        </form>
+      </div>
+
       <!-- Contact Button -->
       <div class="mt-12 max-w-xl mx-auto">
-        <button @click="showContactForm = true" class="inquiry-button">
+        <button @click="showInquiryForm = true" class="inquiry-button">
           Send Inquiry
         </button>
       </div>
 
       <!-- Contact Form Modal -->
-      <ContactForm v-model="showContactForm" />
+      <ContactForm v-model="showContactForm" :prefill="prefillData" />
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
 
-const showContactForm = ref(false);
+const showInquiryForm = ref(false);
+const inquiryData = ref({
+  name: '',
+  email: '',
+  service: '',
+  message: ''
+});
+
+const openInquiryForm = (service) => {
+  inquiryData.value.service = service; // Prefill the service field
+  showInquiryForm.value = true;
+};
+
+const submitInquiry = () => {
+  // Handle form submission logic here
+  console.log('Inquiry submitted:', inquiryData.value);
+  showInquiryForm.value = false; // Close the form after submission
+};
 </script>
 
 <style scoped>
@@ -172,5 +210,46 @@ const showContactForm = ref(false);
 
 .service-title h2 {
   @apply text-yellow-300;
+}
+
+.inquiry-form-modal {
+  /* Add styles for the modal */
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  color: white;
+}
+
+.inquiry-form-modal input,
+.inquiry-form-modal textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submit-button,
+.cancel-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336; /* Red */
+  color: white;
 }
 </style>
