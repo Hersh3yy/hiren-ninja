@@ -6,10 +6,12 @@
     <div class="container mx-auto px-4 sm:px-6 py-8 relative z-10">
       <h1 class="page-title">Services</h1>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Discovery Session Card -->
-        <div class="service-card">
-          <h2>Discovery Session</h2>
+        <div class="card">
+          <div class="service-title">
+            <h2 class="text-yellow-300">Discovery Session</h2>
+          </div>
           <div class="service-content">
             <p>
               3 hours of dedicated consultation to understand your IT needs and
@@ -25,12 +27,15 @@
               <span class="price">€100</span>
               <span class="duration">3 hours</span>
             </div>
+            <button @click="openWizard('Discovery Session')" class="service-button">Inquire</button>
           </div>
         </div>
 
         <!-- Website Development Card -->
-        <div class="service-card">
-          <h2>Website Development</h2>
+        <div class="card">
+          <div class="service-title">
+            <h2>Website Development</h2>
+          </div>
           <div class="service-content">
             <div class="space-y-2">
               <p class="service-subtitle">Simple Website</p>
@@ -56,8 +61,10 @@
         </div>
 
         <!-- Web Applications Card -->
-        <div class="service-card">
-          <h2>Web Applications</h2>
+        <div class="card">
+          <div class="service-title">
+            <h2>Web Applications</h2>
+          </div>
           <div class="service-content">
             <p>Custom web applications tailored to your specific needs.</p>
             <ul class="service-list">
@@ -70,8 +77,10 @@
         </div>
 
         <!-- Freelance Development Card -->
-        <div class="service-card">
-          <h2>Freelance Development</h2>
+        <div class="card">
+          <div class="service-title">
+            <h2>Freelance Development</h2>
+          </div>
           <div class="service-content">
             <p>Hourly development services with flexible engagement options.</p>
             <div class="space-y-2">
@@ -159,5 +168,9 @@ const showContactForm = ref(false);
 
 .inquiry-button {
   @apply w-full py-3 bg-yellow-300 text-black rounded-lg hover:bg-yellow-400 transition-colors font-bold text-lg;
+}
+
+.service-title h2 {
+  @apply text-yellow-300;
 }
 </style>

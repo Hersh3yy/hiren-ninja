@@ -67,7 +67,7 @@ onUnmounted(() => {
 }
 
 .scale-up {
-  transform: scale(1.5);
+  transform: scale(1.2);
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
 }
 

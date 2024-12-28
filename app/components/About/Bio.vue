@@ -1,7 +1,7 @@
 <!-- components/about/BiographySection.vue -->
 <template>
   <section class="mb-12">
-    <h2 class="text-2xl font-bold text-yellow-300 mb-6 text-center">Biography</h2>
+    <h2 class="page-title">Biography</h2>
     <div
       class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8"
     >

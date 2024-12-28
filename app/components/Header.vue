@@ -2,11 +2,8 @@
     <header
         class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-50 bg-gray-800/90 backdrop-blur-md">
         <!-- Logo - centered on home page, left-aligned elsewhere -->
-        <NuxtLink to="/" :class="[
-            'flex items-center',
-            $route.path === '/' ? 'w-full justify-center' : '',
-        ]">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 whitespace-nowrap font-['Sixtyfour_Convergence'] font-[400] antialiased"
+        <NuxtLink to="/" class="flex items-center">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl text-yellow-300 whitespace-nowrap font-['Sixtyfour_Convergence'] font-[400] antialiased"
                 :style="{
                     fontVariationSettings: 'BLED 0, SCAN -16, XELA 60, YELA -94'
                 }">
@@ -15,7 +12,7 @@
         </NuxtLink>
 
         <!-- Navigation Menu - Only show if not on home page -->
-        <nav v-if="$route.path !== '/'" class="ml-4">
+        <nav class="ml-4">
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">
                 <NuxtLink v-for="link in links" :key="link.to" :to="link.to"

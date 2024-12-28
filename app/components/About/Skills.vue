@@ -1,7 +1,7 @@
 <!-- components/about/Skills.vue -->
 <template>
   <div>
-    <h2 class="text-3xl font-bold text-yellow-300 mb-6">Skills & Journey</h2>
+    <h2 class="page-title">Skills & Journey</h2>
 
     <!-- Skills Narrative -->
     <div class="text-white mb-8">
@@ -25,7 +25,7 @@
       <div
         v-for="(category, index) in categories"
         :key="index"
-        class="bg-black/30 p-6 rounded-lg"
+        class="card"
       >
         <h4 class="text-yellow-300 font-bold mb-4">{{ category.name }}</h4>
         <div class="flex flex-wrap gap-4">

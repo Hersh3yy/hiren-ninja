@@ -2,41 +2,17 @@
   <section class="min-h-screen">
     <!-- Outer container with padding -->
     <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-[90vw]">
-      <!-- Header section -->
       <div class="mb-8 sm:mb-12">
-        <h1
-          class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-400 text-transparent bg-clip-text"
-        >
-          My Projects
-        </h1>
+        <h1 class="page-title">My Projects</h1>
       </div>
-
-      <!-- Filters -->
-      <ProjectFilters
-        :tags="tags"
-        :active-filters="activeFilters"
-        @toggle-filter="toggleFilter"
-        class="mb-8"
-      />
-
-      <!-- Grid -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6"
-      >
-        <ProjectCard
-          v-for="project in filteredProjects"
-          :key="project.id"
-          :project="project"
-          @click="openModal(project)"
-        />
+      <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+        <ProjectCard v-for="project in filteredProjects" :key="project.id" :project="project"
+          @click="openModal(project)" />
       </div>
 
       <!-- Pop Up -->
-      <ProjectModal
-        :project="selectedProject"
-        @close="closeModal"
-        v-if="selectedProject"
-      />
+      <ProjectModal :project="selectedProject" @close="closeModal" v-if="selectedProject" />
     </div>
   </section>
 </template>
@@ -71,14 +47,14 @@ const filteredProjects = computed(() => {
     activeFilters.value.length === 0
       ? projects.value
       : projects.value.filter((project) =>
-          activeFilters.value.some(
-            (filter) =>
-              project.year.toString() === filter ||
-              (filter === "Employer" && project.for_employer) ||
-              (filter === "Personal" && !project.for_employer) ||
-              project.tech_tags?.some((tag) => tag.name === filter)
-          )
-        );
+        activeFilters.value.some(
+          (filter) =>
+            project.year.toString() === filter ||
+            (filter === "Employer" && project.for_employer) ||
+            (filter === "Personal" && !project.for_employer) ||
+            project.tech_tags?.some((tag) => tag.name === filter)
+        )
+      );
 
   // Sort by year in descending order (newest first)
   return filtered.sort((a, b) => b.year - a.year);

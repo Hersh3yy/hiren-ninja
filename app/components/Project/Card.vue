@@ -1,7 +1,7 @@
 <template>
   <div
     @click="emit('click', project)"
-    class="group h-full w-full max-w-[95vw] sm:max-w-[45vw] lg:max-w-[30vw] xl:max-w-[22vw] 2xl:max-w-[18vw] rounded-xl overflow-hidden bg-gradient-to-b from-gray-800/80 to-gray-900/90 border border-gray-800/50 transition-all duration-300 hover:border-gray-700/50 hover:shadow-lg cursor-pointer"
+    class="card"
   >
     <div class="aspect-video relative overflow-hidden">
       <img

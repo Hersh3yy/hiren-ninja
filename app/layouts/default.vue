@@ -20,15 +20,21 @@
     >
       <NuxtPage />
     </main>
-    <div class="fixed bottom-4 left-4 z-30">
-      <MusicControls />
-    </div>
     <Footer class="mt-auto z-10 font-space-grotesk" />
   </div>
 </template>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap");
+
+/* Add these global styles */
+.page-title {
+  @apply text-3xl sm:text-4xl font-bold text-yellow-300 mb-8;
+}
+
+.section-title {
+  @apply text-2xl font-bold text-yellow-300 mb-4;
+}
 
 .bg-grid-pattern {
   background-image: linear-gradient(
@@ -37,6 +43,6 @@
     ),
     linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 20px 20px;
-  pointer-events: none; /* This ensures you can click through the grid */
+  pointer-events: none;
 }
 </style>
