@@ -41,7 +41,7 @@ onUnmounted(() => {
 
 <style scoped>
 .fire-text {
-  background-image: url(https://media.tenor.com/wKseAxJMZAgAAAAM/jolteon-pokemon.gif);
+  background-image: url(https://media.tenor.com/XjSlhJYIMXgAAAAM/sunset-sun-setting.gif);
   background-size: cover;
   color: transparent;
   -moz-background-clip: text;
@@ -53,7 +53,7 @@ onUnmounted(() => {
 }
 
 .scale-up {
-  transform: scale(1.2);
+  transform: scale(1.1);
   text-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
 }
 

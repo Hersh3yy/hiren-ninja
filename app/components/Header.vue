@@ -67,8 +67,9 @@ const closeMobileMenu = () => {
 };
 
 // Close menu when route changes
+const route = useRoute();
 watch(
-    () => useRoute().path,
+    () => route.path,
     () => {
         isMobileMenuOpen.value = false;
     },
