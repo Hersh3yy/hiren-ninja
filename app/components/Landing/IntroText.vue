@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-4xl text-center px-4 font-space-grotesk">
-    <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-10 min-h-[50vh]">
+    <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-10 min-h-[30vh]">
       I am
       <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }">Hiren</strong>,
       a web developer who enjoys
