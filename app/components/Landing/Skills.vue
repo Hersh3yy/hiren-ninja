@@ -6,7 +6,7 @@
                 <div class="gif-container">
                     <div v-html="skill.embedCode" class="gif-embed"></div>
                 </div>
-                <h3 class="text-xl font-semibold text-white">{{ skill.title }}</h3>
+                <h3 class="text-xl font-semibold text-white mt-3">{{ skill.title }}</h3>
                 <p class="text-gray-300">{{ skill.description }}</p>
             </div>
         </div>
@@ -31,7 +31,7 @@ const skills = ref([
     },
     {
         title: "Data-Dependent Applications",
-        description: "Build applications that rely on data.",
+        description: "Build applications that rely on data and/or AI.",
         embedCode: `<div class="tenor-gif-embed" data-postid="8591210658048230749" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/gofiber-really-domixi-gif-8591210658048230749">Gofiber Really GIF</a> from <a href="https://tenor.com/search/gofiber-gifs">Gofiber GIFs</a></div>`,
     },
     {
@@ -52,7 +52,7 @@ onMounted(() => {
 <style scoped>
 .gif-container {
     width: 100%;
-    height: 200px;
+    height: 222px;
     overflow: hidden;
     position: relative;
 }
