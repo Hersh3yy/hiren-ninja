@@ -1,56 +1,52 @@
 // netlify/functions/service-request.ts
-import { Handler } from '@netlify/functions'
-import axios from 'axios'
-
-export const handler: Handler = async (event) => {
+export const handler = async (event) => {
     if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' }
+        return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     try {
-        const data = JSON.parse(event.body || '')
+        const data = JSON.parse(event.body || '');
+        console.log('Received service request:', data);
 
-        const response = await axios.post(
-            process.env.CMS_ENDPOINT!,
-            {
-                query: `
-          mutation CreateServiceRequest($input: ServiceRequestInput!) {
-            createServiceRequest(data: $input) {
-              data {
-                id
-                attributes {
-                  status
-                }
-              }
-            }
-          }
-        `,
-                variables: {
-                    input: {
-                        ...data,
-                        status: 'NEW'
-                    }
-                }
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${process.env.CMS_TOKEN}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        )
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Log what would be sent to ClickUp
+        const taskData = {
+            name: `${data.serviceType}: ${data.name}`,
+            description: `
+### Contact Details
+- **Name:** ${data.name}
+- **Email:** ${data.email}
+
+### Service Request Details
+- **Service Type:** ${data.serviceType}
+- **Timeline:** ${data.timeline}
+
+### Project Description
+${data.description}
+            `.trim(),
+            status: 'New Lead'
+        };
+
+        console.log('Would create ClickUp task:', taskData);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(response.data)
-        }
-
-    } catch (error: any) {
-        return {
-            statusCode: error.response?.status || 500,
             body: JSON.stringify({
-                message: error.message
+                message: 'Service request received successfully',
+                data: taskData
             })
-        }
+        };
+
+    } catch (error) {
+        console.error('Service request error:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                message: 'Failed to process service request',
+                error: error.message
+            })
+        };
     }
-}
+};

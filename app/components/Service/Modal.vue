@@ -18,19 +18,18 @@
                             <label class="block text-gray-200 mb-2">Project Description</label>
                             <textarea v-model="formData.description" rows="3"
                                 class="w-full bg-gray-800 text-white rounded p-3 border border-gray-700 focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
-                                placeholder="Tell me about your project and what you're looking to achieve"
-                                required></textarea>
+                                :placeholder="placeholderText" required></textarea>
                         </div>
 
                         <div>
-                            <label class="block text-gray-200 mb-2">Timeline</label>
+                            <label class="block text-gray-200 mb-2">{{ timelineLabel }}</label>
                             <select v-model="formData.timeline"
                                 class="w-full bg-gray-800 text-white rounded p-3 border border-gray-700 focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
                                 required>
-                                <option value="">Select timeline</option>
-                                <option value="urgent">ASAP (1-2 weeks)</option>
-                                <option value="soon">Soon (1-2 months)</option>
-                                <option value="flexible">Flexible (2+ months)</option>
+                                <option value="">Select {{ timelineLabel.toLowerCase() }}</option>
+                                <option v-for="option in timelineOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}
+                                </option>
                             </select>
                         </div>
 
@@ -67,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     isOpen: Boolean,
@@ -75,6 +74,47 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'submit']);
+
+const serviceTitle = computed(() => {
+    const titles = {
+        discovery: 'Discovery & Consultation',
+        website: 'Website Development',
+        application: 'Web Applications',
+        maintenance: 'Maintenance & Support'
+    };
+    return titles[props.serviceType] || 'Service Request';
+});
+
+// Customize placeholder text based on service type
+const placeholderText = computed(() => {
+    const placeholders = {
+        discovery: "Tell me about your business and what you're looking to achieve with technology. What challenges are you facing?",
+        website: "Describe the website you envision. What features do you need? Any specific design preferences?",
+        application: "What processes are you looking to automate? Tell me about your workflow and pain points.",
+        maintenance: "What issues are you experiencing? What kind of support do you need?"
+    };
+    return placeholders[props.serviceType] || "Tell me about your project";
+});
+
+// Customize timeline options based on service type
+const showTimeline = computed(() => props.serviceType !== 'discovery');
+const timelineLabel = computed(() =>
+    props.serviceType === 'discovery' ? 'Preferred Meeting Time' : 'Timeline'
+);
+const timelineOptions = computed(() => {
+    if (props.serviceType === 'discovery') {
+        return [
+            { value: 'morning', label: 'Morning (9AM - 12PM EST)' },
+            { value: 'afternoon', label: 'Afternoon (1PM - 5PM EST)' },
+            { value: 'evening', label: 'Evening (6PM - 8PM EST)' }
+        ];
+    }
+    return [
+        { value: 'urgent', label: 'ASAP (1-2 weeks)' },
+        { value: 'soon', label: 'Soon (1-2 months)' },
+        { value: 'flexible', label: 'Flexible (2+ months)' }
+    ];
+});
 
 const formData = ref({
     description: '',
@@ -84,25 +124,23 @@ const formData = ref({
     serviceType: props.serviceType
 });
 
-const serviceTitle = computed(() => {
-    const titles = {
-        discovery: 'Discovery & Consultation',
-        website: 'Website Development',
-        application: 'Web Applications',
-        maintenance: 'Maintenance & Support'
-    };
-    return titles[props.serviceType] || '';
-});
+watch(() => props.serviceType, (newType) => {
+    formData.value.serviceType = newType;
+}, { immediate: true });
 
-const handleSubmit = async (formData) => {
+const handleSubmit = async () => {
     try {
-        await $fetch('/.netlify/functions/service-request', {
+        console.log('Submitting form data:', formData.value)
+        const response = await $fetch('/.netlify/functions/service-request', {
             method: 'POST',
-            body: formData
+            body: JSON.stringify(formData.value)
         })
-        modalOpen.value = false
+        console.log('Response:', response)
+        emit('submit', formData.value)
+        close()
     } catch (error) {
-        console.error('Error:', error)
+        console.error('Error submitting form:', error)
+        alert('Failed to submit request. Please try again.')
     }
 }
 

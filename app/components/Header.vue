@@ -54,8 +54,8 @@ const isMobileMenuOpen = ref(false);
 
 const links = [
     { to: "/about", text: "About" },
-    { to: "/projects", text: "Projects" },
-    // { to: "/services", text: "Services" },
+    // { to: "/projects", text: "Projects" },
+    { to: "/services", text: "Services" },
 ];
 
 const toggleMobileMenu = () => {
