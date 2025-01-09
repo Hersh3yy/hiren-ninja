@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/apollo": "^5.0.0-alpha.14",
     "@supabase/supabase-js": "^2.45.6",
+    "graphql": "^16.10.0",
+    "graphql-request": "^7.1.2",
     "howler": "^2.2.4",
     "nuxt": "^3.13.2",
     "vue": "latest",
@@ -19,6 +22,6 @@
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^3.4.17"
   }
 }

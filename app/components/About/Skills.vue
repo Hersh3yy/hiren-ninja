@@ -36,7 +36,6 @@
             :class="{
               'hover:scale-105 transition-transform cursor-pointer': tech.linkToProjects,
             }"
-            @click="tech.linkToProjects && navigateToProjects(tech.name)"
           >
             <img
               :src="`/icons/${tech.icon}`"

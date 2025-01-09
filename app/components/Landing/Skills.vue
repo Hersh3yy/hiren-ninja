@@ -10,7 +10,7 @@
                 <p class="text-gray-300">{{ skill.description }}</p>
             </div>
         </div>
-        <NuxtLink to="/services" class="mt-6 inline-block text-yellow-300 hover:text-yellow-400">Learn more about my
+        <NuxtLink to="/services" class="mt-6 mb-3 inline-block text-yellow-300 hover:text-yellow-400">Learn more about my
             services</NuxtLink>
     </div>
 </template>

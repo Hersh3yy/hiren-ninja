@@ -1,4 +1,4 @@
-<!-- pages/services.vue -->
+# pages/services.vue
 <template>
   <section class="min-h-screen">
     <div class="absolute inset-0 bg-grid-pattern"></div>
@@ -13,7 +13,7 @@
             'Technology recommendations',
             'Project planning',
             'Cost estimation'
-          ]" @start="startServiceFlow('discovery')" />
+          ]" @start="openModal('discovery')" />
 
         <ServiceCard title="Website Development"
           description="Get your business online with a professional website. From simple business sites to online stores."
@@ -22,7 +22,7 @@
             'Mobile friendly',
             'Easy to update',
             'Search engine optimized'
-          ]" @start="startServiceFlow('website')" />
+          ]" @start="openModal('website')" />
 
         <ServiceCard title="Web Applications"
           description="Custom software to help run your business better. Automate tasks and manage your data efficiently."
@@ -31,7 +31,7 @@
             'Business automation',
             'Data management',
             'Cloud hosting'
-          ]" @start="startServiceFlow('application')" />
+          ]" @start="openModal('application')" />
 
         <ServiceCard title="Maintenance & Support"
           description="Keep your website or application running smoothly. Regular updates and fixes when you need them."
@@ -40,19 +40,36 @@
             'Problem solving',
             'Performance improvements',
             'Technical support'
-          ]" @start="startServiceFlow('maintenance')" />
+          ]" @start="openModal('maintenance')" />
       </div>
+
+      <ServiceModal :is-open="modalOpen" :service-type="selectedService" @close="modalOpen = false"
+        @submit="handleSubmit" />
     </div>
   </section>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
-const router = useRouter();
+const modalOpen = ref(false);
+const selectedService = ref(null);
 
-const startServiceFlow = (serviceType) => {
-  router.push(`/services/${serviceType}`);
+const openModal = (serviceType) => {
+  selectedService.value = serviceType;
+  modalOpen.value = true;
+};
+
+const handleSubmit = async (formData) => {
+  try {
+    console.log('Sending form data:', formData);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    alert('Request sent successfully!');
+    modalOpen.value = false;
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to send request. Please try again.');
+  }
 };
 </script>
 
