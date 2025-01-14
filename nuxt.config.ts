@@ -26,6 +26,7 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/apollo',
+    'nuxt-site-config',
     '@nuxtjs/robots',
     'nuxt-simple-sitemap',
   ],
