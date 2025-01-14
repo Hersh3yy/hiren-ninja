@@ -26,8 +26,8 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/apollo',
-    '@nuxtjs/robots',  // Add this module
-    'nuxt-simple-sitemap', // Add this module
+    '@nuxtjs/robots',
+    'nuxt-simple-sitemap',
   ],
   css: [
     "~/assets/css/main.css"
@@ -45,5 +45,21 @@ export default defineNuxtConfig({
       }
     },
   },
+  site: {
+    url: 'https://hiren.ninja'
   },
+  routeRules: {
+    '/admin/**': { index: false },
+    '/dashboard/**': { index: false },
+    '/profile/**': { index: false }
+  },
+  future: {
+    compatibilityVersion: 4,
+  },
+  devtools: { enabled: true },
+  compatibilityDate: "2024-10-12",
+  experimental: {
+    payloadExtraction: false,
+    renderJsonPayloads: true
+  }
 });

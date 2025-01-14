@@ -1,0 +1,18 @@
+// public/_robots.txt
+User-agent: *
+Allow: /
+
+# Block search results and filters
+Disallow: /*?query=
+Disallow: /*?page=
+Disallow: /*?sort=
+Disallow: /*?filter=
+
+# Block AI bots
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: Claude-Web
+User-agent: anthropic-ai
+Disallow: /
+
+Sitemap: https://hiren.ninja/sitemap.xml
