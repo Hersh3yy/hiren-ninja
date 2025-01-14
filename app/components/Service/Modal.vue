@@ -1,4 +1,3 @@
-# components/Service/Modal.vue
 <template>
     <Teleport to="body">
         <div v-if="isOpen" class="fixed inset-0 z-50">
@@ -13,7 +12,8 @@
                     </div>
 
                     <!-- Form -->
-                    <form @submit.prevent="handleSubmit" class="space-y-6">
+                    <form @submit.prevent="handleSubmit" class="space-y-6"
+                        :class="{ 'opacity-50 pointer-events-none': isSubmitting }">
                         <div>
                             <label class="block text-gray-200 mb-2">Project Description</label>
                             <textarea v-model="formData.description" rows="3"
@@ -48,14 +48,25 @@
                             </div>
                         </div>
 
+                        <!-- Status Message -->
+                        <div v-if="statusMessage" :class="[
+                            'p-3 rounded text-sm',
+                            statusMessage.type === 'error' ? 'bg-red-900/50 text-red-200' : 'bg-green-900/50 text-green-200'
+                        ]">
+                            {{ statusMessage.text }}
+                        </div>
+
                         <div class="flex justify-end gap-4">
                             <button type="button" @click="close"
                                 class="px-6 py-2 border border-yellow-300 text-yellow-300 rounded hover:bg-yellow-300/10">
                                 Cancel
                             </button>
                             <button type="submit"
-                                class="px-6 py-2 bg-yellow-300 text-black rounded hover:bg-yellow-400">
-                                Send Request
+                                class="px-6 py-2 bg-yellow-300 text-black rounded hover:bg-yellow-400 flex items-center gap-2"
+                                :disabled="isSubmitting">
+                                <span v-if="isSubmitting"
+                                    class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                                {{ isSubmitting ? 'Sending...' : 'Send Request' }}
                             </button>
                         </div>
                     </form>
@@ -75,6 +86,9 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'submit']);
 
+const isSubmitting = ref(false);
+const statusMessage = ref(null);
+
 const serviceTitle = computed(() => {
     const titles = {
         discovery: 'Discovery & Consultation',
@@ -85,33 +99,31 @@ const serviceTitle = computed(() => {
     return titles[props.serviceType] || 'Service Request';
 });
 
-// Customize placeholder text based on service type
 const placeholderText = computed(() => {
     const placeholders = {
-        discovery: "Tell me about your business and what you're looking to achieve with technology. What challenges are you facing?",
-        website: "Describe the website you envision. What features do you need? Any specific design preferences?",
-        application: "What processes are you looking to automate? Tell me about your workflow and pain points.",
-        maintenance: "What issues are you experiencing? What kind of support do you need?"
+        discovery: "Describe your business goals and technical challenges. What specific outcomes would define success for this project?",
+        website: "Share your vision for the website, including key features, target audience, and any specific technical requirements.",
+        application: "Detail your application needs - whether joining an existing project or starting fresh. Include current pain points and desired functionality.",
+        maintenance: "Outline your current system status and specific areas requiring support or improvement."
     };
-    return placeholders[props.serviceType] || "Tell me about your project";
+    return placeholders[props.serviceType] || "Please describe your project requirements";
 });
 
-// Customize timeline options based on service type
-const showTimeline = computed(() => props.serviceType !== 'discovery');
 const timelineLabel = computed(() =>
     props.serviceType === 'discovery' ? 'Preferred Meeting Time' : 'Timeline'
 );
+
 const timelineOptions = computed(() => {
     if (props.serviceType === 'discovery') {
         return [
-            { value: 'morning', label: 'Morning (9AM - 12PM EST)' },
-            { value: 'afternoon', label: 'Afternoon (1PM - 5PM EST)' },
-            { value: 'evening', label: 'Evening (6PM - 8PM EST)' }
+            { value: 'morning', label: 'Morning (9AM - 12PM CET)' },
+            { value: 'afternoon', label: 'Afternoon (1PM - 5PM CET)' },
+            { value: 'evening', label: 'Evening (6PM - 8PM CET)' }
         ];
     }
     return [
-        { value: 'urgent', label: 'ASAP (1-2 weeks)' },
-        { value: 'soon', label: 'Soon (1-2 months)' },
+        { value: 'urgent', label: 'Urgent (1-2 weeks)' },
+        { value: 'soon', label: 'Standard (1-2 months)' },
         { value: 'flexible', label: 'Flexible (2+ months)' }
     ];
 });
@@ -130,19 +142,44 @@ watch(() => props.serviceType, (newType) => {
 
 const handleSubmit = async () => {
     try {
-        console.log('Submitting form data:', formData.value)
-        const response = await $fetch('/.netlify/functions/service-request', {
+        isSubmitting.value = true;
+        statusMessage.value = null;
+
+        const response = await fetch('/.netlify/functions/service-request', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(formData.value)
-        })
-        console.log('Response:', response)
-        emit('submit', formData.value)
-        close()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to submit request');
+        }
+
+        statusMessage.value = {
+            type: 'success',
+            text: 'Request submitted successfully! We\'ll be in touch soon.'
+        };
+
+        // Close modal after a brief delay to show success message
+        setTimeout(() => {
+            emit('submit', formData.value);
+            close();
+        }, 2000);
+
     } catch (error) {
-        console.error('Error submitting form:', error)
-        alert('Failed to submit request. Please try again.')
+        console.error('Error submitting form:', error);
+        statusMessage.value = {
+            type: 'error',
+            text: 'Failed to submit request. Please try again or contact us directly.'
+        };
+    } finally {
+        isSubmitting.value = false;
     }
-}
+};
 
 const close = () => {
     emit('close');
@@ -153,5 +190,6 @@ const close = () => {
         email: '',
         serviceType: props.serviceType
     };
+    statusMessage.value = null;
 };
 </script>

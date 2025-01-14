@@ -1,16 +1,20 @@
+<!-- components/landing/LandingIntroText.vue -->
 <template>
   <div class="max-w-4xl text-center px-4 font-space-grotesk">
-    <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-40 min-h-[30vh]">
+    <!-- Main Text -->
+    <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-24 md:pt-32 lg:pt-40">
       I am a
-      <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }">web developer</strong>,
-      who enjoys
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 1 }">absorbing</span>
-      ideas,
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }">visualizing</span>
-      them, and
-      <span class="fire-text" :class="{ 'scale-up': activeIndex === 3 }">planning</span>
-      their completion
+      <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }">web developer</strong>
+      who
+      <span class="fire-text" :class="{ 'scale-up': activeIndex === 1 }">transforms</span>
+      requirements into
+      <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }">solutions</span>
     </h1>
+
+    <!-- Subtext -->
+    <p class="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+      Bringing balanced strategy and enduring commitment to your digital projects - from concept to completion
+    </p>
   </div>
 </template>
 
@@ -18,7 +22,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const activeIndex = ref(-1);
-const totalElements = 5;
+const totalElements = 3;
 let intervalId;
 
 const animate = () => {

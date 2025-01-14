@@ -25,45 +25,45 @@ import { ref } from 'vue'
 const services = ref([
   {
     id: 'discovery',
-    title: 'Discovery & Consultation',
-    description: 'Together we\'ll uncover your project\'s true potential. Drawing from years of experience, I\'ll help you navigate the technical landscape and forge a path that serves your vision.',
+    title: 'Discovery & Planning',
+    description: 'A strategic approach to understanding business needs and crafting the right technical solution. Each discovery session focuses on identifying opportunities for efficiency and growth.',
     features: [
-      'Understanding your needs',
-      'Technology recommendations',
-      'Project planning',
-      'Cost estimation'
+      'Business process analysis',
+      'Technical requirements gathering',
+      'Solution architecture planning',
+      'Timeline and cost estimation'
     ]
   },
   {
     id: 'website',
-    title: 'Website Development',
-    description: 'Get your business online with a website that means business. From sleek landing pages to full-featured online stores, I build digital experiences that work as hard as you do.',
+    title: 'Site Development',
+    description: 'Modern, efficient websites built with proven technologies. From corporate platforms to dynamic web applications, each solution is crafted for performance and scalability.',
     features: [
-      'Custom design',
-      'Mobile friendly',
-      'Easy to update',
-      'Search engine optimized'
+      'Custom website development',
+      'Responsive design implementation',
+      'Performance optimization',
+      'Search engine readiness'
     ]
   },
   {
     id: 'application',
-    title: 'Web Applications',
-    description: 'Custom software crafted with precision to streamline your operations. Transform your workflows into efficient digital systems that give you the edge in today\'s market.',
+    title: 'Application Development',
+    description: 'Specialized expertise in joining existing development teams or building new applications from the ground up. Focus on clean code, clear documentation, and seamless integration.',
     features: [
-      'Custom software solutions',
-      'Business automation',
-      'Data management',
-      'Cloud hosting'
+      'Custom application development',
+      'Existing system integration',
+      'Team augmentation',
+      'Technical documentation'
     ]
   },
   {
     id: 'maintenance',
     title: 'Maintenance & Support',
-    description: 'Keep your digital assets performing at their peak. With vigilant monitoring and swift response times, I ensure your systems stay sharp and ready for action.',
+    description: 'Proactive maintenance and responsive support to ensure digital assets remain secure and efficient. Regular updates and improvements keep systems running at peak performance.',
     features: [
-      'Regular updates',
-      'Problem solving',
-      'Performance improvements',
+      'Ongoing system maintenance',
+      'Performance monitoring',
+      'Security updates',
       'Technical support'
     ]
   }
