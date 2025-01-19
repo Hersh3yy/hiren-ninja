@@ -1,8 +1,8 @@
 <!-- app.vue -->
 <template>
   <div class="bg-black min-h-screen flex flex-col relative font-space-grotesk">
-    <div class="fixed inset-0 bg-grid-pattern opacity-50" style="z-index: 1"></div>
-    <BackgroundFractalClock />
+    <div class="fixed inset-0 bg-grid-pattern opacity-20" style="z-index: 2"></div>
+    <div id="vanta-background" class="fixed inset-0" style="z-index: 1"></div>
     <Header class="z-20" />
     <main class="flex-grow flex justify-center items-start z-10 mt-16 w-full max-w-full font-space-grotesk">
       <NuxtPage />
@@ -33,6 +33,34 @@ useHead({
   link: [
     { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
+  ],
+  script: [
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js',
+    },
+    {
+      src: 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js',
+      callback: () => {
+        // Initialize VANTA after both scripts are loaded
+        if (typeof VANTA !== 'undefined') {
+          VANTA.BIRDS({
+            el: "#vanta-background",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color1: 0xfffe00,
+            color2: 0x70707,
+            birdSize: 0.95,
+            wingSpan: 40.00,
+            backgroundColor: 0x60707,
+          })
+        }
+      }
+    }
   ]
 });
 </script>

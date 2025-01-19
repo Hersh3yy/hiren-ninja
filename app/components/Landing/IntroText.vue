@@ -1,13 +1,13 @@
 <!-- components/landing/LandingIntroText.vue -->
 <template>
-  <div class="max-w-4xl text-center px-4 font-space-grotesk">
+  <div class="max-w-4xl text-center px-4 font-space-grotesk my-32">
     <!-- Main Text -->
     <h1 class="text-2xl md:text-4xl lg:text-5xl text-white leading-relaxed pt-24 md:pt-32 lg:pt-40">
       I am a
       <strong class="fire-text" :class="{ 'scale-up': activeIndex === 0 }">web developer</strong>
       who
       <span class="fire-text" :class="{ 'scale-up': activeIndex === 1 }">transforms</span>
-      requirements into
+      ideas into
       <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }">solutions</span>
     </h1>
 

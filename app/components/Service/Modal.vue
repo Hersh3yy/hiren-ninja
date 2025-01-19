@@ -4,7 +4,7 @@
             <div class="absolute inset-0 bg-black/70" @click="close"></div>
 
             <div class="relative min-h-full p-4 flex items-center justify-center">
-                <div class="w-full max-w-2xl bg-black/95 rounded-xl p-6 shadow-xl">
+                <div class="w-full max-w-2xl bg-black/95 rounded-xl p-6 shadow-xl border-4 border-yellow-300/20">
                     <!-- Header -->
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-yellow-300">{{ serviceTitle }}</h2>
