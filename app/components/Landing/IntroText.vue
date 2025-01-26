@@ -45,7 +45,7 @@ onUnmounted(() => {
 
 <style scoped>
 .fire-text {
-  background-image: url(https://media.tenor.com/XjSlhJYIMXgAAAAM/sunset-sun-setting.gif);
+  background-image: url(https://media.tenor.com/klRH-5oadkEAAAAM/quagmire-purple-quagmire.gif);
   background-size: cover;
   color: transparent;
   -moz-background-clip: text;

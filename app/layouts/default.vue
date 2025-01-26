@@ -54,7 +54,7 @@ useHead({
             scaleMobile: 1.00,
             color1: 0xfffe00,
             color2: 0x70707,
-            birdSize: 0.95,
+            birdSize: 0.7,
             wingSpan: 40.00,
             backgroundColor: 0x60707,
           })

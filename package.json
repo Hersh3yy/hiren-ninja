@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
-    "@nuxtjs/robots": "^5.1.1",
+    "@nuxtjs/robots": "^5.2.x",
     "@supabase/supabase-js": "^2.45.6",
     "axios": "^1.7.9",
     "graphql": "^16.10.0",
