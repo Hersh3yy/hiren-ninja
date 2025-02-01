@@ -4315,7 +4315,7 @@ nuxt-site-config@^3.0.6:
     site-config-stack "3.0.6"
     ufo "^1.5.4"
 
-nuxt@^3.15.4:
+nuxt@^3.13.x:
   version "3.15.4"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-3.15.4.tgz#631f679ca6d63406bf7e25f15a37432c7ecbcc16"
   integrity sha512-hSbZO4mR0uAMJtZPNTnCfiAtgleoOu28gvJcBNU7KQHgWnNXPjlWgwMczko2O4Tmnv9zIe/CQged+2HsPwl2ZA==
