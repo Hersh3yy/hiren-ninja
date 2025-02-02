@@ -1,115 +1,123 @@
 <template>
   <section class="min-h-screen">
     <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-[90vw]">
+      <!-- Header -->
       <div class="mb-8 sm:mb-12">
         <h1 class="page-title">My Projects</h1>
       </div>
-      <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" />
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
-        <ProjectCard v-for="project in filteredProjects" :key="project.id" :project="project"
-          @click="openModal(project)" />
+
+      <!-- Error State -->
+      <div v-if="error" class="rounded-lg bg-red-50 p-4 mb-8">
+        <p class="text-red-700">Error loading projects: {{ error }}</p>
       </div>
 
-      <ProjectModal :project="selectedProject" @close="closeModal" v-if="selectedProject" />
+      <div v-else-if="loading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+
+      <template v-else>
+        <!-- Filters -->
+        <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" />
+
+        <!-- Projects Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+          <ProjectCard v-for="project in filteredProjects" :key="project.id" :project="project"
+            @click="openModal(project)" />
+        </div>
+
+        <!-- Project Modal -->
+        <ProjectModal v-if="selectedProject" :project="selectedProject" @close="closeModal" />
+      </template>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 const query = gql`
-  query {
+  query GetProjects {
     projects {
+      stage
+      publishedAt
+      updatedAt
+      createdAt
       id
       title
       shortDescription
       fullDescription
-      year
-      for_employer
-      tech_tags {
-        name
-      }
+      url
+      role
+      slug
       coverImage {
         url
-        fileName
-        size
       }
       screenshots {
         url
-        fileName
-        size
+        id
       }
     }
   }
-`;
+`
 
-// Fetch projects
-const { data, error } = await useAsyncQuery(query, {}, {
-  context: {
-    headers: {
-      Authorization: `Bearer ${process.env.HYGRAPH_API_KEY}`
-    }
-  }
-});
+// Data fetching with Apollo
+const { data, loading, error } = await useAsyncQuery(query)
 
-if (error) console.error("GraphQL Error:", error);
-
-const projects = ref(data?.value?.projects || []);
-const selectedProject = ref(null);
-const activeFilters = ref([]);
+const projects = computed(() => data.value?.projects || [])
+const selectedProject = ref(null)
+const activeFilters = ref([])
 
 const tags = computed(() => {
   const allTags = projects.value.flatMap((project) => [
-    project.year.toString(),
-    project.for_employer ? "Employer" : "Personal",
-    ...(project.tech_tags?.map((tag) => tag.name) || []),
-  ]);
+    new Date(project.publishedAt).getFullYear().toString(),
+    project.role || 'Personal'
+  ])
+
   return [...new Set(allTags)].sort((a, b) => {
-    return allTags.filter(tag => tag === b).length - allTags.filter(tag => tag === a).length;
-  });
-});
+    return allTags.filter(tag => tag === b).length -
+      allTags.filter(tag => tag === a).length
+  })
+})
 
+// Update filteredProjects to use the new fields
 const filteredProjects = computed(() => {
-  let filtered = activeFilters.value.length === 0
-    ? projects.value
-    : projects.value.filter(project =>
-      activeFilters.value.some(filter =>
-        project.year.toString() === filter ||
-        (filter === "Employer" && project.for_employer) ||
-        (filter === "Personal" && !project.for_employer) ||
-        project.tech_tags?.some(tag => tag.name === filter)
-      )
-    );
-  return filtered.sort((a, b) => b.year - a.year);
-});
+  if (activeFilters.value.length === 0) return projects.value
 
+  return projects.value.filter(project =>
+    activeFilters.value.some(filter =>
+      new Date(project.publishedAt).getFullYear().toString() === filter ||
+      project.role === filter
+    )
+  ).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+})
+
+// Rest of your code remains the same...
 function openModal(project) {
-  selectedProject.value = project;
-  document.body.style.overflow = "hidden";
+  selectedProject.value = project
+  document.body.style.overflow = 'hidden'
 }
 
 function closeModal() {
-  selectedProject.value = null;
-  document.body.style.overflow = "";
+  selectedProject.value = null
+  document.body.style.overflow = ''
 }
 
 function toggleFilter(tag) {
-  const index = activeFilters.value.indexOf(tag);
+  const index = activeFilters.value.indexOf(tag)
   if (index > -1) {
-    activeFilters.value.splice(index, 1);
+    activeFilters.value.splice(index, 1)
   } else {
-    activeFilters.value.push(tag);
+    activeFilters.value.push(tag)
   }
 }
 
-const route = useRoute();
+const route = useRoute()
 
 onMounted(() => {
-  const skillFilter = route.query.skill;
+  const skillFilter = route.query.skill
   if (skillFilter) {
-    activeFilters.value = [skillFilter];
+    activeFilters.value = [skillFilter]
   }
-});
+})
 </script>

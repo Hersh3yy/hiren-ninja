@@ -1,3 +1,5 @@
+import { computed, ref } from "vue";
+
 // nuxt.config.ts
 export default defineNuxtConfig({
   app: {
@@ -42,7 +44,12 @@ export default defineNuxtConfig({
   apollo: {
     clients: {
       default: {
-        httpEndpoint: 'https://spacex-production.up.railway.app'
+        httpEndpoint: 'https://eu-central-1-shared-euc1-02.cdn.hygraph.com/content/clvkp3ut01ajw07wc38106mxt/master',
+        httpLinkOptions: {
+          headers: {
+            'Authorization': `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImdjbXMtbWFpbi1wcm9kdWN0aW9uIn0.eyJ2ZXJzaW9uIjozLCJpYXQiOjE3Mzg0NDExNDQsImF1ZCI6WyJodHRwczovL2FwaS1ldS1jZW50cmFsLTEtc2hhcmVkLWV1YzEtMDIuaHlncmFwaC5jb20vdjIvY2x2a3AzdXQwMWFqdzA3d2MzODEwNm14dC9tYXN0ZXIiLCJtYW5hZ2VtZW50LW5leHQuZ3JhcGhjbXMuY29tIl0sImlzcyI6Imh0dHBzOi8vbWFuYWdlbWVudC1ldS1jZW50cmFsLTEtc2hhcmVkLWV1YzEtMDIuaHlncmFwaC5jb20vIiwic3ViIjoiZTVmZTZkNjUtNjU0Ny00MTE1LWFkZmMtOGMxZjc1MjZlYmU4IiwianRpIjoiY202bW15enMzMGo1ZTA4djBhNmtzN29qMyJ9.cSp6N3mYIq-N5ocsuWiuyXvQluz8lufXMgPMD1kXs4mBr2VNkC_h1A-AWZ6-bA-ktx4wuZPBslO8L_3sUe0jA6Jq_Sqa5zsUo1fYkGOjATahGro9nISDbVo2Yjyp6-2Wck-xgzWxfHogFtceYI6Wrma9kK3LtMp-RESA0xmWqgsusFIHe5HA4LW19R07nBvedRLoxDGfRzX5FpI4fY9slwIDC4UfgWQ4fNWBl6o6df1Xl3kobKxTobTMCSaWxiKUzWvQirYWGxiwzM7wsptDb9Lris4G8Da5UzwHE10-ewqJgoECugx9oJhSV8Bd4pgHq3PxRKFj3IFm0w-tHnUQHoNmQEIOb4xchgRJvuOm5PTWMZIX6V-gIBgkqtS-jBZygXQ2eciHV6TTvp7i7bu_xr6BvcPK0KjIGF4VhlYIFlYgVlqjpwVkMwv1CAsMbdi7-znzcPlknnvp4NyQoVcu5S4gS4mXAER6k7tUVdmLZAYdAFsAfBtsdcu9Hct2McNvEUoX1trJRz9hWuHgL3Se6H1A6eSlCip09j2QioE7ixd4QC4A9MmJV5qd__Fkl_KLMcYlUfp3AVjL0psmHl7dNJ2NWEl35r1Qzf9VPtsCiQjmKMsp5nv83YTaqNuY3I7Xy-sU7rrpn-JKU30uanclw26ShdfbIjbKTpmn6JTN3lg`
+          }
+        }
       }
     },
   },
