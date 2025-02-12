@@ -17,7 +17,7 @@
 
       <template v-else>
         <!-- Filters -->
-        <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" />
+        <!-- <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" /> -->
 
         <!-- Projects Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
@@ -35,6 +35,19 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead } from '@vueuse/head'
+import { useSeoMeta } from '@vueuse/head'
+
+useHead({
+  title: 'My Projects - Hiren',
+  meta: [
+    { name: 'description', content: 'Explore my projects showcasing custom solutions and application development.' },
+    { property: 'og:title', content: 'My Projects - Hiren' },
+    { property: 'og:description', content: 'Explore my projects showcasing custom solutions and application development.' },
+    { property: 'og:image', content: '/path/to/project-image.jpg' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+  ]
+})
 
 const query = gql`
   query GetProjects {
@@ -86,8 +99,7 @@ const filteredProjects = computed(() => {
 
   return projects.value.filter(project =>
     activeFilters.value.some(filter =>
-      new Date(project.publishedAt).getFullYear().toString() === filter ||
-      project.role === filter
+      new Date(project.publishedAt).getFullYear().toString() === filter
     )
   ).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
 })

@@ -8,3 +8,16 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useSeoMeta } from '@vueuse/head'
+
+useSeoMeta({
+  title: 'About Me - Hiren',
+  ogTitle: 'About Me - Hiren',
+  description: 'Learn more about Hiren, a web developer specializing in custom solutions.',
+  ogDescription: 'Discover my journey, skills, and projects that showcase my expertise in web development.',
+  ogImage: '/path/to/about-image.jpg',
+  twitterCard: 'summary_large_image',
+})
+</script>

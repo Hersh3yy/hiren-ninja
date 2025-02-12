@@ -21,6 +21,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useSeoMeta } from '@vueuse/head'
+
+useSeoMeta({
+  title: 'Professional Services - Hiren',
+  ogTitle: 'Professional Services - Hiren',
+  description: 'Delivering strategic technology solutions with precision and expertise.',
+  ogDescription: 'We focus on understanding your business objectives and creating lasting value through thoughtful implementation.',
+  ogImage: '/path/to/service-image.jpg',
+  twitterCard: 'summary_large_image',
+})
 
 const services = ref([
   {

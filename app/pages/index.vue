@@ -5,3 +5,16 @@
     <LandingSkills />
   </div>
 </template>
+
+<script setup>
+import { useSeoMeta } from '@vueuse/head'
+
+useSeoMeta({
+  title: 'Home - Hiren',
+  ogTitle: 'Welcome to Hiren - Web Developer',
+  description: 'Discover the portfolio of Hiren, a web developer specializing in custom solutions and application development.',
+  ogDescription: 'Explore my projects, services, and skills that showcase my expertise in web development.',
+  ogImage: '/path/to/home-image.jpg',
+  twitterCard: 'summary_large_image',
+})
+</script>
