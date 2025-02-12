@@ -7,8 +7,6 @@
 </template>
 
 <script setup>
-import { useSeoMeta } from '@vueuse/head'
-
 useSeoMeta({
   title: 'Home - Hiren',
   ogTitle: 'Welcome to Hiren - Web Developer',

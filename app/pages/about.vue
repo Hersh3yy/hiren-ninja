@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-import { useSeoMeta } from '@vueuse/head'
 
 useSeoMeta({
   title: 'About Me - Hiren',

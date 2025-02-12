@@ -21,8 +21,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useSeoMeta } from '@vueuse/head'
-
 useSeoMeta({
   title: 'Professional Services - Hiren',
   ogTitle: 'Professional Services - Hiren',
