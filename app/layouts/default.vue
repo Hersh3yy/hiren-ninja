@@ -18,7 +18,6 @@ const vantaEffect = ref(null);
 
 // Global SEO defaults
 useHead({
-  titleTemplate: '%s | Hiren - Web Developer',
   meta: [
     { name: 'author', content: 'Hiren' },
     {
