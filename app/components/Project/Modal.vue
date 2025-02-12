@@ -2,6 +2,10 @@
   <div v-if="project" class="fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50"
     @click.self="emit('close')">
     <div class="bg-gray-800 rounded-lg w-full max-w-2xl mt-20 max-h-[calc(100vh-5rem)] overflow-y-auto relative">
+      <div class="aspect-video relative overflow-hidden">
+        <img v-if="project.coverImage?.url" :src="project.coverImage.url" :alt="project.title"
+          class="w-full h-full object-cover" />
+      </div>
       <div class="sticky top-0 bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
         <h2 class="text-xl sm:text-2xl font-bold text-white pr-8">
           {{ project.title }}
