@@ -21,12 +21,6 @@
       <p class="text-xs sm:text-sm text-gray-300/80 mb-4 line-clamp-3 break-words">
         {{ project.shortDescription }}
       </p>
-
-      <div class="flex flex-wrap gap-1.5 mt-auto">
-        <span class="px-2 py-0.5 text-xs font-medium bg-gray-700/50 text-gray-300 rounded-full">
-          {{ project.role }}
-        </span>
-      </div>
     </div>
   </div>
 </template>
