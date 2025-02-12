@@ -13,7 +13,7 @@ useSeoMeta({
   title: 'Contact Me - Hiren',
   ogTitle: 'Contact Me - Hiren',
   description: 'Get in touch with Hiren for inquiries or collaborations.',
-  ogDescription: 'I am available for projects and collaborations. Let's connect!',
+  ogDescription: 'I am available for projects and collaborations. Let\'s connect!',
   ogImage: '/path/to/contact-image.jpg',
   twitterCard: 'summary_large_image',
 })
