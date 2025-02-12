@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-
 useSeoMeta({
   title: 'About Me - Hiren',
   ogTitle: 'About Me - Hiren',

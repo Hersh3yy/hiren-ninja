@@ -19,9 +19,9 @@
       </div>
       <div class="p-4 sm:p-6">
         <div class="space-y-4">
-          <p class="text-gray-300 text-base sm:text-lg whitespace-pre-wrap">
-            {{ project.fullDescription }}
-          </p>
+          <div class="text-gray-300 text-base sm:text-lg whitespace-pre-wrap"
+            v-html="formattedDescription">
+          </div>
 
           <div class="flex items-center space-x-2">
             <span class="text-gray-400">Published:</span>
@@ -56,6 +56,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const emit = defineEmits(["close"]);
 
 defineProps({
@@ -63,6 +65,26 @@ defineProps({
     type: Object,
     default: null,
   },
+});
+
+// New computed property to format the description
+const formattedDescription = computed(() => {
+  if (!project?.fullDescription) return '';
+
+  const parts = project.fullDescription.split('***').map(item => item.trim()).filter(item => item);
+  
+  if (parts.length === 0) return '';
+
+  // Start with the first part as plain text
+  let result = parts[0];
+
+  // If there are more parts, add them as a list
+  if (parts.length > 1) {
+    const listItems = parts.slice(1).map(item => `<li>${item}</li>`).join('');
+    result += `<ul>${listItems}</ul>`;
+  }
+
+  return result;
 });
 
 function formatDate(dateString) {
