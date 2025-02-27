@@ -22,7 +22,7 @@
         <!-- Projects Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
           <ProjectCard v-for="project in filteredProjects" :key="project.id" :project="project"
-            @click="openModal(project)" />
+            @click="openModal(project)" :data-umami-event="`Project clicked ${project.title}`" />
         </div>
 
         <!-- Project Modal -->
@@ -58,7 +58,7 @@ const query = gql`
       shortDescription
       fullDescription
       url
-      role
+      projectType
       slug
       coverImage {
         url

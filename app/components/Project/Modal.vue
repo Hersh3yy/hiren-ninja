@@ -28,9 +28,9 @@
             <span class="text-white">{{ formatDate(project.publishedAt) }}</span>
           </div>
 
-          <div class="flex items-center space-x-2">
-            <span class="text-gray-400">Role:</span>
-            <span class="text-white">{{ project.role }}</span>
+          <div v-if="project.projectType" class="flex items-center space-x-2">
+            <span class="text-gray-400">Type:</span>
+            <span class="text-white">{{  project.projectType[0] }}</span>
           </div>
 
           <div v-if="project.url" class="flex items-center space-x-2">
