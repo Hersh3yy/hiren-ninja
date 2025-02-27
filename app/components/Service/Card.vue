@@ -11,6 +11,7 @@
             </ul>
         </div>
         <button @click="$emit('start')"
+        :data-umami-event="`Service clicked ${title}`"
             class="w-full mt-6 py-3 bg-yellow-300 text-black rounded-lg hover:bg-yellow-400 transition-colors font-bold">
             Get Started
         </button>

@@ -20,8 +20,6 @@ const vantaEffect = ref(null);
 useHead({
   meta: [
     { name: 'author', content: 'Hiren' },
-    {
-    },
     // Default social media meta tags
     { property: 'og:site_name', content: 'Hiren.ninja' },
     { property: 'og:type', content: 'website' },

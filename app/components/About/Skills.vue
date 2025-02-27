@@ -13,8 +13,8 @@
         me to become a developer who enjoys seeing projects through from start to finish.
       </p>
       <p class="mb-4">
-        I’m now working at a higher level, where I can contribute strategically by
-        automating processes and delivering clean, efficient code. I’ve also begun
+        I'm now working at a higher level, where I can contribute strategically by
+        automating processes and delivering clean, efficient code. I've also begun
         delegating to junior developers and value collaboration to accomplish business
         goals while improving workflow with smart, sustainable solutions.
       </p>
