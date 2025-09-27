@@ -3,17 +3,17 @@
     <div class="overflow-x-auto">
       <div class="inline-flex space-x-2 pb-2">
         <button
-          v-for="tag in tags"
-          :key="tag"
-          @click="emit('toggleFilter', tag)"
+          v-for="year in years"
+          :key="year"
+          @click="emit('toggleFilter', year)"
           :class="[
             'px-3 py-1 rounded-full text-xs sm:text-sm transition-colors duration-200',
-            activeFilters.includes(tag)
+            activeFilters.includes(year)
               ? 'bg-yellow-300 text-black'
               : 'bg-gray-700 text-white hover:bg-gray-600',
           ]"
         >
-          {{ tag }}
+          {{ year }}
         </button>
       </div>
     </div>
@@ -24,7 +24,7 @@
 const emit = defineEmits(["toggleFilter"]);
 
 defineProps({
-  tags: {
+  years: {
     type: Array,
     required: true,
   },

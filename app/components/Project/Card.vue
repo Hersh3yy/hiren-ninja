@@ -14,7 +14,7 @@
           {{ project.title }}
         </h2>
         <span class="text-xs sm:text-sm text-gray-400 whitespace-nowrap">
-          {{ formatDate(project.publishedAt) }}
+          {{ project.year }}
         </span>
       </div>
 

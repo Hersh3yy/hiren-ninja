@@ -1,5 +1,3 @@
-import { computed, ref } from "vue";
-
 // nuxt.config.ts
 export default defineNuxtConfig({
   app: {
@@ -10,7 +8,9 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'format-detection', content: 'telephone=no' }
+        { name: 'format-detection', content: 'telephone=no' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -30,7 +30,7 @@ export default defineNuxtConfig({
     '@nuxtjs/apollo',
     'nuxt-site-config',
     '@nuxtjs/robots',
-    'nuxt-simple-sitemap',
+    // 'nuxt-simple-sitemap', // Temporarily disabled for Nuxt 4 compatibility
   ],
   css: [
     "~/assets/css/main.css"
@@ -40,6 +40,12 @@ export default defineNuxtConfig({
       tailwindcss: {},
       autoprefixer: {},
     },
+  },
+  // Nuxt 4 optimizations
+  vite: {
+    optimizeDeps: {
+      include: ['three']
+    }
   },
   apollo: {
     clients: {
@@ -57,9 +63,10 @@ export default defineNuxtConfig({
     url: 'https://hiren.ninja'
   },
   routeRules: {
-    '/admin/**': { index: false },
-    '/dashboard/**': { index: false },
-    '/profile/**': { index: false }
+    '/admin/**': { robots: false },
+    '/dashboard/**': { robots: false },
+    '/profile/**': { robots: false },
+    '/experiments/**': { robots: false }
   },
   future: {
     compatibilityVersion: 4,

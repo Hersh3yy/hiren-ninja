@@ -22,6 +22,24 @@
     @apply bg-black/30 backdrop-blur-xl rounded-lg p-6 border-4 border-yellow-300/20 hover:border-yellow-300/40 transition-all;
   }
 
+  /* Modal */
+  .modal-container {
+    @apply fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50;
+  }
+
+  .modal-content {
+    @apply bg-gray-800 rounded-lg border-4 border-yellow-300/20 overflow-hidden;
+  }
+
+  /* Images */
+  .zoomable-image {
+    @apply cursor-pointer hover:scale-105 transition-transform duration-300;
+  }
+
+  .image-container {
+    @apply overflow-hidden rounded-lg cursor-pointer;
+  }
+
   /* Buttons */
   .btn {
     @apply px-4 py-2 rounded-lg transition-colors duration-200;
@@ -33,6 +51,10 @@
 
   .btn-secondary {
     @apply btn border-2 border-yellow-300 text-yellow-300 hover:bg-yellow-300/10;
+  }
+
+  .btn-close {
+    @apply text-gray-400 hover:text-white transition-colors;
   }
 
   /* Grid Background Pattern */

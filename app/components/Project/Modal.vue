@@ -1,17 +1,15 @@
 <template>
-  <div v-if="project" class="fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50"
-    @click.self="emit('close')">
-    <div class="bg-gray-800 rounded-lg w-full max-w-2xl mt-20 max-h-[calc(100vh-5rem)] overflow-y-auto relative">
-      <div class="aspect-video relative overflow-hidden">
+  <div v-if="project" class="modal-container" @click.self="emit('close')">
+    <div class="modal-content w-full max-w-2xl mt-20 max-h-[calc(100vh-5rem)] overflow-y-auto relative">
+      <div class="aspect-video relative overflow-hidden" @click="expandImage(project.coverImage?.url)">
         <img v-if="project.coverImage?.url" :src="project.coverImage.url" :alt="project.title"
-          class="w-full h-full object-cover" />
+          class="w-full h-full object-cover zoomable-image" />
       </div>
       <div class="sticky top-0 bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
         <h2 class="text-xl sm:text-2xl font-bold text-white pr-8">
           {{ project.title }}
         </h2>
-        <button @click="emit('close')" class="text-gray-400 hover:text-white transition-colors"
-          aria-label="Close modal">
+        <button @click="emit('close')" class="btn-close" aria-label="Close modal">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -24,7 +22,7 @@
 
           <div v-if="project.projectType" class="flex items-center space-x-2">
             <span class="text-gray-400">Type:</span>
-            <span class="text-white">{{ project.projectType[0] }}</span>
+            <span class="text-white">{{ formatProjectType(project.projectType) }}</span>
           </div>
 
           <div v-if="project.url" class="flex items-center space-x-2">
@@ -39,20 +37,44 @@
           <div v-if="project.screenshots?.length" class="space-y-4">
             <h3 class="text-lg font-semibold text-white">Screenshots:</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <img v-for="screenshot in project.screenshots" :key="screenshot.id" :src="screenshot.url"
-                :alt="`${project.title} screenshot`" class="w-full rounded-lg shadow-lg" loading="lazy" />
+              <div v-for="screenshot in project.screenshots" :key="screenshot.id" 
+                class="image-container"
+                @click="expandImage(screenshot.url)">
+                <img :src="screenshot.url"
+                  :alt="`${project.title} screenshot`" 
+                  class="w-full shadow-lg zoomable-image" 
+                  loading="lazy" />
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Expanded Image Modal -->
+  <div v-if="expandedImageUrl" 
+    class="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] cursor-zoom-out"
+    @click="expandedImageUrl = null">
+    <img :src="expandedImageUrl" 
+      class="max-w-[90vw] max-h-[90vh] object-contain"
+      alt="Expanded view" />
+    <button 
+      @click="expandedImageUrl = null"
+      class="absolute top-4 right-4 text-white hover:text-yellow-300 transition-colors"
+      aria-label="Close expanded image">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const emit = defineEmits(["close"]);
+const expandedImageUrl = ref(null);
 
 const props = defineProps({
   project: {
@@ -60,6 +82,12 @@ const props = defineProps({
     default: null
   }
 });
+
+function expandImage(url) {
+  if (url) {
+    expandedImageUrl.value = url;
+  }
+}
 
 // New computed property to format the description
 const formattedDescription = computed(() => {
@@ -87,5 +115,11 @@ function formatDate(dateString) {
     month: 'long',
     day: 'numeric'
   });
+}
+
+function formatProjectType(type) {
+  if (type === 'website') return 'Website';
+  if (type === 'webApplication') return 'Web Application';
+  return type;
 }
 </script>

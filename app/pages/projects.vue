@@ -17,12 +17,20 @@
 
       <template v-else>
         <!-- Filters -->
-        <!-- <ProjectFilters :tags="tags" :active-filters="activeFilters" @toggle-filter="toggleFilter" class="mb-8" /> -->
+        <div class="mb-8 space-y-6 flex flex-col">
+          <ProjectFilters :years="years" :active-filters="activeFilters" @toggle-filter="toggleFilter" />
+          <ProjectTypeFilter v-model="activeTypeFilter" />
+        </div>
 
         <!-- Projects Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
           <ProjectCard v-for="project in filteredProjects" :key="project.id" :project="project"
             @click="openModal(project)" :data-umami-event="`Project clicked ${project.title}`" />
+        </div>
+
+        <!-- No Projects Message -->
+        <div v-if="filteredProjects.length === 0" class="text-center mt-4">
+          <p class="text-gray-500">No projects available for the selected year.</p>
         </div>
 
         <!-- Project Modal -->
@@ -57,6 +65,7 @@ const query = gql`
       title
       shortDescription
       fullDescription
+      year
       url
       projectType
       slug
@@ -77,6 +86,7 @@ const { data, loading, error } = await useAsyncQuery(query)
 const projects = computed(() => data.value?.projects || [])
 const selectedProject = ref(null)
 const activeFilters = ref([])
+const activeTypeFilter = ref('both')
 
 const tags = computed(() => {
   const allTags = projects.value.flatMap((project) => [
@@ -90,16 +100,39 @@ const tags = computed(() => {
   })
 })
 
-// Update filteredProjects to use the new fields
-const filteredProjects = computed(() => {
-  if (activeFilters.value.length === 0) return projects.value
+// Add this computed property to extract unique years from projects
+const years = computed(() => {
+  const allYears = projects.value.map(project => project.year);
+  return [...new Set(allYears)].sort((a, b) => b - a); // Sort years in descending order
+});
 
-  return projects.value.filter(project =>
-    activeFilters.value.some(filter =>
-      new Date(project.publishedAt).getFullYear().toString() === filter
-    )
-  ).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+// Update filteredProjects to include type filtering
+const filteredProjects = computed(() => {
+  // Create a new array from projects.value to avoid mutating the original
+  let filtered = [...(projects.value || [])];
+
+  // Filter by year if active
+  if (activeFilters.value.length > 0) {
+    filtered = filtered.filter(project => {
+      return activeFilters.value.some(filter => Number(filter) === project.year);
+    });
+  }
+
+  // Filter by type
+  if (activeTypeFilter.value !== 'both') {
+    filtered = filtered.filter(project => project.projectType === activeTypeFilter.value);
+  }
+
+  // Create a new sorted array instead of mutating the filtered array
+  return [...filtered].sort((a, b) => b.year - a.year);
 })
+
+// Format project type for display
+function formatProjectType(type) {
+  if (type === 'website') return 'Website';
+  if (type === 'webApplication') return 'Web Application';
+  return type;
+}
 
 // Rest of your code remains the same...
 function openModal(project) {

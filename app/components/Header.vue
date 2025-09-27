@@ -16,7 +16,7 @@
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">
                 <NuxtLink v-for="link in links" :key="link.to" :to="link.to"
-                    class="text-white hover:text-yellow-300 transition-colors duration-200">
+                    class="text-white hover:text-yellow-300 transition-colors duration-200 cursor-pointer">
                     {{ link.text }}
                 </NuxtLink>
             </div>
@@ -36,7 +36,7 @@
                 class="absolute top-full right-0 w-48 bg-gray-800/90 backdrop-blur-md md:hidden">
                 <div class="py-2">
                     <NuxtLink v-for="link in links" :key="link.to" :to="link.to"
-                        class="block px-4 py-2 text-white hover:bg-gray-700/50 transition-colors duration-200"
+                        class="block px-4 py-2 text-white hover:bg-gray-700/50 transition-colors duration-200 cursor-pointer"
                         @click="closeMobileMenu">
                         {{ link.text }}
                     </NuxtLink>
@@ -56,6 +56,7 @@ const links = [
     { to: "/about", text: "About" },
     { to: "/projects", text: "Projects" },
     { to: "/services", text: "Services" },
+    { to: "/experiments", text: "Experiments" },
 ];
 
 const toggleMobileMenu = () => {
@@ -80,6 +81,7 @@ watch(
 /* Optional: Add hover effects for links */
 a {
     position: relative;
+    cursor: pointer !important;
 }
 
 a::after {
@@ -91,6 +93,7 @@ a::after {
     height: 1px;
     background-color: theme("colors.yellow.300");
     transition: width 0.2s ease;
+    pointer-events: none;
 }
 
 a:hover::after {
@@ -100,5 +103,10 @@ a:hover::after {
 /* Ensure mobile menu dropdown is above other content */
 .absolute {
     z-index: 51;
+}
+
+/* Ensure cursor pointer is always shown for navigation links */
+nav a {
+    cursor: pointer !important;
 }
 </style>
