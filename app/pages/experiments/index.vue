@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
-    <div class="container mx-auto py-12 px-4">
+    <div class="w-full py-12 px-2 sm:px-4 lg:px-6 xl:px-8">
       <!-- Header -->
-      <div class="text-center mb-12">
+      <div class="text-center mb-12 max-w-4xl mx-auto">
         <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
           Experiments
         </h1>
@@ -12,7 +12,7 @@
       </div>
       
       <!-- Experiments List as Collapsibles -->
-      <div class="max-w-4xl mx-auto space-y-4">
+      <div class="w-full space-y-4">
         <ExperimentsCollapsible
           v-for="experiment in experiments"
           :key="experiment.id"

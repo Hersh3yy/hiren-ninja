@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-4">
     <!-- Experiment Layout -->
-    <div class="flex flex-col xl:flex-row gap-4">
-      <!-- Parameter Panel -->
-      <div class="xl:w-80 xl:flex-shrink-0">
+    <div class="flex flex-col xl:flex-row gap-6">
+      <!-- Parameter Panel - Mobile: full width, Desktop: fixed width -->
+      <div class="w-full xl:w-96 xl:flex-shrink-0">
         <LSSParameterPanel 
           :parameters="parameters"
           @randomize="randomizeParameters"
@@ -11,13 +11,15 @@
         />
       </div>
       
-      <!-- 3D Viewer - takes remaining space -->
-      <div class="flex-1 h-96 xl:h-[600px] min-w-0">
-        <LSSViewer 
-          :curve-data="curveData"
-          :parameters="parameters"
-          :loading="loading"
-        />
+      <!-- 3D Viewer - maintains aspect ratio -->
+      <div class="flex-1 min-w-0">
+        <div class="aspect-[4/3] w-full max-w-full min-h-[500px]">
+          <LSSViewer 
+            :curve-data="curveData"
+            :parameters="parameters"
+            :loading="loading"
+          />
+        </div>
       </div>
     </div>
   </div>

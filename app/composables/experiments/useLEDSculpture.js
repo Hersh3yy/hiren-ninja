@@ -11,6 +11,7 @@ export function useLEDSculpture() {
     bendCount: 8,           // Number of major bends around the loop
     bendIntensity: 1.5,     // How dramatic the bends are (0.1-3.0)
     verticalComplexity: 1.0, // How much vertical winding/looping (0.1-3.0)
+    twistFactor: 1.0,       // How much the sculpture twists around itself (0.1-3.0)
     randomSeed: 1234,       // For reproducible results
     tubeRadius: 0.08,       // LED tube thickness in meters
     primaryColor: '#00FFFF', // Cyan LED color
@@ -78,14 +79,31 @@ export function useLEDSculpture() {
         z += (random() - 0.5) * randomFactor
         y += (random() - 0.5) * randomFactor * parameters.verticalComplexity
         
-        // TWISTING - Add rotation around the path for more complexity
-        const twistAngle = progress * Math.PI * 4 * (parameters.verticalComplexity * 0.3)
-        const twistRadius = parameters.bendIntensity * 0.1
+        // TWISTING - Add rotation around the path for self-intersecting patterns
+        const twistAngle = progress * Math.PI * 6 * parameters.twistFactor
+        const twistRadius = parameters.bendIntensity * 0.2 * parameters.twistFactor
+        
+        // Create twisting motion that can make the sculpture turn around itself
         const twistX = Math.cos(twistAngle) * twistRadius
         const twistZ = Math.sin(twistAngle) * twistRadius
         
-        x += twistX
-        z += twistZ
+        // Add secondary twist for more complex self-intersection
+        const secondaryTwist = Math.sin(progress * Math.PI * 8 * parameters.twistFactor) * twistRadius * 0.5
+        
+        x += twistX + secondaryTwist * Math.cos(angle)
+        z += twistZ + secondaryTwist * Math.sin(angle)
+        
+        // Add inward/outward movement to create more dramatic self-intersection
+        const radialVariation = Math.sin(angle * parameters.bendCount * 0.5 + progress * Math.PI * 4) * parameters.twistFactor * 0.3
+        const currentRadius = Math.sqrt(x * x + z * z)
+        const newRadius = Math.max(0.5, currentRadius + radialVariation)
+        
+        // Adjust x,z to maintain radial variation while keeping the twist
+        if (currentRadius > 0) {
+          const ratio = newRadius / currentRadius
+          x *= ratio
+          z *= ratio
+        }
         
         // Ensure minimum height but allow dramatic dips and loops
         y = Math.max(0.2, y)
@@ -121,6 +139,7 @@ export function useLEDSculpture() {
     parameters.bendCount = Math.floor(Math.random() * 12) + 4 // 4-16 bends
     parameters.bendIntensity = Math.round((Math.random() * 2.5 + 0.5) * 10) / 10 // 0.5-3.0
     parameters.verticalComplexity = Math.round((Math.random() * 2.5 + 0.3) * 10) / 10 // 0.3-2.8
+    parameters.twistFactor = Math.round((Math.random() * 2.5 + 0.2) * 10) / 10 // 0.2-2.7
     parameters.randomSeed = Math.floor(Math.random() * 9999) + 1
     generateCurve()
   }
@@ -130,6 +149,7 @@ export function useLEDSculpture() {
     parameters.bendCount = 8
     parameters.bendIntensity = 1.5
     parameters.verticalComplexity = 1.0
+    parameters.twistFactor = 1.0
     parameters.randomSeed = 1234
     parameters.tubeRadius = 0.08
     parameters.primaryColor = '#00FFFF'

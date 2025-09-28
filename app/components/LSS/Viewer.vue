@@ -23,14 +23,29 @@
       <!-- Controls -->
       <div class="bg-black bg-opacity-70 text-white p-2 rounded space-y-2">
         <!-- Spin controls -->
-        <div class="flex items-center space-x-2">
-          <button
-            @click="toggleSpin"
-            class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 rounded text-xs transition-colors"
-          >
-            {{ isSpinning ? '⏸ Pause' : '▶ Spin' }}
-          </button>
-          <span class="text-xs text-gray-300">Rotation</span>
+        <div class="space-y-2">
+          <div class="flex items-center space-x-2">
+            <button
+              @click="toggleSpin"
+              class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 rounded text-xs transition-colors"
+            >
+              {{ isSpinning ? '⏸ Pause' : '▶ Spin' }}
+            </button>
+            <span class="text-xs text-gray-300">Rotation</span>
+          </div>
+          
+          <!-- Speed control -->
+          <div class="flex items-center space-x-2">
+            <input
+              v-model.number="rotationSpeed"
+              type="range"
+              min="0.1"
+              max="3.0"
+              step="0.1"
+              class="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+            />
+            <span class="text-xs text-gray-300 w-12">Speed: {{ rotationSpeed }}x</span>
+          </div>
         </div>
         
         <!-- Zoom controls -->
@@ -75,11 +90,13 @@ const props = defineProps({
 const canvasContainer = ref(null)
 const isSpinning = ref(false)
 const maxHeight = ref(0)
+const rotationSpeed = ref(1.0)
 
-let scene, camera, renderer, curve3D, groundGrid
+let scene, camera, renderer, curve3D, groundGrid, sparkEffect
 let animationId = null
 let initialCameraPosition = { x: 15, y: 10, z: 15 }
 let currentZoom = 1
+let sparkProgress = 0
 
 onMounted(() => {
   initThreeJS()
@@ -203,6 +220,48 @@ function updateVisualization(curveData) {
   
   const glow = new THREE.Mesh(glowGeometry, glowMaterial)
   curve3D.add(glow) // Attach to main curve so it rotates together
+  
+  // Create flowing spark effect
+  createSparkEffect(curveData.curve)
+}
+
+function createSparkEffect(curve) {
+  // Remove existing spark effect
+  if (sparkEffect) {
+    scene.remove(sparkEffect)
+  }
+  
+  // Create spark geometry - a small bright sphere that follows the curve
+  const sparkGeometry = new THREE.SphereGeometry(0.05, 8, 8)
+  const sparkMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    emissive: 0xffffff,
+    emissiveIntensity: 1.0
+  })
+  
+  sparkEffect = new THREE.Mesh(sparkGeometry, sparkMaterial)
+  scene.add(sparkEffect)
+  
+  // Add trail effect using multiple spheres
+  const trailLength = 10
+  const trailSpheres = []
+  
+  for (let i = 0; i < trailLength; i++) {
+    const trailGeometry = new THREE.SphereGeometry(0.02, 6, 6)
+    const trailMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00ffff,
+      emissive: 0x00ffff,
+      emissiveIntensity: 0.5 * (1 - i / trailLength),
+      transparent: true,
+      opacity: 1 - (i / trailLength) * 0.8
+    })
+    
+    const trailSphere = new THREE.Mesh(trailGeometry, trailMaterial)
+    scene.add(trailSphere)
+    trailSpheres.push(trailSphere)
+  }
+  
+  sparkEffect.userData = { curve, trailSpheres }
 }
 
 function updateLEDGlow() {
@@ -251,9 +310,31 @@ function updateCameraPosition() {
 function animate() {
   animationId = requestAnimationFrame(animate)
   
-  // Controlled rotation
+  // Controlled rotation with speed control
   if (curve3D && isSpinning.value) {
-    curve3D.rotation.y += 0.008
+    curve3D.rotation.y += 0.008 * rotationSpeed.value
+  }
+  
+  // Animate spark effect
+  if (sparkEffect && sparkEffect.userData.curve) {
+    sparkProgress += 0.01 // Speed of spark movement
+    if (sparkProgress > 1) sparkProgress = 0 // Loop back
+    
+    const curve = sparkEffect.userData.curve
+    const trailSpheres = sparkEffect.userData.trailSpheres
+    
+    // Update main spark position
+    const sparkPosition = curve.getPoint(sparkProgress)
+    sparkEffect.position.copy(sparkPosition)
+    
+    // Update trail positions
+    for (let i = 0; i < trailSpheres.length; i++) {
+      const trailProgress = (sparkProgress - (i + 1) * 0.02) % 1
+      if (trailProgress < 0) continue // Don't show trail behind start
+      
+      const trailPosition = curve.getPoint(trailProgress)
+      trailSpheres[i].position.copy(trailPosition)
+    }
   }
   
   renderer.render(scene, camera)
@@ -274,6 +355,12 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   if (animationId) {
     cancelAnimationFrame(animationId)
+  }
+  if (sparkEffect) {
+    scene.remove(sparkEffect)
+    if (sparkEffect.userData.trailSpheres) {
+      sparkEffect.userData.trailSpheres.forEach(trail => scene.remove(trail))
+    }
   }
   if (renderer) {
     renderer.dispose()

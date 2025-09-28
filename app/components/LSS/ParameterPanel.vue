@@ -63,6 +63,22 @@
       />
     </div>
     
+    <!-- Twist Factor -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">
+        Twist Factor: {{ parameters.twistFactor }}
+        <span class="text-xs text-gray-400">(self-intersection)</span>
+      </label>
+      <input
+        v-model.number="parameters.twistFactor"
+        type="range"
+        min="0.1"
+        max="3.0"
+        step="0.1"
+        class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+      />
+    </div>
+    
     <!-- Seed -->
     <div>
       <label class="block text-sm font-medium text-gray-300 mb-2">

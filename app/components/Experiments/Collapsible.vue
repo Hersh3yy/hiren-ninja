@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300">
+  <div class="w-full bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300">
     <!-- Header (Always Visible) -->
     <div 
       @click="$emit('toggle', experiment.id)"
@@ -36,9 +36,9 @@
       leave-to-class="opacity-0 max-h-0"
     >
       <div v-if="isOpen" class="overflow-hidden">
-        <div class="px-6 pb-6 border-t border-gray-700">
+        <div class="px-2 pb-2 border-t border-gray-700">
           <!-- LED Sculpture Experiment -->
-          <div v-if="experiment.id === 'led-sculpture-generator'" class="mt-4">
+          <div v-if="experiment.id === 'led-sculpture-generator'" class="mt-2">
             <LSSExperiment />
           </div>
           

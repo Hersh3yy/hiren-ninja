@@ -10,11 +10,6 @@
       ideas into
       <span class="fire-text" :class="{ 'scale-up': activeIndex === 2 }">solutions</span>
     </h1>
-
-    <!-- Subtext -->
-    <p class="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-      Bringing balanced strategy and enduring commitment to your digital projects - from concept to completion
-    </p>
   </div>
 </template>
 
