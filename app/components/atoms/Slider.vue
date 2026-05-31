@@ -11,14 +11,14 @@
 
     <input
       :value="modelValue"
-      @input="handleInput"
       type="range"
       :min="min"
       :max="max"
       :step="step"
       :disabled="disabled"
       :class="sliderClasses"
-    />
+      @input="handleInput"
+    >
 
     <p v-if="description" class="text-xs text-content-muted">
       {{ description }}

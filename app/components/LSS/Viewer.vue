@@ -1,12 +1,12 @@
 <template>
   <div class="relative w-full h-full bg-ink">
     <!-- Three.js canvas will be mounted here -->
-    <div ref="canvasContainer" class="w-full h-full"></div>
+    <div ref="canvasContainer" class="w-full h-full"/>
     
     <!-- Loading overlay -->
     <div v-if="loading" class="absolute inset-0 bg-ink/75 flex items-center justify-center">
       <div class="text-center text-content">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-2"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-2"/>
         <p>Generating LED sculpture...</p>
       </div>
     </div>
@@ -26,8 +26,8 @@
         <div class="space-y-2">
           <div class="flex items-center space-x-2">
             <button
-              @click="toggleSpin"
               class="px-3 py-1 bg-accent text-ink hover:bg-accent-hover rounded text-xs transition-colors"
+              @click="toggleSpin"
             >
               {{ isSpinning ? '⏸ Pause' : '▶ Spin' }}
             </button>
@@ -43,7 +43,7 @@
               max="3.0"
               step="0.1"
               class="flex-1 h-1 bg-elevated rounded-lg appearance-none cursor-pointer"
-            />
+            >
             <span class="text-xs text-content-muted w-12">Speed: {{ rotationSpeed }}x</span>
           </div>
         </div>
@@ -51,23 +51,23 @@
         <!-- Zoom controls -->
         <div class="flex items-center space-x-2">
           <button
-            @click="zoomIn"
             class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Zoom In"
+            @click="zoomIn"
           >
             🔍+
           </button>
           <button
-            @click="zoomOut"
             class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Zoom Out"
+            @click="zoomOut"
           >
             🔍-
           </button>
           <button
-            @click="resetView"
             class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Reset View"
+            @click="resetView"
           >
             ↺
           </button>

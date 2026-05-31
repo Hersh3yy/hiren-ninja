@@ -2,13 +2,19 @@
   <header
     class="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-50 bg-surface/90 backdrop-blur-md"
   >
-    <NuxtLink to="/" class="flex items-center">
-      <h1
+    <NuxtLink to="/" class="group flex items-center gap-3" aria-label="Hiren Devs, go to home">
+      <img
+        src="/hirshi2.svg"
+        alt=""
+        aria-hidden="true"
+        class="h-9 w-auto transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]"
+      >
+      <span
         class="text-2xl sm:text-3xl md:text-4xl text-accent whitespace-nowrap font-sixtyfour font-normal antialiased"
         :style="{ fontVariationSettings: 'BLED 0, SCAN -16, XELA 60, YELA -94' }"
       >
         HIREN DEVS
-      </h1>
+      </span>
     </NuxtLink>
 
     <nav class="ml-4">
@@ -16,12 +22,19 @@
         <MoleculesNavLink v-for="link in links" :key="link.to" :to="link.to" :text="link.text" />
       </div>
 
-      <button @click="toggleMobileMenu" class="md:hidden text-content focus:outline-none" aria-label="Toggle menu">
+      <button
+        class="md:hidden text-content rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        :aria-expanded="isMobileMenuOpen"
+        aria-controls="mobile-menu"
+        aria-label="Toggle navigation menu"
+        @click="toggleMobileMenu"
+      >
         <AtomsIcon :path="isMobileMenuOpen ? closeIconPath : menuIconPath" size="md" />
       </button>
 
       <div
         v-show="isMobileMenuOpen"
+        id="mobile-menu"
         class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md md:hidden rounded-b-lg z-[51]"
       >
         <div class="py-2">

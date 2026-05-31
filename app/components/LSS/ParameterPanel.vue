@@ -14,7 +14,7 @@
         max="50"
         step="1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Bend Count -->
@@ -29,7 +29,7 @@
         max="16"
         step="1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Bend Intensity -->
@@ -44,7 +44,7 @@
         max="3.0"
         step="0.1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Vertical Complexity -->
@@ -60,7 +60,7 @@
         max="3.0"
         step="0.1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Twist Factor -->
@@ -76,7 +76,7 @@
         max="3.0"
         step="0.1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Seed -->
@@ -91,7 +91,7 @@
         max="9999"
         step="1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- LED Glow Intensity -->
@@ -106,20 +106,20 @@
         max="2.0"
         step="0.1"
         class="w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer"
-      />
+      >
     </div>
     
     <!-- Action Buttons -->
     <div class="space-y-2 pt-4">
       <button
-        @click="$emit('randomize')"
         class="w-full px-4 py-2 bg-accent text-ink font-medium rounded hover:bg-accent-hover transition-colors"
+        @click="$emit('randomize')"
       >
         Randomize
       </button>
       <button
-        @click="$emit('reset')"
         class="w-full px-4 py-2 bg-elevated text-content rounded hover:bg-border-default transition-colors"
+        @click="$emit('reset')"
       >
         Reset
       </button>
@@ -128,12 +128,12 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   parameters: {
     type: Object,
     required: true
   }
 })
 
-const emit = defineEmits(['randomize', 'reset'])
+defineEmits(['randomize', 'reset'])
 </script>

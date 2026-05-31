@@ -1,6 +1,6 @@
 <template>
   <div :class="containerClasses">
-    <div v-if="type === 'spinner'" :class="spinnerClasses"></div>
+    <div v-if="type === 'spinner'" :class="spinnerClasses"/>
 
     <div v-else-if="type === 'dots'" class="flex space-x-1">
       <div
@@ -8,10 +8,10 @@
         :key="i"
         :class="dotClasses"
         :style="{ animationDelay: `${(i - 1) * 0.2}s` }"
-      ></div>
+      />
     </div>
 
-    <div v-else-if="type === 'pulse'" :class="pulseClasses"></div>
+    <div v-else-if="type === 'pulse'" :class="pulseClasses"/>
 
     <p v-if="text" :class="textClasses">{{ text }}</p>
   </div>

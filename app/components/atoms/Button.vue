@@ -5,19 +5,19 @@
     :class="buttonClasses"
     @click="$emit('click', $event)"
   >
-    <div v-if="loading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+    <div v-if="loading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"/>
 
     <component
-      v-if="icon && !loading"
       :is="icon"
+      v-if="icon && !loading"
       class="w-4 h-4 mr-2"
     />
 
     <span>{{ text }}</span>
 
     <component
-      v-if="trailingIcon"
       :is="trailingIcon"
+      v-if="trailingIcon"
       class="w-4 h-4 ml-2"
     />
   </button>

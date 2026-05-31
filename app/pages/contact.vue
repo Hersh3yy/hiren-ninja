@@ -16,7 +16,7 @@
             type="text"
             required
             class="w-full bg-elevated text-content rounded p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent"
-          />
+          >
         </div>
         <div>
           <label class="block text-content-muted mb-2" for="contact-email">Email</label>
@@ -26,7 +26,7 @@
             type="email"
             required
             class="w-full bg-elevated text-content rounded p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent"
-          />
+          >
         </div>
       </div>
 
@@ -38,7 +38,7 @@
           rows="5"
           required
           class="w-full bg-elevated text-content rounded p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent"
-        ></textarea>
+        />
       </div>
 
       <div class="flex justify-end">

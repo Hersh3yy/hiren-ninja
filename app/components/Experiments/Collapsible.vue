@@ -2,8 +2,8 @@
   <div class="w-full bg-surface rounded-lg overflow-hidden border border-border-subtle hover:border-border-default transition-all duration-300">
     <!-- Header (Always Visible) -->
     <div 
-      @click="$emit('toggle', experiment.id)"
       class="p-6 cursor-pointer hover:bg-elevated transition-colors"
+      @click="$emit('toggle', experiment.id)"
     >
       <div class="flex items-center justify-between">
         <div class="flex-1">
@@ -20,7 +20,7 @@
             stroke="currentColor" 
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
       </div>
@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   experiment: {
     type: Object,
     required: true
@@ -66,7 +66,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['toggle'])
+defineEmits(['toggle'])
 </script>
 
 <style scoped>

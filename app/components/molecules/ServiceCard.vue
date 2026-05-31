@@ -12,9 +12,9 @@
       </ul>
     </div>
     <button
-      @click="$emit('start')"
       :data-umami-event="`Service clicked ${title}`"
       class="w-full mt-6 py-3 bg-accent text-ink rounded-lg hover:bg-accent-hover transition-colors font-bold"
+      @click="$emit('start')"
     >
       Get Started
     </button>

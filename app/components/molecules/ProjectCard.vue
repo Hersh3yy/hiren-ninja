@@ -1,8 +1,8 @@
 <template>
-  <div @click="emit('click', project)" class="card cursor-pointer group overflow-hidden !p-0">
+  <div class="card cursor-pointer group overflow-hidden !p-0" @click="emit('click', project)">
     <div class="aspect-video relative overflow-hidden">
       <img v-if="project.coverImage?.url" :src="project.coverImage.url" :alt="project.title"
-        class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105" />
+        class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105" >
       <div v-else class="w-full h-full bg-elevated flex items-center justify-center">
         <span class="text-content-muted">No Image</span>
       </div>

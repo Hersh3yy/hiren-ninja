@@ -1,22 +1,22 @@
 <template>
   <Teleport to="body">
     <div v-if="isOpen" class="fixed inset-0 z-50">
-      <div class="absolute inset-0 bg-black/70" @click="close"></div>
+      <div class="absolute inset-0 bg-black/70" @click="close"/>
 
       <div class="relative min-h-full p-4 flex items-center justify-center">
         <div class="w-full max-w-2xl bg-surface rounded-xl p-6 shadow-xl border border-border-subtle">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-accent">{{ serviceTitle }}</h2>
-            <button @click="close" class="text-content-muted hover:text-content">✕</button>
+            <button class="text-content-muted hover:text-content" @click="close">✕</button>
           </div>
 
-          <form @submit.prevent="handleSubmit" class="space-y-6"
-            :class="{ 'opacity-50 pointer-events-none': isSubmitting }">
+          <form class="space-y-6" :class="{ 'opacity-50 pointer-events-none': isSubmitting }"
+            @submit.prevent="handleSubmit">
             <div>
               <label class="block text-content-muted mb-2">Project Description</label>
               <textarea v-model="formData.description" rows="3"
                 class="w-full bg-elevated text-content rounded p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent"
-                :placeholder="placeholderText" required></textarea>
+                :placeholder="placeholderText" required/>
             </div>
 
             <div>
@@ -54,15 +54,15 @@
             </div>
 
             <div class="flex justify-end gap-4">
-              <button type="button" @click="close"
-                class="px-6 py-2 border border-accent text-accent rounded hover:bg-accent/10">
+              <button type="button" class="px-6 py-2 border border-accent text-accent rounded hover:bg-accent/10"
+                @click="close">
                 Cancel
               </button>
               <button type="submit"
                 class="px-6 py-2 bg-accent text-ink rounded hover:bg-accent-hover flex items-center gap-2"
                 :disabled="isSubmitting">
                 <span v-if="isSubmitting"
-                  class="w-4 h-4 border-2 border-ink border-t-transparent rounded-full animate-spin"></span>
+                  class="w-4 h-4 border-2 border-ink border-t-transparent rounded-full animate-spin"/>
                 {{ isSubmitting ? 'Sending...' : 'Send Request' }}
               </button>
             </div>
@@ -88,7 +88,7 @@ const statusMessage = ref(null)
 
 const serviceTitle = computed(() => {
   const titles = {
-    website: 'Website Development & Maintenance',
+    website: 'Web Development & Maintenance',
     ai: 'A.I. Integration into Business',
     automation: 'Workflow Automation',
     backend: 'High-Performance Backends'

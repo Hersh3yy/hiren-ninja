@@ -24,50 +24,50 @@ import { ref } from 'vue'
 const services = [
   {
     id: 'website',
-    title: 'Website Development & Maintenance',
+    title: 'Web Development & Maintenance',
     description:
-      'Production-grade Nuxt/Vue sites and apps, built for performance and kept healthy with ongoing support and observability.',
+      'I think with you to figure out your needs, then deliver a modern, fast digital presence and keep it healthy over time.',
     features: [
-      'Custom Nuxt / Vue development',
-      'Responsive, accessible design',
-      'Performance & SEO optimisation',
-      'Ongoing maintenance & monitoring'
+      'A modern, fast website or app',
+      'Built around your real needs',
+      'Looks great on every device',
+      'Easy to keep updated'
     ]
   },
   {
     id: 'ai',
     title: 'A.I. Integration into Business',
     description:
-      'Embedding LLMs, agents and semantic search into your existing operations so your team gets real leverage.',
+      'Feasible? Let\'s see how artificial intelligence can help you reach your goals while staying human.',
     features: [
-      'LLM & agent orchestration',
-      'RAG & semantic search',
-      'Custom AI tooling & assistants',
-      'Evaluation & guardrails'
+      'Spot where AI genuinely helps',
+      'Speed up research, content, or support',
+      'Always keep a human in the loop',
+      'Practical, no hype'
     ]
   },
   {
     id: 'automation',
     title: 'Workflow Automation',
     description:
-      'Replacing manual, repetitive operations with reliable event-driven pipelines and background automation.',
+      'Add smart automation to your processes and create time you can spend elsewhere.',
     features: [
-      'Event-driven pipelines',
-      'Background job queues',
-      'Third-party integrations',
-      'Scheduled & AI-triggered actions'
+      'Remove repetitive manual work',
+      'Connect the tools you already use',
+      'Let routine tasks run themselves',
+      'Free up time for what matters'
     ]
   },
   {
     id: 'backend',
     title: 'High-Performance Backends',
     description:
-      'Scalable APIs and data layers engineered to stay fast and reliable under real-world load.',
+      'Secure storing, updating, and serving of your data, right where it needs to be.',
     features: [
-      'Scalable API design',
-      'Query & caching optimisation',
-      'State machines & reliability',
-      'Observability & tuning'
+      'Your data stored securely',
+      'Fast, reliable access',
+      'Grows as you grow',
+      'Always up to date'
     ]
   }
 ]

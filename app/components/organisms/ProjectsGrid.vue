@@ -9,23 +9,18 @@
     </div>
 
     <template v-else>
-      <div class="mb-8 space-y-6 flex flex-col">
-        <OrganismsProjectFilters :years="years" :active-filters="activeFilters" @toggle-filter="toggleFilter" />
-        <OrganismsProjectTypeFilter v-model="activeTypeFilter" />
-      </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
         <MoleculesProjectCard
-          v-for="project in filteredProjects"
+          v-for="project in sortedProjects"
           :key="project.id"
           :project="project"
-          @click="openModal(project)"
           :data-umami-event="`Project clicked ${project.title}`"
+          @click="openModal(project)"
         />
       </div>
 
-      <div v-if="filteredProjects.length === 0" class="text-center mt-4">
-        <p class="text-content-muted">No projects available for the selected year.</p>
+      <div v-if="sortedProjects.length === 0" class="text-center mt-4">
+        <p class="text-content-muted">No projects to show yet.</p>
       </div>
 
       <OrganismsProjectModal v-if="selectedProject" :project="selectedProject" @close="closeModal" />
@@ -34,8 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
 
 const query = gql`
   query GetProjects {
@@ -67,28 +61,9 @@ const { data, loading, error } = await useAsyncQuery(query)
 
 const projects = computed(() => data.value?.projects || [])
 const selectedProject = ref(null)
-const activeFilters = ref([])
-const activeTypeFilter = ref('both')
 
-const years = computed(() => {
-  const allYears = projects.value.map(project => project.year)
-  return [...new Set(allYears)].sort((a, b) => b - a)
-})
-
-const filteredProjects = computed(() => {
-  let filtered = [...(projects.value || [])]
-
-  if (activeFilters.value.length > 0) {
-    filtered = filtered.filter(project => {
-      return activeFilters.value.some(filter => Number(filter) === project.year)
-    })
-  }
-
-  if (activeTypeFilter.value !== 'both') {
-    filtered = filtered.filter(project => project.projectType === activeTypeFilter.value)
-  }
-
-  return [...filtered].sort((a, b) => b.year - a.year)
+const sortedProjects = computed(() => {
+  return [...projects.value].sort((a, b) => b.year - a.year)
 })
 
 function openModal(project) {
@@ -100,22 +75,4 @@ function closeModal() {
   selectedProject.value = null
   document.body.style.overflow = ''
 }
-
-function toggleFilter(tag) {
-  const index = activeFilters.value.indexOf(tag)
-  if (index > -1) {
-    activeFilters.value.splice(index, 1)
-  } else {
-    activeFilters.value.push(tag)
-  }
-}
-
-const route = useRoute()
-
-onMounted(() => {
-  const skillFilter = route.query.skill
-  if (skillFilter) {
-    activeFilters.value = [skillFilter]
-  }
-})
 </script>

@@ -7,18 +7,20 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 export default withNuxt({
   rules: {
     // --- Atomic design friendliness ---
-    // Atoms like Button/Tag/Icon are intentionally single-word.
+    // Atoms like Button/Icon are intentionally single-word.
     'vue/multi-word-component-names': 'off',
     // Components should be referenced in PascalCase (AtomsButton, OrganismsSiteHeader).
     'vue/component-name-in-template-casing': ['warn', 'PascalCase', {
       registeredComponentsOnly: false
     }],
 
-    // --- Silence purely-stylistic formatting noise (kept non-intrusive) ---
-    'vue/html-self-closing': 'off',
+    // --- Stylistic: re-enabled the sensible, auto-fixable ones ---
+    // These are tidy, low-noise, and fixable in one `eslint --fix` pass.
+    'vue/attributes-order': 'warn',
+    'vue/html-self-closing': 'warn',
+    // --- Left off for now: noisy line-wrapping reformatters (revisit later) ---
     'vue/first-attribute-linebreak': 'off',
     'vue/max-attributes-per-line': 'off',
-    'vue/attributes-order': 'off',
     'vue/singleline-html-element-content-newline': 'off',
     'vue/require-default-prop': 'off',
 

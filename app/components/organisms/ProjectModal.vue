@@ -3,20 +3,19 @@
     <div class="modal-content w-full max-w-2xl mt-20 max-h-[calc(100vh-5rem)] overflow-y-auto relative">
       <div class="aspect-video relative overflow-hidden" @click="expandImage(project.coverImage?.url)">
         <img v-if="project.coverImage?.url" :src="project.coverImage.url" :alt="project.title"
-          class="w-full h-full object-cover zoomable-image" />
+          class="w-full h-full object-cover zoomable-image" >
       </div>
       <div class="sticky top-0 bg-surface p-4 border-b border-border-subtle flex justify-between items-center">
         <h2 class="text-xl sm:text-2xl font-bold text-content pr-8">
           {{ project.title }}
         </h2>
-        <button @click="emit('close')" class="btn-close" aria-label="Close modal">
+        <button class="btn-close" aria-label="Close modal" @click="emit('close')">
           <AtomsIcon :path="closeIconPath" size="md" />
         </button>
       </div>
       <div class="p-4 sm:p-6">
         <div class="space-y-4">
-          <div class="text-content-muted text-base sm:text-lg whitespace-pre-wrap" v-html="formattedDescription">
-          </div>
+          <div class="text-content-muted text-base sm:text-lg whitespace-pre-wrap" v-html="formattedDescription"/>
 
           <div v-if="project.projectType" class="flex items-center space-x-2">
             <span class="text-content-muted">Type:</span>
@@ -40,7 +39,7 @@
                 <img :src="screenshot.url"
                   :alt="`${project.title} screenshot`"
                   class="w-full shadow-lg zoomable-image"
-                  loading="lazy" />
+                  loading="lazy" >
               </div>
             </div>
           </div>
@@ -54,11 +53,11 @@
     @click="expandedImageUrl = null">
     <img :src="expandedImageUrl"
       class="max-w-[90vw] max-h-[90vh] object-contain"
-      alt="Expanded view" />
+      alt="Expanded view" >
     <button
-      @click="expandedImageUrl = null"
       class="absolute top-4 right-4 text-white hover:text-accent transition-colors"
-      aria-label="Close expanded image">
+      aria-label="Close expanded image"
+      @click="expandedImageUrl = null">
       <AtomsIcon :path="closeIconPath" size="lg" />
     </button>
   </div>
