@@ -1,21 +1,21 @@
 <template>
-  <div class="w-full bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300">
+  <div class="w-full bg-surface rounded-lg overflow-hidden border border-border-subtle hover:border-border-default transition-all duration-300">
     <!-- Header (Always Visible) -->
     <div 
       @click="$emit('toggle', experiment.id)"
-      class="p-6 cursor-pointer hover:bg-gray-750 transition-colors"
+      class="p-6 cursor-pointer hover:bg-elevated transition-colors"
     >
       <div class="flex items-center justify-between">
         <div class="flex-1">
-          <h3 class="text-xl font-bold text-white mb-2">{{ experiment.title }}</h3>
-          <p class="text-gray-400 text-sm">{{ experiment.description }}</p>
+          <h3 class="text-xl font-bold text-content mb-2">{{ experiment.title }}</h3>
+          <p class="text-content-muted text-sm">{{ experiment.description }}</p>
         </div>
         
         <!-- Expand/Collapse Icon -->
         <div class="ml-4">
           <svg 
             :class="{ 'rotate-180': isOpen }"
-            class="w-6 h-6 text-gray-400 transition-transform duration-300"
+            class="w-6 h-6 text-content-muted transition-transform duration-300"
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -36,7 +36,7 @@
       leave-to-class="opacity-0 max-h-0"
     >
       <div v-if="isOpen" class="overflow-hidden">
-        <div class="px-2 pb-2 border-t border-gray-700">
+        <div class="px-2 pb-2 border-t border-border-subtle">
           <!-- LED Sculpture Experiment -->
           <div v-if="experiment.id === 'led-sculpture-generator'" class="mt-2">
             <LSSExperiment />
@@ -44,7 +44,7 @@
           
           <!-- Other experiments will go here -->
           <div v-else class="mt-4">
-            <div class="text-gray-400 text-sm">
+            <div class="text-content-muted text-sm">
               Experiment coming soon...
             </div>
           </div>

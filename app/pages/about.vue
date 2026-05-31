@@ -1,10 +1,10 @@
 <template>
   <div class="container mx-auto px-4 sm:px-6 py-8 space-y-8">
     <div class="card">
-      <AboutBio />
+      <OrganismsAboutBio />
     </div>
     <div class="card">
-      <AboutSkills />
+      <OrganismsAboutSkills />
     </div>
   </div>
 </template>
@@ -13,9 +13,9 @@
 useSeoMeta({
   title: 'About Me - Hiren',
   ogTitle: 'About Me - Hiren',
-  description: 'Learn more about Hiren, a web developer specializing in custom solutions.',
-  ogDescription: 'Discover my journey, skills, and projects that showcase my expertise in web development.',
+  description: 'Hiren is an AI & automation systems engineer based in Amsterdam, focused on AI integration, workflow automation, and high-performance backends.',
+  ogDescription: 'Learn about my journey from full-stack development into AI integration, automation, and backend engineering.',
   ogImage: '/path/to/about-image.jpg',
-  twitterCard: 'summary_large_image',
+  twitterCard: 'summary_large_image'
 })
 </script>

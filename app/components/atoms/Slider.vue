@@ -1,17 +1,15 @@
 <template>
   <div class="space-y-2">
-    <!-- Label and Value -->
     <div class="flex items-center justify-between">
-      <label v-if="label" class="text-sm font-medium text-gray-300">
+      <label v-if="label" class="text-sm font-medium text-content">
         {{ label }}
       </label>
-      <span class="text-sm text-gray-400">
+      <span class="text-sm text-content-muted">
         {{ displayValue }}{{ suffix }}
       </span>
     </div>
-    
-    <!-- Slider Input -->
-    <input 
+
+    <input
       :value="modelValue"
       @input="handleInput"
       type="range"
@@ -21,14 +19,12 @@
       :disabled="disabled"
       :class="sliderClasses"
     />
-    
-    <!-- Description -->
-    <p v-if="description" class="text-xs text-gray-400">
+
+    <p v-if="description" class="text-xs text-content-muted">
       {{ description }}
     </p>
-    
-    <!-- Min/Max Labels -->
-    <div v-if="showMinMax" class="flex justify-between text-xs text-gray-500">
+
+    <div v-if="showMinMax" class="flex justify-between text-xs text-content-muted">
       <span>{{ min }}{{ suffix }}</span>
       <span>{{ max }}{{ suffix }}</span>
     </div>
@@ -86,9 +82,9 @@ const displayValue = computed(() => {
 })
 
 const sliderClasses = computed(() => {
-  const baseClasses = 'w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider'
+  const baseClasses = 'w-full h-2 bg-elevated rounded-lg appearance-none cursor-pointer slider'
   const disabledClasses = props.disabled ? 'opacity-50 cursor-not-allowed' : ''
-  
+
   return [baseClasses, disabledClasses].filter(Boolean).join(' ')
 })
 
@@ -103,35 +99,29 @@ function handleInput(event) {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #3B82F6;
+  background: #fde047;
   cursor: pointer;
-  border: 2px solid #1E40AF;
+  border: 2px solid #facc15;
   transition: all 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover {
-  background: #2563EB;
+  background: #facc15;
   transform: scale(1.1);
-}
-
-.slider::-webkit-slider-thumb:disabled {
-  background: #6B7280;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .slider::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #3B82F6;
+  background: #fde047;
   cursor: pointer;
-  border: 2px solid #1E40AF;
+  border: 2px solid #facc15;
   transition: all 0.2s ease;
 }
 
 .slider::-moz-range-thumb:hover {
-  background: #2563EB;
+  background: #facc15;
   transform: scale(1.1);
 }
 </style>

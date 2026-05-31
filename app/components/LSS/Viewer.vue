@@ -1,12 +1,12 @@
 <template>
-  <div class="relative w-full h-full bg-gray-900">
+  <div class="relative w-full h-full bg-ink">
     <!-- Three.js canvas will be mounted here -->
     <div ref="canvasContainer" class="w-full h-full"></div>
     
     <!-- Loading overlay -->
-    <div v-if="loading" class="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
-      <div class="text-center text-white">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto mb-2"></div>
+    <div v-if="loading" class="absolute inset-0 bg-ink/75 flex items-center justify-center">
+      <div class="text-center text-content">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-2"></div>
         <p>Generating LED sculpture...</p>
       </div>
     </div>
@@ -14,24 +14,24 @@
     <!-- Controls overlay -->
     <div class="absolute top-4 left-4 space-y-2">
       <!-- Info panel -->
-      <div v-if="curveData" class="bg-black bg-opacity-70 text-white p-3 rounded text-sm">
-        <div class="font-semibold text-cyan-400 mb-1">LED Sculpture</div>
+      <div v-if="curveData" class="bg-black bg-opacity-70 text-content p-3 rounded text-sm">
+        <div class="font-semibold text-accent mb-1">LED Sculpture</div>
         <div>Length: {{ Math.round(curveData.totalLength) }}m</div>
         <div>Height: {{ Math.round(maxHeight * 10) / 10 }}m</div>
       </div>
       
       <!-- Controls -->
-      <div class="bg-black bg-opacity-70 text-white p-2 rounded space-y-2">
+      <div class="bg-black bg-opacity-70 text-content p-2 rounded space-y-2">
         <!-- Spin controls -->
         <div class="space-y-2">
           <div class="flex items-center space-x-2">
             <button
               @click="toggleSpin"
-              class="px-3 py-1 bg-cyan-600 hover:bg-cyan-700 rounded text-xs transition-colors"
+              class="px-3 py-1 bg-accent text-ink hover:bg-accent-hover rounded text-xs transition-colors"
             >
               {{ isSpinning ? '⏸ Pause' : '▶ Spin' }}
             </button>
-            <span class="text-xs text-gray-300">Rotation</span>
+            <span class="text-xs text-content-muted">Rotation</span>
           </div>
           
           <!-- Speed control -->
@@ -42,9 +42,9 @@
               min="0.1"
               max="3.0"
               step="0.1"
-              class="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              class="flex-1 h-1 bg-elevated rounded-lg appearance-none cursor-pointer"
             />
-            <span class="text-xs text-gray-300 w-12">Speed: {{ rotationSpeed }}x</span>
+            <span class="text-xs text-content-muted w-12">Speed: {{ rotationSpeed }}x</span>
           </div>
         </div>
         
@@ -52,26 +52,26 @@
         <div class="flex items-center space-x-2">
           <button
             @click="zoomIn"
-            class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs transition-colors"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Zoom In"
           >
             🔍+
           </button>
           <button
             @click="zoomOut"
-            class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs transition-colors"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Zoom Out"
           >
             🔍-
           </button>
           <button
             @click="resetView"
-            class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs transition-colors"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
             title="Reset View"
           >
             ↺
           </button>
-          <span class="text-xs text-gray-300">Zoom</span>
+          <span class="text-xs text-content-muted">Zoom</span>
         </div>
       </div>
     </div>
@@ -94,7 +94,7 @@ const rotationSpeed = ref(1.0)
 
 let scene, camera, renderer, curve3D, groundGrid, sparkEffect
 let animationId = null
-let initialCameraPosition = { x: 15, y: 10, z: 15 }
+const initialCameraPosition = { x: 15, y: 10, z: 15 }
 let currentZoom = 1
 let sparkProgress = 0
 
