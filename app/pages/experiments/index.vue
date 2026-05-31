@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div class="text-content">
     <div class="w-full py-12 px-2 sm:px-4 lg:px-6 xl:px-8">
       <!-- Header -->
       <div class="text-center mb-12 max-w-4xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-accent to-amber-500 bg-clip-text text-transparent">
           Experiments
         </h1>
-        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+        <p class="text-xl text-content-muted max-w-2xl mx-auto">
           Interactive prototypes and creative coding experiments. Each experiment showcases different technologies and creative approaches.
         </p>
       </div>

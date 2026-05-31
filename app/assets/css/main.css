@@ -10,16 +10,16 @@
 
   /* Typography */
   .page-title {
-    @apply text-3xl sm:text-4xl font-bold text-yellow-300 mb-8;
+    @apply text-3xl sm:text-4xl font-bold text-accent mb-8;
   }
 
   .section-title {
-    @apply text-2xl font-bold text-yellow-300 mb-4;
+    @apply text-2xl font-bold text-accent mb-4;
   }
 
   /* Cards */
   .card {
-    @apply bg-black/30 backdrop-blur-xl rounded-lg p-6 border-4 border-yellow-300/20 hover:border-yellow-300/40 transition-all;
+    @apply bg-surface/80 backdrop-blur-xl rounded-xl p-6 border border-border-subtle hover:border-accent-muted transition-all;
   }
 
   /* Modal */
@@ -28,7 +28,7 @@
   }
 
   .modal-content {
-    @apply bg-gray-800 rounded-lg border-4 border-yellow-300/20 overflow-hidden;
+    @apply bg-surface rounded-xl border border-border-subtle overflow-hidden;
   }
 
   /* Images */
@@ -46,15 +46,15 @@
   }
 
   .btn-primary {
-    @apply btn bg-yellow-300 text-black hover:bg-yellow-400 font-bold;
+    @apply btn bg-accent text-ink hover:bg-accent-hover font-bold;
   }
 
   .btn-secondary {
-    @apply btn border-2 border-yellow-300 text-yellow-300 hover:bg-yellow-300/10;
+    @apply btn border border-accent text-accent hover:bg-accent/10;
   }
 
   .btn-close {
-    @apply text-gray-400 hover:text-white transition-colors;
+    @apply text-content-muted hover:text-content transition-colors;
   }
 
   /* Grid Background Pattern */

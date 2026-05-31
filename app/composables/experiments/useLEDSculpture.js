@@ -171,7 +171,7 @@ export function useLEDSculpture() {
   // Auto-regenerate when parameters change
   watchEffect(() => {
     JSON.stringify(parameters) // Create dependency
-    if (process.client) {
+    if (import.meta.client) {
       debouncedRegenerate()
     }
   })

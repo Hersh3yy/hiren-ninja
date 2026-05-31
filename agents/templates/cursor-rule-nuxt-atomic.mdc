@@ -1,0 +1,55 @@
+---
+description: Nuxt 4 atomic design, tokens, CMS-ready conventions (portable — copy to any marketing site)
+alwaysApply: true
+---
+
+# Nuxt 4 Atomic Project Conventions
+
+Content-agnostic rules for Nuxt 4 + Vue 3 + Tailwind marketing/portfolio sites with a headless CMS.
+
+## Architecture
+
+- **atoms/** — props-only, NO slots, no business logic, no CMS
+- **molecules/** — compose atoms; slot only for layout shells (Card)
+- **organisms/** — page sections (header, hero, grids, modals)
+- **backgrounds/** — client-only effects; dynamic import heavy libs; cleanup on unmount
+- Feature domains (experiments, tools) get separate folders — not mixed into atoms
+
+Nuxt auto-import prefixes: `AtomsButton`, `OrganismsSiteHeader`, `BackgroundsVantaBirds`.
+
+## Slots
+
+Prefer props. Atoms must not use `<slot>`. If an atom needs a slot, move it to molecules.
+
+## Design tokens
+
+Use semantic Tailwind tokens from `tailwind.config.js`: `ink`, `surface`, `elevated`, `border-subtle`, `border-default`, `accent`, `accent-hover`, `accent-muted`, `content`, `content-muted`.
+
+FORBIDDEN in components/pages: `bg-gray-*`, `text-gray-*`, `bg-blue-*`, hardcoded brand hex in templates.
+
+Use `@layer components` utilities in `main.css`: `.page-title`, `.card`, `.btn-primary`.
+
+## Layout
+
+`layouts/default.vue` = shell only (background tag, header, main, footer, SEO). No CDN scripts, no animation init in layout.
+
+Avoid `min-h-screen` on short pages — causes unnecessary footer scroll.
+
+## CMS & secrets
+
+Tokens/endpoints in `.env` (gitignored) + `.env.example`. Never commit bearer tokens. Components consume composables, not raw config.
+
+## Hygiene
+
+- `<script setup>` only
+- No `v-html` for third-party embeds
+- No dead components
+- Accessibility: skip link, `#main-content`, focus-visible rings, aria on menus
+
+## Copy mindset
+
+Speak to humans, not engineers. Hero = one accent phrase, not a skill list. Benefits over jargon in cards.
+
+## Before shipping
+
+Run `npm run lint` and `npm run build`. Grep for rogue palette classes and slots in atoms.
