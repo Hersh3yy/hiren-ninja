@@ -72,6 +72,13 @@ export default defineNuxtConfig({
       }
     },
   },
+  runtimeConfig: {
+    clickupApiKey: process.env.CLICKUP_API_KEY ?? '',
+    clickupListId: process.env.CLICKUP_LIST_ID ?? '',
+  },
+  nitro: {
+    preset: 'netlify',
+  },
   site: {
     url: 'https://hiren.ninja'
   },

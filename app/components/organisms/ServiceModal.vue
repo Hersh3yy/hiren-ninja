@@ -83,8 +83,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'submit'])
 
-const isSubmitting = ref(false)
-const statusMessage = ref(null)
+const { isSubmitting, statusMessage, submit, clearStatus } = useSubmitLead('/api/service-request')
 
 const serviceTitle = computed(() => {
   const titles = {
@@ -130,40 +129,14 @@ watch(() => props.serviceType, (newType) => {
 
 const handleSubmit = async () => {
   try {
-    isSubmitting.value = true
-    statusMessage.value = null
-
-    const response = await fetch('/.netlify/functions/service-request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData.value)
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Failed to submit request')
-    }
-
-    statusMessage.value = {
-      type: 'success',
-      text: 'Request submitted successfully! We\'ll be in touch soon.'
-    }
+    await submit(formData.value)
 
     setTimeout(() => {
       emit('submit', formData.value)
       close()
     }, 2000)
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    statusMessage.value = {
-      type: 'error',
-      text: 'Failed to submit request. Please try again or contact us directly.'
-    }
-  } finally {
-    isSubmitting.value = false
+  } catch {
+    // Error message is set by useSubmitLead
   }
 }
 
@@ -176,6 +149,6 @@ const close = () => {
     email: '',
     serviceType: props.serviceType
   }
-  statusMessage.value = null
+  clearStatus()
 }
 </script>

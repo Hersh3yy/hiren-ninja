@@ -6,7 +6,7 @@
       Send a note and I'll get back to you.
     </p>
 
-    <form class="card space-y-6" @submit.prevent="handleSubmit">
+    <form class="card space-y-6" :class="{ 'opacity-50 pointer-events-none': isSubmitting }" @submit.prevent="handleSubmit">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label class="block text-content-muted mb-2" for="contact-name">Name</label>
@@ -41,8 +41,19 @@
         />
       </div>
 
+      <div v-if="statusMessage" :class="[
+        'p-3 rounded text-sm',
+        statusMessage.type === 'error' ? 'bg-red-900/50 text-red-200' : 'bg-green-900/50 text-green-200'
+      ]">
+        {{ statusMessage.text }}
+      </div>
+
       <div class="flex justify-end">
-        <button type="submit" class="btn-primary">Send Message</button>
+        <button type="submit" class="btn-primary flex items-center gap-2" :disabled="isSubmitting">
+          <span v-if="isSubmitting"
+            class="w-4 h-4 border-2 border-ink border-t-transparent rounded-full animate-spin"/>
+          {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+        </button>
       </div>
     </form>
   </div>
@@ -65,10 +76,16 @@ const form = reactive({
   message: ''
 })
 
-// Stub: composes a mailto until a dedicated contact endpoint is wired up.
-const handleSubmit = () => {
-  const subject = encodeURIComponent(`Project enquiry from ${form.name}`)
-  const body = encodeURIComponent(`${form.message}\n\nFrom: ${form.name} <${form.email}>`)
-  window.location.href = `mailto:hello@hiren.ninja?subject=${subject}&body=${body}`
+const { isSubmitting, statusMessage, submit } = useSubmitLead('/api/contact')
+
+const handleSubmit = async () => {
+  try {
+    await submit({ ...form })
+    form.name = ''
+    form.email = ''
+    form.message = ''
+  } catch {
+    // Error message is set by useSubmitLead
+  }
 }
 </script>
