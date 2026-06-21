@@ -4,13 +4,15 @@
 
     <div class="text-content mb-8">
       <p class="mb-4">
-        My foundation is full-stack web development, end to end: from the first idea and the design,
-        through building it, to launching and looking after it. AI and automation are a big part of
-        how I work now, but they're tools in service of the product, not the whole story.
+        I help creative professionals and growing businesses turn ideas into digital products,
+        systems and experiences. My foundation is full-stack web development — from first concept
+        through build, launch, and ongoing care — with AI and automation woven into the process,
+        not bolted on as an afterthought.
       </p>
       <p class="mb-4">
-        I work best where strategy meets craft, and I genuinely enjoy the human side: brainstorming
-        with you and your team, learning how you think, and shaping something we're both proud of.
+        I work best as a genuine collaborator: learning how you think, understanding what matters
+        to your audience, and translating that into technology that feels right — not just
+        technology that technically works.
       </p>
     </div>
 
@@ -27,20 +29,20 @@
 <script setup>
 const values = [
   {
-    name: 'Design & UX',
-    description: 'I care how things look and feel, not just whether they work. Good design is part of the job.'
+    name: 'Creative & technical',
+    description: 'I speak both languages — I understand what you\'re trying to say creatively, and I know how to build the system that says it.'
   },
   {
-    name: 'Close to the customer',
-    description: 'I love brainstorming requirements with you. Understanding how a different person thinks makes the product better.'
+    name: 'Close to the work',
+    description: 'I stay involved, curious, and collaborative. Understanding how you think produces better work than just following a brief.'
   },
   {
     name: 'End to end',
-    description: 'From first sketch and design through build, launch, and ongoing care, I see projects all the way through.'
+    description: 'From first sketch and design through build, launch, and ongoing care — I see projects all the way through.'
   },
   {
-    name: 'Always learning',
-    description: 'I keep up with the latest tech, tools, and standards, and use AI to work faster and smarter.'
+    name: 'AI in practice',
+    description: 'I use AI daily across my own work and for clients. No hype — just genuine leverage where it actually helps.'
   }
 ]
 </script>

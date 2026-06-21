@@ -1,14 +1,14 @@
 <template>
   <div class="max-w-3xl text-center px-4 my-32">
     <p class="text-xs sm:text-sm uppercase tracking-[0.3em] text-content-muted mb-6">
-      Full-stack · AI &amp; Automation · Design-minded
+      Software · AI &amp; Automation · For creative businesses
     </p>
     <h1 class="text-3xl md:text-4xl lg:text-5xl text-content leading-tight font-semibold pt-8">
-      I help turn your ideas into
-      <span class="accent-phrase">something real</span>.
+      Technology for
+      <span class="accent-phrase">creative businesses</span>.
     </h1>
     <p class="mt-6 text-base md:text-lg text-content-muted">
-      From first sketch to shipped product &mdash; modern, fast, and refreshingly human.
+      Websites, software, automation and AI that help artists, designers, agencies and growing businesses work smarter and communicate their ideas better.
     </p>
   </div>
 </template>

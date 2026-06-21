@@ -8,26 +8,27 @@
       </div>
       <div class="w-full md:w-2/3 text-content text-sm sm:text-base">
         <p class="mb-3 sm:mb-4">
-          Hi, I'm Hiren. Originally from the island of Sint Maarten and now based in Amsterdam,
-          I help people turn ideas into digital products that are modern, fast, and genuinely
-          nice to use.
+          Hi, I'm Hiren. I'm a developer who specialises in translating creative ideas into
+          technology. Originally from Sint Maarten and now based in Amsterdam, I work with
+          artists, designers, photographers, musicians, founders and growing businesses — people
+          who know exactly what they want to say, and need a technical partner who gets it.
         </p>
         <p class="mb-3 sm:mb-4">
-          I started out as a backend developer in PHP, then grew into full-stack work with Vue and
-          Nuxt. These days I still do that, but faster and smarter with the help of AI. The time I
-          save goes into sharpening existing skills, trying out the next big thing, and keeping up
-          with the latest tech, tools, and standards of the industry.
+          That's the thread connecting all of them: they have vision, I provide execution. I
+          speak both creative and technical, and I think that combination is genuinely rare. My
+          interest in music, art, and what makes things resonate is the reason I'm right for this
+          kind of work — not just someone who can build it, but someone who understands why it
+          matters.
         </p>
         <p class="mb-3 sm:mb-4">
-          I care about more than just whether something works. Design, user experience, and the
-          people I'm building for matter just as much. I like staying close to the customer,
-          thinking through the product together, and seeing it through from first sketch to launch
-          and beyond.
+          On the technical side, I started in backend PHP, grew into full-stack work with Vue and
+          Nuxt, and now use AI daily — to work faster, experiment more, and spend the time I save
+          on craft and collaboration. I care about design, UX, and seeing a project through from
+          first sketch to launch and beyond.
         </p>
         <p>
-          Outside of work I produce music and DJ techno. The precision and timing of electronic
-          music mirror how I like to build software, and Amsterdam's tech and music scenes are a
-          great backdrop for both.
+          Outside of client work I produce music and DJ techno. Amsterdam's overlap of tech and
+          music culture is exactly why I ended up here, and it keeps both sides of my brain sharp.
         </p>
       </div>
     </div>

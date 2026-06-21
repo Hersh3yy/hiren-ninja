@@ -7,10 +7,10 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Hiren - AI & Automation Systems Engineer',
-  ogTitle: 'Hiren - AI & Automation Systems Engineer',
-  description: 'I build high-performance backend systems, custom AI integrations, and automated business workflows.',
-  ogDescription: 'AI integration, workflow automation, and high-performance backends - engineered to last.',
+  title: 'Hiren - Technology for Creative Businesses',
+  ogTitle: 'Hiren - Technology for Creative Businesses',
+  description: 'Websites, AI, automation and reliable systems for artists, designers, agencies and growing businesses.',
+  ogDescription: 'A developer who specialises in translating creative ideas into technology. Based in Amsterdam.',
   ogImage: '/path/to/home-image.jpg',
   twitterCard: 'summary_large_image'
 })

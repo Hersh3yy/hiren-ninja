@@ -13,6 +13,7 @@
     </div>
     <button
       :data-umami-event="`Service clicked ${title}`"
+      :aria-label="`Get started with ${title}`"
       class="w-full mt-6 py-3 bg-accent text-ink rounded-lg hover:bg-accent-hover transition-colors font-bold"
       @click="$emit('start')"
     >

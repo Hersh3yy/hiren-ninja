@@ -11,14 +11,12 @@
 </template>
 
 <script setup>
-useHead({
-  title: 'My Projects - Hiren',
-  meta: [
-    { name: 'description', content: 'Explore my projects showcasing AI integration, automation, and full-stack engineering.' },
-    { property: 'og:title', content: 'My Projects - Hiren' },
-    { property: 'og:description', content: 'Explore my projects showcasing AI integration, automation, and full-stack engineering.' },
-    { property: 'og:image', content: '/path/to/project-image.jpg' },
-    { name: 'twitter:card', content: 'summary_large_image' }
-  ]
+useSeoMeta({
+  title: 'Projects - Hiren',
+  ogTitle: 'Projects - Hiren',
+  description: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
+  ogDescription: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
+  ogImage: '/path/to/project-image.jpg',
+  twitterCard: 'summary_large_image'
 })
 </script>

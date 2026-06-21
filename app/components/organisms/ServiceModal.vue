@@ -87,22 +87,22 @@ const { isSubmitting, statusMessage, submit, clearStatus } = useSubmitLead('/api
 
 const serviceTitle = computed(() => {
   const titles = {
-    website: 'Web Development & Maintenance',
-    ai: 'A.I. Integration into Business',
-    automation: 'Workflow Automation',
-    backend: 'High-Performance Backends'
+    website: 'Websites & Digital Experiences',
+    ai: 'Practical AI That Saves Time',
+    automation: 'Remove Repetitive Work',
+    backend: 'Reliable Systems That Scale'
   }
   return titles[props.serviceType] || 'Service Request'
 })
 
 const placeholderText = computed(() => {
   const placeholders = {
-    website: 'Share your vision for the site or app: key features, audience, and any technical or maintenance requirements.',
-    ai: 'Describe the workflow or product where AI could add leverage. What decisions, content, or lookups are slow or manual today?',
-    automation: 'Outline the manual, repetitive process you want gone. What triggers it, what systems are involved, and what should happen automatically?',
-    backend: 'Detail the system that needs to scale or speed up: current load, pain points, and the performance targets you care about.'
+    website: 'Tell me about the site or app you have in mind: what it should say, who it\'s for, and how you want people to feel when they land on it.',
+    ai: 'Describe where your time gets eaten up. What decisions, research, or content are slow or repetitive today?',
+    automation: 'Walk me through the manual process you want gone — what triggers it, what tools are involved, and what the end result should be.',
+    backend: 'Describe what you\'re building or running: current pain points, how it needs to grow, and what\'s most important to you.'
   }
-  return placeholders[props.serviceType] || 'Please describe your project requirements'
+  return placeholders[props.serviceType] || 'Please describe your project'
 })
 
 const timelineLabel = computed(() => 'Timeline')

@@ -24,50 +24,50 @@ import { ref } from 'vue'
 const services = [
   {
     id: 'website',
-    title: 'Web Development & Maintenance',
+    title: 'Websites & Digital Experiences',
     description:
-      'I think with you to figure out your needs, then deliver a modern, fast digital presence and keep it healthy over time.',
+      'A fast, beautiful digital presence that tells your story the way you want it told — and keeps working for you long after launch.',
     features: [
-      'A modern, fast website or app',
-      'Built around your real needs',
-      'Looks great on every device',
-      'Easy to keep updated'
+      'Portfolio sites for photographers, designers & artists',
+      'Built around who you are and who you\'re talking to',
+      'Looks and feels right on every device',
+      'Easy to update, easy to hand off'
     ]
   },
   {
     id: 'ai',
-    title: 'A.I. Integration into Business',
+    title: 'Practical AI That Saves Time',
     description:
-      'Feasible? Let\'s see how artificial intelligence can help you reach your goals while staying human.',
+      'AI built into the way you already work — not a gimmick, but a genuine time-saver that keeps you in control.',
     features: [
-      'Spot where AI genuinely helps',
-      'Speed up research, content, or support',
+      'Speed up research, writing, and content creation',
+      'Automate repetitive decisions and lookups',
       'Always keep a human in the loop',
-      'Practical, no hype'
+      'No hype, just real leverage'
     ]
   },
   {
     id: 'automation',
-    title: 'Workflow Automation',
+    title: 'Remove Repetitive Work',
     description:
-      'Add smart automation to your processes and create time you can spend elsewhere.',
+      'Connect the tools you already use and let the routine stuff run itself — so your energy goes into the work that actually matters.',
     features: [
-      'Remove repetitive manual work',
-      'Connect the tools you already use',
-      'Let routine tasks run themselves',
-      'Free up time for what matters'
+      'Auto-generate release schedules, invoices, or reports',
+      'Connect booking, CRM, and communication tools',
+      'Trigger notifications and handoffs automatically',
+      'Free up hours every single week'
     ]
   },
   {
     id: 'backend',
-    title: 'High-Performance Backends',
+    title: 'Reliable Systems That Scale',
     description:
-      'Secure storing, updating, and serving of your data, right where it needs to be.',
+      'The engine under the hood — secure, fast, and built to grow with your business without breaking when it matters most.',
     features: [
-      'Your data stored securely',
-      'Fast, reliable access',
-      'Grows as you grow',
-      'Always up to date'
+      'Your data stored securely and accessed quickly',
+      'APIs that connect your tools and platforms',
+      'Scales as your audience and business grow',
+      'Built to last, not just to ship'
     ]
   }
 ]

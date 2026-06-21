@@ -11,10 +11,10 @@
 
 <script setup>
 useSeoMeta({
-  title: 'About Me - Hiren',
-  ogTitle: 'About Me - Hiren',
-  description: 'Hiren is an AI & automation systems engineer based in Amsterdam, focused on AI integration, workflow automation, and high-performance backends.',
-  ogDescription: 'Learn about my journey from full-stack development into AI integration, automation, and backend engineering.',
+  title: 'About - Hiren',
+  ogTitle: 'About - Hiren',
+  description: 'Hiren is a developer based in Amsterdam who specialises in translating creative ideas into technology — for artists, designers, musicians and growing businesses.',
+  ogDescription: 'From Sint Maarten to Amsterdam: a developer who speaks both creative and technical, building digital products for people with vision.',
   ogImage: '/path/to/about-image.jpg',
   twitterCard: 'summary_large_image'
 })

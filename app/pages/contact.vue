@@ -2,8 +2,8 @@
   <div class="container mx-auto px-4 sm:px-6 py-8 max-w-2xl">
     <h1 class="page-title">Contact Me</h1>
     <p class="text-content-muted mb-8">
-      Have a project in mind - AI integration, automation, or a backend that needs to scale?
-      Send a note and I'll get back to you.
+      Have a project in mind? Whether it's a new website, a tool powered by AI, or just
+      removing the busywork from your day — send a note and I'll get back to you.
     </p>
 
     <form class="card space-y-6" :class="{ 'opacity-50 pointer-events-none': isSubmitting }" @submit.prevent="handleSubmit">
@@ -63,9 +63,9 @@
 import { reactive } from 'vue'
 
 useSeoMeta({
-  title: 'Contact Me - Hiren',
-  ogTitle: 'Contact Me - Hiren',
-  description: 'Get in touch with Hiren for AI integration, automation, and backend engineering projects.',
+  title: 'Contact - Hiren',
+  ogTitle: 'Contact - Hiren',
+  description: 'Get in touch with Hiren — websites, AI tools, automation and digital products for creative businesses.',
   ogDescription: 'Available for projects and collaborations. Let\'s connect!',
   twitterCard: 'summary_large_image'
 })
