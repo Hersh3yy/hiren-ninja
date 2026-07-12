@@ -55,7 +55,13 @@ export default defineNuxtConfig({
   // Nuxt 4 optimizations
   vite: {
     optimizeDeps: {
-      include: ['three']
+      include: [
+        'three',
+        'vanta/dist/vanta.birds.min',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'graphql-tag',
+      ]
     }
   },
   apollo: {

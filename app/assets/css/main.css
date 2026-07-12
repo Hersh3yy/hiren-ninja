@@ -24,7 +24,7 @@
 
   /* Modal */
   .modal-container {
-    @apply fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50;
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50;
   }
 
   .modal-content {
@@ -63,5 +63,66 @@
       linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
     background-size: 20px 20px;
     pointer-events: none;
+  }
+
+  .project-description ul {
+    @apply list-disc pl-5 space-y-1 mt-3;
+  }
+}
+
+/* Modal enter / leave */
+.project-modal-enter-active,
+.project-modal-leave-active {
+  transition: opacity 0.28s ease;
+}
+
+.project-modal-enter-active .modal-content,
+.project-modal-leave-active .modal-content {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+}
+
+.project-modal-enter-from,
+.project-modal-leave-to {
+  opacity: 0;
+}
+
+.project-modal-enter-from .modal-content,
+.project-modal-leave-to .modal-content {
+  opacity: 0;
+  transform: scale(0.96) translateY(0.75rem);
+}
+
+.lightbox-enter-active,
+.lightbox-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.lightbox-enter-from,
+.lightbox-leave-to {
+  opacity: 0;
+}
+
+.shared-element-clone {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-modal-enter-active,
+  .project-modal-leave-active,
+  .project-modal-enter-active .modal-content,
+  .project-modal-leave-active .modal-content,
+  .lightbox-enter-active,
+  .lightbox-leave-active {
+    transition-duration: 0.01ms !important;
+  }
+
+  .project-modal-enter-from .modal-content,
+  .project-modal-leave-to .modal-content {
+    transform: none;
+  }
+
+  .zoomable-image,
+  .card img {
+    transition: none !important;
   }
 }
