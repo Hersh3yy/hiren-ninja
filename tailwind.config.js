@@ -28,6 +28,15 @@ export default {
           DEFAULT: "#f4f4f5", // zinc-100 - primary text
           muted: "#a1a1aa", // zinc-400 - secondary text
         },
+        // Feedback tokens
+        success: {
+          DEFAULT: "#86efac", // green-300
+          muted: "rgb(20 83 45 / 0.5)", // green-900 @ 50%
+        },
+        danger: {
+          DEFAULT: "#fca5a5", // red-300
+          muted: "rgb(127 29 29 / 0.5)", // red-900 @ 50%
+        },
       },
       fontFamily: {
         "space-grotesk": ["Space Grotesk", "sans-serif"],

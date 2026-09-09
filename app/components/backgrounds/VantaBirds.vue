@@ -21,6 +21,10 @@ const el = ref(null)
 let effect = null
 
 onMounted(async () => {
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return
+  }
+
   const THREE = await import('three')
   if (typeof window !== 'undefined') {
     window.THREE = THREE

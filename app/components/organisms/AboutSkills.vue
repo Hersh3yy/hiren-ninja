@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h2 class="page-title">Skills & Focus</h2>
+  <section aria-labelledby="about-skills-heading">
+    <AtomsHeading id="about-skills-heading" text="Skills & Focus" :level="2" size="xl" variant="page" />
 
     <div class="text-content mb-8">
       <p class="mb-4">
@@ -16,18 +16,20 @@
       </p>
     </div>
 
-    <h2 class="section-title">How I work</h2>
+    <AtomsHeading text="How I work" :level="3" size="lg" variant="section" />
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div v-for="value in values" :key="value.name" class="card">
-        <h4 class="text-accent font-bold mb-2">{{ value.name }}</h4>
-        <p class="text-content-muted text-sm">{{ value.description }}</p>
-      </div>
+      <MoleculesValueCard
+        v-for="value in values"
+        :key="value.name"
+        :title="value.name"
+        :description="value.description"
+      />
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
-const values = [
+const values = Object.freeze([
   {
     name: 'Creative & technical',
     description: 'I speak both languages — I understand what you\'re trying to say creatively, and I know how to build the system that says it.'
@@ -44,5 +46,5 @@ const values = [
     name: 'AI in practice',
     description: 'I use AI daily across my own work and for clients. No hype — just genuine leverage where it actually helps.'
   }
-]
+])
 </script>

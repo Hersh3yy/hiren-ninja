@@ -1,10 +1,14 @@
 <template>
-  <section class="mb-12">
-    <h2 class="page-title">Biography</h2>
+  <section class="mb-12" aria-labelledby="about-bio-heading">
+    <AtomsHeading id="about-bio-heading" text="Biography" :level="2" size="xl" variant="page" />
     <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
       <div class="w-full md:w-1/3 flex justify-center mb-6 md:mb-0">
-        <img src="/mugshot.jpg" alt="Portrait of Hiren"
-          class="w-48 sm:w-64 h-auto object-cover rounded-lg shadow-lg border-2 border-accent" loading="lazy" >
+        <img
+          src="/mugshot.jpg"
+          alt="Portrait of Hiren"
+          class="w-48 sm:w-64 h-auto object-cover rounded-lg shadow-lg border-2 border-accent"
+          loading="lazy"
+        >
       </div>
       <div class="w-full md:w-2/3 text-content text-sm sm:text-base">
         <p class="mb-3 sm:mb-4">

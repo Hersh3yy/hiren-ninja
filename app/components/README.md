@@ -58,9 +58,23 @@ palette utilities like `bg-gray-700` or `bg-blue-600`.
 | `accent-muted`       | yellow-300 @ 40%    | subtle accent borders          |
 | `content`            | zinc-100            | primary text                   |
 | `content-muted`      | zinc-400            | secondary text                 |
+| `success`            | green-300           | success text                   |
+| `success-muted`      | green-900 @ 50%     | success surfaces               |
+| `danger`             | red-300             | error text                     |
+| `danger-muted`       | red-900 @ 50%       | error surfaces                 |
 
 > Note: the darkest surface token is named `ink` (not `base`) to avoid colliding with
 > Tailwind's built-in `text-base` font-size utility.
+
+## Shared data & utilities
+
+| Path                         | Role                                      |
+| ---------------------------- | ----------------------------------------- |
+| `app/data/services.js`       | Single source for services / skills copy  |
+| `app/utils/icons.js`         | Shared SVG paths for `AtomsIcon`          |
+| `app/utils/escapeHtml.js`    | Escape CMS text before `v-html`           |
+
+Prefer these over duplicating strings or path constants in components.
 
 ## File conventions
 

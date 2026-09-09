@@ -16,9 +16,21 @@
 <style scoped>
 .accent-phrase {
   font-weight: 700;
-  background-image: linear-gradient(to right, #fde047, #f59e0b);
+  color: theme('colors.accent.DEFAULT');
+  background-image: linear-gradient(
+    to right,
+    theme('colors.accent.DEFAULT'),
+    theme('colors.accent.hover')
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+@supports not (background-clip: text) {
+  .accent-phrase {
+    color: theme('colors.accent.DEFAULT');
+    background-image: none;
+  }
 }
 </style>

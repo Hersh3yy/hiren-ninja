@@ -2,7 +2,7 @@
   <section class="w-full">
     <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-[90vw]">
       <div class="mb-8 sm:mb-12">
-        <h1 class="page-title">My Projects</h1>
+        <AtomsHeading text="My Projects" :level="1" size="xl" variant="page" />
       </div>
 
       <OrganismsProjectsGrid />

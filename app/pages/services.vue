@@ -1,7 +1,7 @@
 <template>
   <section class="w-full">
     <div class="container mx-auto px-4 sm:px-6 py-8 relative z-10">
-      <h1 class="page-title">Services</h1>
+      <AtomsHeading text="Services" :level="1" size="xl" variant="page" />
       <p class="text-content-muted max-w-3xl mb-12">
         Whether you're an artist who needs a digital home, a founder drowning in manual work, or a
         business that wants to use AI without the hype — every project starts with understanding what

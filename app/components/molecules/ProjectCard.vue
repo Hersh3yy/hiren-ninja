@@ -1,8 +1,11 @@
 <template>
-  <article
+  <MoleculesCard
+    as="article"
     role="button"
     tabindex="0"
-    class="card cursor-pointer group overflow-hidden !p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+    :padded="false"
+    interactive
+    class="overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink group"
     :aria-label="`Open project: ${project.title}`"
     :data-project-card-id="project.id"
     @click="emit('click', project, $event)"
@@ -31,9 +34,13 @@
 
     <div class="p-4 flex flex-col gap-1">
       <div class="flex items-start justify-between gap-2">
-        <h2 class="text-base sm:text-lg font-semibold text-content uppercase tracking-wide break-words leading-snug">
-          {{ project.title }}
-        </h2>
+        <AtomsHeading
+          :text="project.title"
+          :level="2"
+          size="sm"
+          :accent="false"
+          class="uppercase tracking-wide break-words leading-snug"
+        />
         <span class="text-xs text-content-muted whitespace-nowrap pt-1">
           {{ project.year }}
         </span>
@@ -43,7 +50,7 @@
         {{ project.shortDescription }}
       </p>
     </div>
-  </article>
+  </MoleculesCard>
 </template>
 
 <script setup>
@@ -52,7 +59,8 @@ const emit = defineEmits(['click'])
 defineProps({
   project: {
     type: Object,
-    required: true
+    required: true,
+    validator: (project) => Boolean(project?.id && project?.title)
   }
 })
 </script>

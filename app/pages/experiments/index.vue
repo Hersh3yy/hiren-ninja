@@ -1,17 +1,13 @@
 <template>
   <div class="text-content">
     <div class="w-full py-12 px-2 sm:px-4 lg:px-6 xl:px-8">
-      <!-- Header -->
       <div class="text-center mb-12 max-w-4xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-accent to-amber-500 bg-clip-text text-transparent">
-          Experiments
-        </h1>
+        <AtomsHeading text="Experiments" :level="1" size="2xl" class="mb-4 experiments-title" />
         <p class="text-xl text-content-muted max-w-2xl mx-auto">
           Interactive prototypes and creative coding experiments. Each experiment showcases different technologies and creative approaches.
         </p>
       </div>
-      
-      <!-- Experiments List as Collapsibles -->
+
       <div class="w-full space-y-4">
         <ExperimentsCollapsible
           v-for="experiment in experiments"
@@ -21,13 +17,11 @@
           @toggle="toggleExperiment"
         />
       </div>
-      
     </div>
   </div>
 </template>
 
 <script setup>
-// SEO and meta
 useHead({
   title: 'Experiments - Hiren Ninja',
   meta: [
@@ -38,25 +32,37 @@ useHead({
   ]
 })
 
-// Reactive state for open experiment
 const openExperiment = ref(null)
 
-// Experiments data - simplified for prototyping
-const experiments = [
+const experiments = Object.freeze([
   {
     id: 'led-sculpture-generator',
-    title: 'LED Sculpture Generator', 
+    title: 'LED Sculpture Generator',
     description: 'Generate 3D curved paths for LED light sculptures using parametric algorithms.'
   }
-  // Future experiments will be added here
-]
+])
 
-// Toggle experiment open/close (only one at a time)
 function toggleExperiment(experimentId) {
-  if (openExperiment.value === experimentId) {
-    openExperiment.value = null
-  } else {
-    openExperiment.value = experimentId
-  }
+  openExperiment.value = openExperiment.value === experimentId ? null : experimentId
 }
 </script>
+
+<style scoped>
+:deep(.experiments-title) {
+  background-image: linear-gradient(
+    to right,
+    theme('colors.accent.DEFAULT'),
+    theme('colors.accent.hover')
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@supports not (background-clip: text) {
+  :deep(.experiments-title) {
+    color: theme('colors.accent.DEFAULT');
+    background-image: none;
+  }
+}
+</style>

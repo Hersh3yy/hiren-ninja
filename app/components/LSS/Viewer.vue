@@ -1,72 +1,83 @@
 <template>
   <div class="relative w-full h-full bg-ink">
-    <!-- Three.js canvas will be mounted here -->
-    <div ref="canvasContainer" class="w-full h-full"/>
-    
-    <!-- Loading overlay -->
-    <div v-if="loading" class="absolute inset-0 bg-ink/75 flex items-center justify-center">
+    <div
+      ref="canvasContainer"
+      class="w-full h-full"
+      role="img"
+      aria-label="Interactive 3D LED sculpture preview"
+    />
+
+    <div
+      v-if="loading"
+      class="absolute inset-0 bg-ink/75 flex items-center justify-center"
+      role="status"
+      aria-live="polite"
+    >
       <div class="text-center text-content">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-2"/>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-2" aria-hidden="true" />
         <p>Generating LED sculpture...</p>
       </div>
     </div>
-    
-    <!-- Controls overlay -->
+
     <div class="absolute top-4 left-4 space-y-2">
-      <!-- Info panel -->
       <div v-if="curveData" class="bg-black bg-opacity-70 text-content p-3 rounded text-sm">
         <div class="font-semibold text-accent mb-1">LED Sculpture</div>
         <div>Length: {{ Math.round(curveData.totalLength) }}m</div>
         <div>Height: {{ Math.round(maxHeight * 10) / 10 }}m</div>
       </div>
-      
-      <!-- Controls -->
-      <div class="bg-black bg-opacity-70 text-content p-2 rounded space-y-2">
-        <!-- Spin controls -->
+
+      <div class="bg-black bg-opacity-70 text-content p-2 rounded space-y-2" aria-label="Viewer controls">
         <div class="space-y-2">
           <div class="flex items-center space-x-2">
             <button
-              class="px-3 py-1 bg-accent text-ink hover:bg-accent-hover rounded text-xs transition-colors"
+              type="button"
+              class="px-3 py-1 bg-accent text-ink hover:bg-accent-hover rounded text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              :aria-pressed="isSpinning"
+              :aria-label="isSpinning ? 'Pause rotation' : 'Start rotation'"
               @click="toggleSpin"
             >
-              {{ isSpinning ? '⏸ Pause' : '▶ Spin' }}
+              {{ isSpinning ? 'Pause' : 'Spin' }}
             </button>
             <span class="text-xs text-content-muted">Rotation</span>
           </div>
-          
-          <!-- Speed control -->
+
           <div class="flex items-center space-x-2">
+            <label class="sr-only" for="lss-rotation-speed">Rotation speed</label>
             <input
+              id="lss-rotation-speed"
               v-model.number="rotationSpeed"
               type="range"
               min="0.1"
               max="3.0"
               step="0.1"
+              :aria-valuetext="`${rotationSpeed} times`"
               class="flex-1 h-1 bg-elevated rounded-lg appearance-none cursor-pointer"
             >
-            <span class="text-xs text-content-muted w-12">Speed: {{ rotationSpeed }}x</span>
+            <span class="text-xs text-content-muted w-12" aria-hidden="true">{{ rotationSpeed }}x</span>
           </div>
         </div>
-        
-        <!-- Zoom controls -->
+
         <div class="flex items-center space-x-2">
           <button
-            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
-            title="Zoom In"
+            type="button"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Zoom in"
             @click="zoomIn"
           >
-            🔍+
+            +
           </button>
           <button
-            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
-            title="Zoom Out"
+            type="button"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Zoom out"
             @click="zoomOut"
           >
-            🔍-
+            −
           </button>
           <button
-            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors"
-            title="Reset View"
+            type="button"
+            class="px-2 py-1 bg-elevated hover:bg-border-default rounded text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Reset view"
             @click="resetView"
           >
             ↺

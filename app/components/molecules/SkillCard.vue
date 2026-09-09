@@ -1,15 +1,22 @@
 <template>
-  <article :class="cardClasses">
-    <div v-if="iconPath" class="mb-4 inline-flex items-center justify-center w-11 h-11 rounded-lg bg-accent/10 text-accent">
+  <MoleculesCard
+    as="article"
+    :class="featured ? 'lg:col-span-2' : ''"
+    interactive
+  >
+    <div
+      v-if="iconPath"
+      class="mb-4 inline-flex items-center justify-center w-11 h-11 rounded-lg bg-accent/10 text-accent"
+    >
       <AtomsIcon :path="iconPath" size="md" />
     </div>
-    <h3 class="text-lg font-semibold text-content mb-2">{{ title }}</h3>
+    <AtomsHeading :text="title" :level="3" size="sm" :accent="false" class="mb-2" />
     <p class="text-sm leading-relaxed text-content-muted">{{ description }}</p>
-  </article>
+  </MoleculesCard>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     required: true
@@ -26,13 +33,5 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-})
-
-const cardClasses = computed(() => {
-  return [
-    'group h-full rounded-xl border border-border-subtle bg-surface/80 p-6 backdrop-blur-xl',
-    'transition-all duration-300 hover:border-accent-muted hover:ring-1 hover:ring-accent/30',
-    props.featured ? 'lg:col-span-2' : ''
-  ].filter(Boolean).join(' ')
 })
 </script>

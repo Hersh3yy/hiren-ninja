@@ -1,9 +1,7 @@
 <template>
-  <div
-    class="bg-surface/80 backdrop-blur-xl rounded-xl p-6 border border-border-subtle hover:border-accent-muted transition-all h-full flex flex-col"
-  >
+  <MoleculesCard class="h-full flex flex-col">
     <div class="mb-4">
-      <h2 class="text-2xl font-bold text-accent">{{ title }}</h2>
+      <AtomsHeading :text="title" :level="2" size="lg" />
       <p class="text-content-muted mt-2">{{ description }}</p>
     </div>
     <div class="flex-grow">
@@ -11,22 +9,32 @@
         <li v-for="feature in features" :key="feature">{{ feature }}</li>
       </ul>
     </div>
-    <button
-      :data-umami-event="`Service clicked ${title}`"
+    <AtomsButton
+      text="Get Started"
+      full-width
+      class="mt-6"
       :aria-label="`Get started with ${title}`"
-      class="w-full mt-6 py-3 bg-accent text-ink rounded-lg hover:bg-accent-hover transition-colors font-bold"
+      :data-umami-event="`Service clicked ${title}`"
       @click="$emit('start')"
-    >
-      Get Started
-    </button>
-  </div>
+    />
+  </MoleculesCard>
 </template>
 
 <script setup>
 defineProps({
-  title: String,
-  description: String,
-  features: Array
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  features: {
+    type: Array,
+    required: true
+  }
 })
+
 defineEmits(['start'])
 </script>

@@ -21,6 +21,11 @@ const props = defineProps({
   accent: {
     type: Boolean,
     default: true
+  },
+  variant: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'page', 'section'].includes(value)
   }
 })
 
@@ -43,10 +48,17 @@ const sizeClasses = {
 
 const headingClasses = computed(() => {
   const resolvedSize = props.size ?? defaultSizeByLevel[props.level]
+  const variantClasses = {
+    default: '',
+    page: 'mb-8',
+    section: 'mb-4'
+  }
+
   return [
     'font-bold tracking-tight',
     sizeClasses[resolvedSize],
-    props.accent ? 'text-accent' : 'text-content'
-  ].join(' ')
+    props.accent ? 'text-accent' : 'text-content',
+    variantClasses[props.variant]
+  ].filter(Boolean).join(' ')
 })
 </script>

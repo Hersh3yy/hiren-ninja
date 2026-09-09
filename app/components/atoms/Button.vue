@@ -1,26 +1,40 @@
 <template>
-  <button
-    :type="type"
-    :disabled="disabled || loading"
+  <component
+    :is="tag"
+    :type="tag === 'button' ? type : undefined"
+    :href="href || undefined"
+    :target="href && external ? '_blank' : undefined"
+    :rel="href && external ? 'noopener noreferrer' : undefined"
+    :disabled="tag === 'button' ? (disabled || loading) : undefined"
+    :aria-disabled="tag !== 'button' && (disabled || loading) ? 'true' : undefined"
+    :aria-busy="loading || undefined"
     :class="buttonClasses"
-    @click="$emit('click', $event)"
+    @click="onClick"
   >
-    <div v-if="loading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"/>
+    <span
+      v-if="loading"
+      class="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"
+      aria-hidden="true"
+    />
 
-    <component
-      :is="icon"
-      v-if="icon && !loading"
-      class="w-4 h-4 mr-2"
+    <AtomsIcon
+      v-if="iconPath && !loading"
+      :path="iconPath"
+      size="sm"
+      class="mr-2"
     />
 
     <span>{{ text }}</span>
 
-    <component
-      :is="trailingIcon"
-      v-if="trailingIcon"
-      class="w-4 h-4 ml-2"
+    <AtomsIcon
+      v-if="trailingIconPath"
+      :path="trailingIconPath"
+      size="sm"
+      class="ml-2"
     />
-  </button>
+
+    <span v-if="external && href" class="sr-only">(opens in a new tab)</span>
+  </component>
 </template>
 
 <script setup>
@@ -32,7 +46,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'success', 'danger', 'ghost', 'outline'].includes(value)
+    validator: (value) => ['primary', 'secondary', 'ghost', 'outline'].includes(value)
   },
   size: {
     type: String,
@@ -43,6 +57,14 @@ const props = defineProps({
     type: String,
     default: 'button',
     validator: (value) => ['button', 'submit', 'reset'].includes(value)
+  },
+  href: {
+    type: String,
+    default: ''
+  },
+  external: {
+    type: Boolean,
+    default: false
   },
   disabled: {
     type: Boolean,
@@ -56,28 +78,28 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  icon: {
-    type: [String, Object],
-    default: null
+  iconPath: {
+    type: String,
+    default: ''
   },
-  trailingIcon: {
-    type: [String, Object],
-    default: null
+  trailingIconPath: {
+    type: String,
+    default: ''
   }
 })
 
-defineEmits(['click'])
+const emit = defineEmits(['click'])
+
+const tag = computed(() => (props.href ? 'a' : 'button'))
 
 const buttonClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-ink disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variantClasses = {
-    primary: 'bg-accent text-ink hover:bg-accent-hover focus:ring-accent',
-    secondary: 'bg-elevated text-content hover:bg-border-default focus:ring-border-default',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'bg-transparent text-content-muted hover:bg-elevated hover:text-content focus:ring-border-default',
-    outline: 'border border-border-default text-content-muted hover:bg-elevated hover:text-content focus:ring-border-default'
+    primary: 'bg-accent text-ink hover:bg-accent-hover focus-visible:ring-accent',
+    secondary: 'bg-elevated text-content hover:bg-border-default focus-visible:ring-border-default',
+    ghost: 'bg-transparent text-content-muted hover:bg-elevated hover:text-content focus-visible:ring-border-default',
+    outline: 'border border-accent text-accent hover:bg-accent/10 focus-visible:ring-accent'
   }
 
   const sizeClasses = {
@@ -87,12 +109,24 @@ const buttonClasses = computed(() => {
   }
 
   const widthClass = props.fullWidth ? 'w-full' : ''
+  const disabledLinkClass = props.href && (props.disabled || props.loading)
+    ? 'pointer-events-none opacity-50'
+    : ''
 
   return [
     baseClasses,
     variantClasses[props.variant],
     sizeClasses[props.size],
-    widthClass
+    widthClass,
+    disabledLinkClass
   ].filter(Boolean).join(' ')
 })
+
+function onClick(event) {
+  if (props.disabled || props.loading) {
+    event.preventDefault()
+    return
+  }
+  emit('click', event)
+}
 </script>

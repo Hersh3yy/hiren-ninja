@@ -1,15 +1,21 @@
 <template>
   <div>
-    <div v-if="error" class="rounded-lg bg-red-900/40 p-4 mb-8">
-      <p class="text-red-200">Error loading projects: {{ error }}</p>
+    <div v-if="error" class="rounded-lg bg-danger-muted p-4 mb-8" role="alert">
+      <p class="text-danger">Error loading projects: {{ error }}</p>
     </div>
 
-    <div v-else-if="loading" class="flex justify-center items-center h-64">
-      <AtomsLoader type="spinner" size="lg" color="accent" />
+    <div
+      v-else-if="loading"
+      class="flex justify-center items-center h-64"
+      aria-busy="true"
+    >
+      <AtomsLoader type="spinner" size="lg" color="accent" text="Loading projects" />
     </div>
 
     <template v-else>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6"
+      >
         <MoleculesProjectCard
           v-for="project in sortedProjects"
           :key="project.id"
@@ -19,7 +25,7 @@
         />
       </div>
 
-      <div v-if="sortedProjects.length === 0" class="text-center mt-4">
+      <div v-if="sortedProjects.length === 0" class="text-center mt-4" role="status">
         <p class="text-content-muted">No projects to show yet.</p>
       </div>
 

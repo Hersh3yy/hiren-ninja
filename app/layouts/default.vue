@@ -2,7 +2,7 @@
   <div class="bg-ink min-h-screen flex flex-col relative font-space-grotesk">
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-accent focus:text-ink focus:px-4 focus:py-2 focus:rounded"
+      class="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:z-50 focus-visible:top-2 focus-visible:left-2 focus-visible:bg-accent focus-visible:text-ink focus-visible:px-4 focus-visible:py-2 focus-visible:rounded"
     >
       Skip to content
     </a>

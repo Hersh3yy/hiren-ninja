@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-3">
     <button
       type="button"
-      class="aspect-video relative overflow-hidden rounded-lg bg-elevated focus:outline-none focus:ring-2 focus:ring-accent"
+      class="aspect-video relative overflow-hidden rounded-lg bg-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       :aria-label="`Expand image for ${title}`"
       @click="emit('expand', activeImageUrl)"
     >
@@ -19,47 +19,41 @@
     </button>
 
     <div v-if="images.length > 1" class="flex items-center gap-2">
-      <button
-        type="button"
-        class="shrink-0 rounded-full p-2 text-content-muted hover:text-content hover:bg-elevated focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40"
-        aria-label="Previous image"
+      <MoleculesIconButton
+        :icon-path="ICONS.chevronLeft"
+        label="Previous image"
         :disabled="activeIndex === 0"
         @click="activeIndex = Math.max(0, activeIndex - 1)"
-      >
-        <AtomsIcon :path="chevronLeftPath" size="sm" />
-      </button>
+      />
 
-      <div class="flex gap-2 overflow-x-auto py-1 flex-1 scrollbar-thin" role="list" aria-label="Project screenshots">
+      <div class="flex gap-2 overflow-x-auto py-1 flex-1" role="group" aria-label="Project screenshots">
         <button
           v-for="(image, index) in images"
           :key="image.id || image.url || index"
           type="button"
-          role="listitem"
-          class="shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+          class="shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           :class="index === activeIndex ? 'border-accent' : 'border-transparent opacity-70 hover:opacity-100'"
           :aria-label="`Show image ${index + 1} of ${images.length}`"
-          :aria-current="index === activeIndex ? 'true' : undefined"
+          :aria-pressed="index === activeIndex"
           @click="activeIndex = index"
         >
-          <img :src="image.url" :alt="''" class="w-full h-full object-cover" loading="lazy">
+          <img :src="image.url" alt="" class="w-full h-full object-cover" loading="lazy">
         </button>
       </div>
 
-      <button
-        type="button"
-        class="shrink-0 rounded-full p-2 text-content-muted hover:text-content hover:bg-elevated focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40"
-        aria-label="Next image"
+      <MoleculesIconButton
+        :icon-path="ICONS.chevronRight"
+        label="Next image"
         :disabled="activeIndex >= images.length - 1"
         @click="activeIndex = Math.min(images.length - 1, activeIndex + 1)"
-      >
-        <AtomsIcon :path="chevronRightPath" size="sm" />
-      </button>
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { ICONS } from '~/utils/icons'
 
 const props = defineProps({
   title: {
@@ -77,9 +71,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['expand'])
-
-const chevronLeftPath = 'M15 19l-7-7 7-7'
-const chevronRightPath = 'M9 5l7 7-7 7'
 
 const activeIndex = ref(0)
 

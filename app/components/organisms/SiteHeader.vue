@@ -7,7 +7,7 @@
         src="/hirshi2.svg"
         alt=""
         aria-hidden="true"
-        class="h-9 w-auto transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]"
+        class="h-9 w-auto transition-transform duration-700 ease-in-out motion-safe:group-hover:rotate-[360deg]"
       >
       <span
         class="text-2xl sm:text-3xl md:text-4xl text-accent whitespace-nowrap font-sixtyfour font-normal antialiased"
@@ -17,65 +17,83 @@
       </span>
     </NuxtLink>
 
-    <nav class="ml-4">
+    <nav class="ml-4" aria-label="Main navigation">
       <div class="hidden md:flex items-center space-x-8">
         <MoleculesNavLink v-for="link in links" :key="link.to" :to="link.to" :text="link.text" />
       </div>
 
       <button
+        ref="menuButtonRef"
         class="md:hidden text-content rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         :aria-expanded="isMobileMenuOpen"
         aria-controls="mobile-menu"
         aria-label="Toggle navigation menu"
         @click="toggleMobileMenu"
       >
-        <AtomsIcon :path="isMobileMenuOpen ? closeIconPath : menuIconPath" size="md" />
+        <AtomsIcon :path="isMobileMenuOpen ? ICONS.close : ICONS.menu" size="md" />
       </button>
 
       <div
         v-show="isMobileMenuOpen"
         id="mobile-menu"
-        class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md md:hidden rounded-b-lg z-[51]"
+        class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md md:hidden rounded-b-lg z-[51] border border-border-subtle py-2"
       >
-        <div class="py-2">
-          <NuxtLink
-            v-for="link in links"
-            :key="link.to"
-            :to="link.to"
-            class="block px-4 py-2 text-content hover:bg-elevated/50 transition-colors duration-200"
-            @click="closeMobileMenu"
-          >
-            {{ link.text }}
-          </NuxtLink>
-        </div>
+        <MoleculesNavLink
+          v-for="link in links"
+          :key="link.to"
+          :to="link.to"
+          :text="link.text"
+          class="block px-4 py-2 hover:bg-elevated/50"
+          @click="closeMobileMenu"
+        />
       </div>
     </nav>
   </header>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-
-const menuIconPath = 'M4 6h16M4 12h16M4 18h16'
-const closeIconPath = 'M6 18L18 6M6 6l12 12'
+import { ICONS } from '~/utils/icons'
 
 const isMobileMenuOpen = ref(false)
+const menuButtonRef = ref(null)
 
-const links = [
+const links = Object.freeze([
   { to: '/about', text: 'About' },
   { to: '/projects', text: 'Projects' },
   { to: '/services', text: 'Services' },
   { to: '/experiments', text: 'Experiments' }
-]
+])
 
-const toggleMobileMenu = () => {
+function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
-const closeMobileMenu = () => {
+function closeMobileMenu() {
   isMobileMenuOpen.value = false
 }
+
+function onDocumentKeydown(event) {
+  if (!isMobileMenuOpen.value) return
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeMobileMenu()
+    menuButtonRef.value?.focus()
+  }
+}
+
+watch(isMobileMenuOpen, (open) => {
+  if (open) {
+    document.addEventListener('keydown', onDocumentKeydown)
+  } else {
+    document.removeEventListener('keydown', onDocumentKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onDocumentKeydown)
+})
 
 const route = useRoute()
 watch(

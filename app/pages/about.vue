@@ -1,11 +1,12 @@
 <template>
   <div class="container mx-auto px-4 sm:px-6 py-8 space-y-8">
-    <div class="card">
+    <h1 class="sr-only">About Hiren</h1>
+    <MoleculesCard>
       <OrganismsAboutBio />
-    </div>
-    <div class="card">
+    </MoleculesCard>
+    <MoleculesCard>
       <OrganismsAboutSkills />
-    </div>
+    </MoleculesCard>
   </div>
 </template>
 

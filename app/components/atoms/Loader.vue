@@ -1,8 +1,13 @@
 <template>
-  <div :class="containerClasses">
-    <div v-if="type === 'spinner'" :class="spinnerClasses"/>
+  <div
+    role="status"
+    aria-live="polite"
+    :aria-label="text || 'Loading'"
+    :class="containerClasses"
+  >
+    <div v-if="type === 'spinner'" :class="spinnerClasses" aria-hidden="true" />
 
-    <div v-else-if="type === 'dots'" class="flex space-x-1">
+    <div v-else-if="type === 'dots'" class="flex space-x-1" aria-hidden="true">
       <div
         v-for="i in 3"
         :key="i"
@@ -11,9 +16,10 @@
       />
     </div>
 
-    <div v-else-if="type === 'pulse'" :class="pulseClasses"/>
+    <div v-else-if="type === 'pulse'" :class="pulseClasses" aria-hidden="true" />
 
     <p v-if="text" :class="textClasses">{{ text }}</p>
+    <span v-else class="sr-only">Loading</span>
   </div>
 </template>
 

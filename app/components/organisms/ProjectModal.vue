@@ -1,111 +1,106 @@
 <template>
-  <Teleport to="body">
-    <Transition name="project-modal">
-      <div
-        v-if="project"
-        class="modal-container items-center"
-        @click.self="requestClose"
-      >
+  <MoleculesModalShell
+    :is-open="!!project"
+    :title="project?.title || 'Project'"
+    :title-id="titleId"
+    close-label="Close project details"
+    panel-class="w-full max-w-5xl max-h-[min(90vh,52rem)] overflow-y-auto relative"
+    @close="requestClose"
+  >
+    <template #header="{ titleId: id, close }">
+      <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
+        <p class="text-xs uppercase tracking-widest text-content-muted">Project</p>
+        <span :id="id" class="sr-only">{{ project?.title }}</span>
+        <AtomsModalCloseButton label="Close project details" @click="close" />
+      </div>
+    </template>
+
+    <div v-if="project" class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 sm:p-6">
+      <MoleculesProjectGallery
+        :title="project.title"
+        :cover-url="project.coverImage?.url || ''"
+        :screenshots="project.screenshots || []"
+        @expand="expandImage"
+      />
+
+      <div class="flex flex-col gap-5 min-w-0">
+        <div>
+          <AtomsHeading
+            :text="project.title"
+            :level="2"
+            size="lg"
+            :accent="false"
+            class="uppercase tracking-wide"
+            aria-hidden="true"
+          />
+          <p v-if="project.year" class="mt-1 text-sm text-content-muted">
+            {{ project.year }}
+            <span v-if="project.projectType"> · {{ formatProjectType(project.projectType) }}</span>
+          </p>
+        </div>
+
+        <div>
+          <AtomsHeading text="About" :level="3" size="sm" :accent="false" class="uppercase tracking-wide mb-2" />
+          <div class="text-content-muted text-sm sm:text-base space-y-3 project-description" v-html="formattedDescription" />
+        </div>
+
+        <div v-if="project.url" class="pt-1">
+          <AtomsButton
+            text="Launch"
+            :href="project.url"
+            external
+            :trailing-icon-path="ICONS.externalLink"
+          />
+        </div>
+
         <div
-          ref="dialogRef"
-          role="dialog"
-          aria-modal="true"
-          :aria-labelledby="titleId"
-          tabindex="-1"
-          class="modal-content w-full max-w-5xl max-h-[min(90vh,52rem)] overflow-y-auto relative outline-none"
+          v-if="projects.length > 1"
+          class="mt-auto pt-4 flex items-center justify-end gap-3 border-t border-border-subtle"
         >
-          <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
-            <p class="text-xs uppercase tracking-widest text-content-muted">Project</p>
-            <AtomsModalCloseButton label="Close project details" @click="requestClose" />
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 sm:p-6">
-            <MoleculesProjectGallery
-              :title="project.title"
-              :cover-url="project.coverImage?.url || ''"
-              :screenshots="project.screenshots || []"
-              @expand="expandImage"
-            />
-
-            <div class="flex flex-col gap-5 min-w-0">
-              <div>
-                <h2 :id="titleId" class="text-2xl sm:text-3xl font-bold text-content uppercase tracking-wide">
-                  {{ project.title }}
-                </h2>
-                <p v-if="project.year" class="mt-1 text-sm text-content-muted">
-                  {{ project.year }}
-                  <span v-if="project.projectType"> · {{ formatProjectType(project.projectType) }}</span>
-                </p>
-              </div>
-
-              <div>
-                <h3 class="text-sm font-semibold uppercase tracking-wide text-content mb-2">About</h3>
-                <div class="text-content-muted text-sm sm:text-base space-y-3 project-description" v-html="formattedDescription" />
-              </div>
-
-              <div v-if="project.url" class="pt-1">
-                <a
-                  :href="project.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="btn-primary inline-flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-surface"
-                >
-                  <span>Launch</span>
-                  <AtomsIcon :path="externalLinkPath" size="sm" />
-                </a>
-              </div>
-
-              <div
-                v-if="projects.length > 1"
-                class="mt-auto pt-4 flex items-center justify-end gap-3 border-t border-border-subtle"
-              >
-                <span class="text-sm text-content-muted tabular-nums" aria-live="polite">
-                  {{ currentIndex + 1 }}/{{ projects.length }}
-                </span>
-                <button
-                  type="button"
-                  class="rounded-full p-2 border border-border-default text-content-muted hover:text-content hover:border-accent-muted focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40"
-                  aria-label="Previous project"
-                  :disabled="currentIndex <= 0"
-                  @click="emit('navigate', currentIndex - 1)"
-                >
-                  <AtomsIcon :path="chevronLeftPath" size="sm" />
-                </button>
-                <button
-                  type="button"
-                  class="rounded-full p-2 border border-border-default text-content-muted hover:text-content hover:border-accent-muted focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40"
-                  aria-label="Next project"
-                  :disabled="currentIndex >= projects.length - 1"
-                  @click="emit('navigate', currentIndex + 1)"
-                >
-                  <AtomsIcon :path="chevronRightPath" size="sm" />
-                </button>
-              </div>
-            </div>
-          </div>
+          <span class="text-sm text-content-muted tabular-nums" aria-live="polite">
+            {{ currentIndex + 1 }}/{{ projects.length }}
+          </span>
+          <MoleculesIconButton
+            :icon-path="ICONS.chevronLeft"
+            label="Previous project"
+            variant="bordered"
+            :disabled="currentIndex <= 0"
+            @click="emit('navigate', currentIndex - 1)"
+          />
+          <MoleculesIconButton
+            :icon-path="ICONS.chevronRight"
+            label="Next project"
+            variant="bordered"
+            :disabled="currentIndex >= projects.length - 1"
+            @click="emit('navigate', currentIndex + 1)"
+          />
         </div>
       </div>
-    </Transition>
+    </div>
+  </MoleculesModalShell>
 
+  <Teleport to="body">
     <Transition name="lightbox">
       <div
         v-if="expandedImageUrl"
-        class="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] cursor-zoom-out"
+        ref="lightboxRef"
+        class="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] cursor-zoom-out p-4"
         role="dialog"
         aria-modal="true"
-        aria-label="Expanded project image"
-        @click="expandedImageUrl = null"
+        :aria-label="`Expanded image for ${project?.title || 'project'}`"
+        tabindex="-1"
+        @click.self="expandedImageUrl = null"
       >
         <img
           :src="expandedImageUrl"
           class="max-w-[90vw] max-h-[90vh] object-contain"
-          alt="Expanded project view"
+          :alt="`Expanded view of ${project?.title || 'project'}`"
         >
         <AtomsModalCloseButton
           class="absolute top-4 right-4 text-white hover:text-accent"
           label="Close expanded image"
           size="lg"
-          @click.stop="expandedImageUrl = null"
+          @click="expandedImageUrl = null"
         />
       </div>
     </Transition>
@@ -114,10 +109,8 @@
 
 <script setup>
 import { computed, ref, useId, watch } from 'vue'
-
-const externalLinkPath = 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
-const chevronLeftPath = 'M15 19l-7-7 7-7'
-const chevronRightPath = 'M9 5l7 7-7 7'
+import { ICONS } from '~/utils/icons'
+import { escapeHtml } from '~/utils/escapeHtml'
 
 const props = defineProps({
   project: {
@@ -137,10 +130,10 @@ const props = defineProps({
 const emit = defineEmits(['close', 'navigate'])
 
 const titleId = useId()
-const dialogRef = ref(null)
+const lightboxRef = ref(null)
 const expandedImageUrl = ref(null)
 
-const isOpen = computed(() => !!props.project)
+const isLightboxOpen = computed(() => !!expandedImageUrl.value)
 
 function requestClose() {
   if (expandedImageUrl.value) {
@@ -151,9 +144,11 @@ function requestClose() {
 }
 
 useModalA11y({
-  isOpen,
-  onClose: requestClose,
-  containerRef: dialogRef
+  isOpen: isLightboxOpen,
+  onClose: () => {
+    expandedImageUrl.value = null
+  },
+  containerRef: lightboxRef
 })
 
 watch(
@@ -192,14 +187,6 @@ const formattedDescription = computed(() => {
 
   return result
 })
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-}
 
 function formatProjectType(type) {
   if (type === 'website') return 'Website'
