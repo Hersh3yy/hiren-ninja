@@ -102,6 +102,7 @@ export function useModalA11y({ isOpen, onClose, containerRef, initialFocusRef })
   watch(
     () => unref(isOpen),
     (open) => {
+      if (import.meta.server) return
       if (open) {
         activate()
       } else {

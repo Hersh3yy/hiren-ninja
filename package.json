@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
-    "@nuxtjs/robots": "^5.5.5",
+    "@nuxtjs/robots": "^6.2.3",
     "@types/three": "^0.180.0",
     "axios": "^1.18.1",
     "graphql": "^16.11.0",
