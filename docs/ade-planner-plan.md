@@ -13,7 +13,7 @@ Target for tonight: phase 1 and 2 running locally. You paste artist names or a p
   - Apple Music: yes, public playlists exist (editorial ones and user playlists shared as `pl.u-...` links). The `music.apple.com` page has a `serialized-server-data` JSON block with `artistName` per track. Tested: 50 of 50 tracks. No Apple Developer account needed.
   - Both pages probably cap at the first ~100 tracks. Verify with a big playlist.
   - Both routes read the public web page, not an official API, which is against each service's terms. Fine for a personal experiment, and it can break when they change the page.
-- VAMS hosts (2026-09-27): the live API is `https://vams-main-qvek1c.laravel.cloud/api`. The local `vams-api` container writes to the DigitalOcean database, which no running app serves (the DO app and `app.use-vams.me` are gone). Until the sync runs against the Laravel Cloud database, hiren.ninja reads the bundled snapshot.
+- VAMS host: `https://app.use-vams.me/api` (DigitalOcean App Platform). The ADE data is synced into that database. Without `VAMS_API_URL` set, hiren.ninja reads the bundled snapshot.
 - VAMS: its API is read-only (`GET /api/entries/by-type/{slug}` with `X-API-Key`, 60 requests/min). It returns every entry of a type in one response with no pagination and no filter. Writes only go through the web UI, so hydration is an artisan command inside VAMS. The local `vams-api` container points at the production database.
 
 ## Copyright and legal (my read, not legal advice)

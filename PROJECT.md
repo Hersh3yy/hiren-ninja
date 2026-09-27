@@ -91,7 +91,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - [x] ADE data layer: VAMS `ade:sync` + `ade:export` (koala/VAMS), `ade-artist`/`ade-event` entry types, snapshot fallback <!-- id:a2 -->
 - [x] MVP: paste a list of artist names, matcher, day-by-day results <!-- id:a3 -->
 - [x] Public playlist link input: Spotify embed page, Apple Music page <!-- id:a4 -->
-- [ ] Deploy VAMS somewhere public (DigitalOcean build failed after the 2026-09-27 merge) and set `VAMS_API_URL` + `VAMS_API_KEY` on Netlify; until then prod uses Hygraph (projects) and the snapshot (ADE) <!-- id:a7 -->
+- [ ] Set `VAMS_API_URL=https://app.use-vams.me/api` + `VAMS_API_KEY` on Netlify, remove `HYGRAPH_TOKEN`; until then prod uses Hygraph (projects) and the snapshot (ADE) <!-- id:a7 -->
 - [ ] Add ADE Planner to the projects list (Hygraph/VAMS content) and deploy <!-- id:a8 -->
 - [ ] Discovery: Last.fm similar artists, co-billed artists, genres, clash warnings, `.ics` export <!-- id:a5 -->
 - [ ] Optional logins: Spotify (5-user dev limit), Apple Music ($99/yr developer account) <!-- id:a6 -->
@@ -114,7 +114,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - ADE Planner is a page at `/ade-planner` (moved out of experiments): paste names or a public Spotify / Apple Music link. Full data synced into VAMS (3,356 artists, 1,104 events) and bundled as `server/assets/ade-planner/snapshot.json` for when VAMS is unreachable. 8 Vitest tests.
 - Projects now load through `server/api/projects.get.ts` from VAMS (all 9 already migrated there, images still on the Hygraph CDN). Removed `@nuxtjs/apollo`, `graphql`, `graphql-request`; Hygraph's public CDN is the fallback. Shared VAMS client in `server/utils/vams.ts`, key server-side only.
 - `@nuxtjs/sitemap` replaces the dead `nuxt-simple-sitemap` (includes `/ade-planner`, excludes `/experiments`). VAMS migration ticket restored from `fix/build-sitemap`, which is now deleted.
-- Local dev reads VAMS via `php artisan serve --port=8765` in koala/VAMS (`VAMS_API_URL=http://127.0.0.1:8765/api`). There is no public VAMS URL right now.
+- Local dev reads VAMS via `php artisan serve --port=8765` in koala/VAMS (`VAMS_API_URL=http://127.0.0.1:8765/api`). Public VAMS: `https://app.use-vams.me/api`.
 
 ### 2026-09-27 — package update + ADE Planner experiment planned
 - Branch `experiment/ade-planner` from `origin/main`. `npm update`: Nuxt 4.3.1 to 4.5.2, vue 3.5.43, axios 1.20, autoprefixer 10.6.1 and other patch/minor bumps. `npm run build` green, dev server serves `/`, `/experiments`, `/about`, `/projects` with no console errors.

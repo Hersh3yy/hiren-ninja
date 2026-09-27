@@ -23,7 +23,7 @@ Audit finding: despite the "projects/services/skills" framing, **only `projects`
 - **2 published project entries already exist** under Hiren ("Doctor Mesi", "Itamar Gilboa's website bob") with exactly those `content` keys.
 
 ## The GraphQL → REST shape mismatch
-- **Endpoint:** `GET https://vams-main-qvek1c.laravel.cloud/api/entries/by-type/projects` (the old `/api/v1` path and `app.use-vams.me` are gone; ADE Planner already reads `VAMS_API_URL`), header **`X-API-Key`** (Hiren's key), throttled 60/min.
+- **Endpoint:** `GET https://app.use-vams.me/api/entries/by-type/projects` (no `/v1`; set as `VAMS_API_URL`), header **`X-API-Key`** (Hiren's key), throttled 60/min.
 - **Envelope:** `{ entries: [...], entry_type: {...} }`. Each entry is flat — `{ id, title, content, status, published_at, order, created_at, updated_at }` — with **all domain fields inside `content` (a JSON blob)**.
 - **Field mapping** (Hygraph → VAMS): `title` → `entry.title` (native); `stage` → `entry.status`; `publishedAt/updatedAt/createdAt` → `published_at/updated_at/created_at`; everything else → `entry.content.*` (`shortDescription`, `fullDescription`, `year`, `url`, `projectType`, `slug`, `coverImage`, `screenshots`). Note `coverImage`/`screenshots` are `image_collection` in VAMS, not GraphQL asset objects — read the URL(s) out of the content value (confirm the exact JSON shape of an `image_collection` value against a live entry before wiring).
 - `year` must stay numeric for the year filter (`useProjects.js:49` `Number(filter) === project.year`).
