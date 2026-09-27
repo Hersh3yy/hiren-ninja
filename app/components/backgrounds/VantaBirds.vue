@@ -31,7 +31,8 @@ onMounted(async () => {
   }
 
   const mod = await import('vanta/dist/vanta.birds.min')
-  const BIRDS = mod.default || mod
+  const BIRDS = [mod.default, mod, window.VANTA?.BIRDS].find((c) => typeof c === 'function')
+  if (!BIRDS) return
 
   effect = BIRDS({
     el: el.value,
