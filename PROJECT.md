@@ -101,7 +101,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - [ ] Fix service-request double-submit (let the modal own submission, delete the stub) + add input validation to the function <!-- id:f3 -->
 - [ ] Atomic-design cleanup: either delete the unused `Base` set or re-theme it (yellow) and route sliders/buttons through it; add the missing `variant` validator; fix the `CategoryCard` slot violation <!-- id:f4 -->
 - [ ] Real content for `blog` + `contact` stubs (or noindex them); CSS de-dup; README rewrite (it's a generic starter) <!-- id:f5 -->
-- [ ] Major upgrades, each behind build check: Tailwind 4, `@nuxtjs/robots` 6, `nuxt-site-config` 4, `graphql` 17, ESLint 10; `three` stuck at 0.134 because of `vanta`. Also resolve the mixed package manager (commit to npm, drop the misleading `packageManager: yarn`) <!-- id:f6 -->
+- [ ] Major upgrades, each behind build check (robots 6 done): Tailwind 4, `nuxt-site-config` 4, `graphql` 17, ESLint 10; `three` stuck at 0.134 because of `vanta`. Also resolve the mixed package manager (commit to npm, drop the misleading `packageManager: yarn`) <!-- id:f6 -->
 - [ ] Link a ClickUp list + sync this roadmap <!-- id:f7 -->
 
 ---
@@ -112,6 +112,9 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - Branch `experiment/ade-radar` from `origin/main`. `npm update`: Nuxt 4.3.1 to 4.5.2, vue 3.5.43, axios 1.20, autoprefixer 10.6.1 and other patch/minor bumps. `npm run build` green, dev server serves `/`, `/experiments`, `/about`, `/projects` with no console errors.
 - Tried `three` 0.186: npm ERESOLVE because `vanta` needs 0.134. Left `three` alone. Majors (Tailwind 4, robots 6, site-config 4, graphql 17, ESLint 10) not done, listed in far future.
 - Researched and planned ADE Radar: ADE has an undocumented JSON API (3,355 artists, ~1,100 events). Spotify API (Feb 2026) blocks reading tracks of playlists you don't own, so public links need the embed page. Plan in `docs/experiments/ade-radar-plan.md`. PROJECT.md copied over from `fix/build-sitemap`.
+- Merged to `main` (fast-forward). Fixed `/services` 500: `useModalA11y.js` immediate watcher used `document` during SSR. Upgraded `@nuxtjs/robots` 5 to 6, build + all 7 routes 200.
+- Branch triage: old local `main` commit `a691e6e` superseded by the atomic rework, dropped locally (still on `fix/build-sitemap`). `fix/build-sitemap` built on old structure: salvage `@nuxtjs/sitemap` + `docs/vams-migration-ticket.md`, then delete. `rework/atomic-design-system` has 1 unmerged commit `e235622` (2026-09-09, 46 files) that merges cleanly: merge pending Hiren's go.
+- Check: in dev, `/experiments` renders `robots: index, follow` despite the `routeRules` `robots: false`; verify on a production build.
 
 ### 2026-09-09 — first map + build/sitemap fix + VAMS verification
 - **Renew:** two fan-out audits (frontend; integrations/security). Found the build broken at HEAD, two committed secrets, and a real SEO/perf/a11y backlog.
