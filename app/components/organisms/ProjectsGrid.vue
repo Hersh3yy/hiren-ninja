@@ -43,43 +43,14 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
 
-const query = gql`
-  query GetProjects {
-    projects {
-      stage
-      publishedAt
-      updatedAt
-      createdAt
-      id
-      title
-      shortDescription
-      fullDescription
-      year
-      url
-      projectType
-      slug
-      coverImage {
-        url
-      }
-      screenshots {
-        url
-        id
-      }
-    }
-  }
-`
+const { data, pending: loading, error: fetchError } = await useFetch('/api/projects', { key: 'projects' })
 
-const { data, loading, error } = await useAsyncQuery(query)
-
-const projects = computed(() => data.value?.projects || [])
+const error = computed(() => fetchError.value?.statusMessage || fetchError.value?.message || '')
+const sortedProjects = computed(() => data.value || [])
 const selectedIndex = ref(-1)
 const originCardId = ref(null)
 
 const { runOpen, runClose } = useSharedElementTransition()
-
-const sortedProjects = computed(() => {
-  return [...projects.value].sort((a, b) => b.year - a.year)
-})
 
 const selectedProject = computed(() => {
   if (selectedIndex.value < 0) return null
