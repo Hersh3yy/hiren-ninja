@@ -30,11 +30,10 @@ export default defineNuxtConfig({
     }
   },
   modules: [
-    '@nuxtjs/apollo',
     'nuxt-site-config',
     '@nuxtjs/robots',
     '@nuxt/eslint',
-    // 'nuxt-simple-sitemap', // Temporarily disabled for Nuxt 4 compatibility
+    '@nuxtjs/sitemap',
   ],
   eslint: {
     config: {
@@ -64,23 +63,11 @@ export default defineNuxtConfig({
       ]
     }
   },
-  apollo: {
-    clients: {
-      default: {
-        // Endpoint and token are read from environment variables (see .env / .env.example).
-        // Nuxt auto-loads .env, which is gitignored so the token stays out of source control.
-        httpEndpoint: process.env.HYGRAPH_ENDPOINT ?? 'https://eu-central-1-shared-euc1-02.cdn.hygraph.com/content/clvkp3ut01ajw07wc38106mxt/master',
-        httpLinkOptions: {
-          headers: {
-            'Authorization': `Bearer ${process.env.HYGRAPH_TOKEN ?? ''}`
-          }
-        }
-      }
-    },
-  },
   runtimeConfig: {
     clickupApiKey: process.env.CLICKUP_API_KEY ?? '',
     clickupListId: process.env.CLICKUP_LIST_ID ?? '',
+    vamsApiUrl: process.env.VAMS_API_URL ?? '',
+    vamsApiKey: process.env.VAMS_API_KEY ?? '',
   },
   nitro: {
     preset: 'netlify',

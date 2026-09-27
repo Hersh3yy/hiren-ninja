@@ -11,9 +11,9 @@
 **What it is** · Hiren's personal portfolio at [hiren.ninja](https://hiren.ninja): a landing page, a filterable **projects** gallery, a **services** page (with a request form), an **about** page, a blog stub, and interactive **experiments** (a Three.js LED-sculpture generator).
 **Stack** · Nuxt 4 · Vue 3 · Tailwind 3 · `@nuxtjs/apollo` (Hygraph GraphQL) · `motion-v` (animation) · Three.js + Vanta · Umami analytics · Netlify function for the contact form · deployed on Netlify from GitHub (`Hersh3yy/hiren-ninja`).
 **Content** · `projects` from **Hygraph** (moving to **VAMS** — see ticket) · `services` + `skills` are **hardcoded** · the service-request form → a **ClickUp** task via a Netlify function.
-**Status** · 🟢 `main` builds again (rework commits since 2026-09-09). Packages updated to latest safe versions on branch **`experiment/ade-radar`** (Nuxt 4.5.2), build + dev verified. Branch `fix/build-sitemap` is still unmerged and now diverged from `main`. Secrets and the SEO/perf/a11y backlog below were assessed on 2026-09-09 and not re-checked.
-**Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · working branch **`experiment/ade-radar`**; `main` is sacred.
-**Current experiment** · **ADE Radar**: match your music against the Amsterdam Dance Event 2026 lineup. Plan: [`docs/experiments/ade-radar-plan.md`](docs/experiments/ade-radar-plan.md).
+**Status** · 🟢 `main` builds again (rework commits since 2026-09-09). Packages updated to latest safe versions on branch **`experiment/ade-planner`** (Nuxt 4.5.2), build + dev verified. Branch `fix/build-sitemap` is still unmerged and now diverged from `main`. Secrets and the SEO/perf/a11y backlog below were assessed on 2026-09-09 and not re-checked.
+**Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · working branch **`experiment/ade-planner`**; `main` is sacred.
+**Current project** · **ADE Planner** at `/ade-planner`: match your music against the Amsterdam Dance Event 2026 lineup. Plan: [`docs/ade-planner-plan.md`](docs/ade-planner-plan.md).
 **Package manager** · **npm** (only `package-lock.json` exists; the `packageManager: yarn` field is misleading — there's no `yarn.lock`).
 **ClickUp** · not linked yet (needs a list id + the token in the env).
 **Last assessed** · 2026-09-27
@@ -85,18 +85,20 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - [ ] **a11y pass:** `prefers-reduced-motion` gate; modal `role=dialog`/focus-trap/Escape; `TypeFilter` `sr-only` not `hidden`; collapsible as a real button; icon-button labels; associate form labels <!-- id:n6 -->
 - [ ] Remove dead code + unused deps (`motion`, `howler`, `axios`; `MenuComponent`, `BlogPost`, `Fireworks`, `FractalClock`, `ProjectInfo`, `curvemath.js`) <!-- id:n7 -->
 
-### ADE Radar experiment (plan: [`docs/experiments/ade-radar-plan.md`](docs/experiments/ade-radar-plan.md))
-- [ ] Refine the plan: public vs personal, design direction, VAMS yes/no <!-- id:a0 -->
-- [ ] Scaffold: `pages/experiments/ade-radar/`, atomic components, `server/api/ade-radar/`, GSAP, Vitest <!-- id:a1 -->
-- [ ] ADE data layer: sync the hidden `/api/program/filter` JSON (artists + events), cache, snapshot fallback, parser tests <!-- id:a2 -->
-- [ ] MVP: paste a list of artist names, matcher, day-by-day results <!-- id:a3 -->
-- [ ] Public playlist link input: Spotify embed page, Apple Music page (spike first, grey-area scraping) <!-- id:a4 -->
+### ADE Planner (plan: [`docs/ade-planner-plan.md`](docs/ade-planner-plan.md))
+- [x] Refine the plan: personal project, VAMS for data, no AI in the app, public playlist links as main input <!-- id:a0 -->
+- [x] Page `/ade-planner`, `app/components/AdePlanner/`, `server/api/ade-planner/`, Vitest <!-- id:a1 -->
+- [x] ADE data layer: VAMS `ade:sync` + `ade:export` (koala/VAMS), `ade-artist`/`ade-event` entry types, snapshot fallback <!-- id:a2 -->
+- [x] MVP: paste a list of artist names, matcher, day-by-day results <!-- id:a3 -->
+- [x] Public playlist link input: Spotify embed page, Apple Music page <!-- id:a4 -->
+- [ ] Deploy VAMS somewhere public (DigitalOcean build failed after the 2026-09-27 merge) and set `VAMS_API_URL` + `VAMS_API_KEY` on Netlify; until then prod uses Hygraph (projects) and the snapshot (ADE) <!-- id:a7 -->
+- [ ] Add ADE Planner to the projects list (Hygraph/VAMS content) and deploy <!-- id:a8 -->
 - [ ] Discovery: Last.fm similar artists, co-billed artists, genres, clash warnings, `.ics` export <!-- id:a5 -->
 - [ ] Optional logins: Spotify (5-user dev limit), Apple Music ($99/yr developer account) <!-- id:a6 -->
 
 ## Roadmap — far future
 
-- [ ] **Hygraph → VAMS migration** (VAMS side verified ready): swap the one `useProjects` composable + config to VAMS REST (`/entries/by-type/projects`, `X-API-Key`); retires the Hygraph JWT. Ticket: [`docs/vams-migration-ticket.md`](docs/vams-migration-ticket.md) <!-- id:f1 -->
+- [x] **Hygraph → VAMS migration** (done 2026-09-27: `server/api/projects.get.ts` reads VAMS, Hygraph CDN only as fallback and for images): swap the one `useProjects` composable + config to VAMS REST (`/entries/by-type/projects`, `X-API-Key`); retires the Hygraph JWT. Ticket: [`docs/vams-migration-ticket.md`](docs/vams-migration-ticket.md) <!-- id:f1 -->
 - [ ] Fix `LSS/Viewer.vue` WebGL disposal (dispose geometry/material on rebuild; full teardown + `forceContextLoss()` on unmount) <!-- id:f2 -->
 - [ ] Fix service-request double-submit (let the modal own submission, delete the stub) + add input validation to the function <!-- id:f3 -->
 - [ ] Atomic-design cleanup: either delete the unused `Base` set or re-theme it (yellow) and route sliders/buttons through it; add the missing `variant` validator; fix the `CategoryCard` slot violation <!-- id:f4 -->
@@ -108,10 +110,16 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
-### 2026-09-27 — package update + ADE Radar experiment planned
-- Branch `experiment/ade-radar` from `origin/main`. `npm update`: Nuxt 4.3.1 to 4.5.2, vue 3.5.43, axios 1.20, autoprefixer 10.6.1 and other patch/minor bumps. `npm run build` green, dev server serves `/`, `/experiments`, `/about`, `/projects` with no console errors.
+### 2026-09-28 — ADE Planner live locally, projects on VAMS
+- ADE Planner is a page at `/ade-planner` (moved out of experiments): paste names or a public Spotify / Apple Music link. Full data synced into VAMS (3,356 artists, 1,104 events) and bundled as `server/assets/ade-planner/snapshot.json` for when VAMS is unreachable. 8 Vitest tests.
+- Projects now load through `server/api/projects.get.ts` from VAMS (all 9 already migrated there, images still on the Hygraph CDN). Removed `@nuxtjs/apollo`, `graphql`, `graphql-request`; Hygraph's public CDN is the fallback. Shared VAMS client in `server/utils/vams.ts`, key server-side only.
+- `@nuxtjs/sitemap` replaces the dead `nuxt-simple-sitemap` (includes `/ade-planner`, excludes `/experiments`). VAMS migration ticket restored from `fix/build-sitemap`, which is now deleted.
+- Local dev reads VAMS via `php artisan serve --port=8765` in koala/VAMS (`VAMS_API_URL=http://127.0.0.1:8765/api`). There is no public VAMS URL right now.
+
+### 2026-09-27 — package update + ADE Planner experiment planned
+- Branch `experiment/ade-planner` from `origin/main`. `npm update`: Nuxt 4.3.1 to 4.5.2, vue 3.5.43, axios 1.20, autoprefixer 10.6.1 and other patch/minor bumps. `npm run build` green, dev server serves `/`, `/experiments`, `/about`, `/projects` with no console errors.
 - Tried `three` 0.186: npm ERESOLVE because `vanta` needs 0.134. Left `three` alone. Majors (Tailwind 4, robots 6, site-config 4, graphql 17, ESLint 10) not done, listed in far future.
-- Researched and planned ADE Radar: ADE has an undocumented JSON API (3,355 artists, ~1,100 events). Spotify API (Feb 2026) blocks reading tracks of playlists you don't own, so public links need the embed page. Plan in `docs/experiments/ade-radar-plan.md`. PROJECT.md copied over from `fix/build-sitemap`.
+- Researched and planned ADE Planner: ADE has an undocumented JSON API (3,355 artists, ~1,100 events). Spotify API (Feb 2026) blocks reading tracks of playlists you don't own, so public links need the embed page. Plan in `docs/ade-planner-plan.md`. PROJECT.md copied over from `fix/build-sitemap`.
 - Merged to `main` (fast-forward). Fixed `/services` 500: `useModalA11y.js` immediate watcher used `document` during SSR. Upgraded `@nuxtjs/robots` 5 to 6, build + all 7 routes 200.
 - Branch triage: old local `main` commit `a691e6e` superseded by the atomic rework, dropped locally (still on `fix/build-sitemap`). `fix/build-sitemap` built on old structure: salvage `@nuxtjs/sitemap` + `docs/vams-migration-ticket.md`, then delete. `rework/atomic-design-system` has 1 unmerged commit `e235622` (2026-09-09, 46 files) that merges cleanly.
 - Landed `e235622` on `main` as cherry-pick `9016ce6` (atomic design round 3: `app/data/services.js`, `ModalShell`/`FormField`/`IconButton`/`StatusAlert`/`ContactForm`, semantic Tailwind tokens, stacked-modal a11y). Verified: build, 7 routes 200, service modal open/inert/Escape. Fixed pre-existing `BIRDS is not a function` (Vanta UMD export sits on `window.VANTA`). Deleted `rework/atomic-design-system`. Note: `EXPERIMENTS.md` still describes a `/experiments/led-sculpture-generator` route that doesn't exist; the experiment is embedded on `/experiments`.
