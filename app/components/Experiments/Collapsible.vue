@@ -32,8 +32,8 @@
     >
       <div v-if="isOpen" :id="panelId" class="overflow-hidden" role="region" :aria-label="experiment.title">
         <div class="px-2 pb-2 border-t border-border-subtle">
-          <div v-if="experiment.id === 'led-sculpture-generator'" class="mt-2">
-            <LSSExperiment />
+          <div v-if="experimentComponent" class="mt-2">
+            <component :is="experimentComponent" />
           </div>
           <div v-else class="mt-4">
             <div class="text-content-muted text-sm">
@@ -47,10 +47,15 @@
 </template>
 
 <script setup>
-import { useId } from 'vue'
+import { computed, useId } from 'vue'
 import { ICONS } from '~/utils/icons'
+import { LazyLSSExperiment } from '#components'
 
-defineProps({
+const EXPERIMENT_COMPONENTS = {
+  'led-sculpture-generator': LazyLSSExperiment
+}
+
+const props = defineProps({
   experiment: {
     type: Object,
     required: true
@@ -64,4 +69,5 @@ defineProps({
 defineEmits(['toggle'])
 
 const panelId = useId()
+const experimentComponent = computed(() => EXPERIMENT_COMPONENTS[props.experiment.id] ?? null)
 </script>

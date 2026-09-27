@@ -1,0 +1,60 @@
+<template>
+  <div class="space-y-6">
+    <p class="text-content-muted max-w-2xl">
+      Paste a public Spotify or Apple Music playlist link, or a list of artist names.
+      See who plays Amsterdam Dance Event 2026 (21-25 October), when and where.
+    </p>
+
+    <form class="space-y-4" @submit.prevent="run">
+      <MoleculesFormField
+        v-model="input"
+        label="Playlist link or artist names"
+        name="ade-planner-input"
+        type="textarea"
+        :rows="isPlaylistLink ? 2 : 5"
+        placeholder="https://open.spotify.com/playlist/...  or one artist per line"
+        :described-by="error ? 'ade-planner-status' : ''"
+      />
+
+      <div class="flex flex-wrap items-center gap-3">
+        <AtomsButton
+          type="submit"
+          :text="isLoading ? 'Scanning the lineup...' : 'Find my ADE'"
+          :loading="isLoading"
+          :disabled="isLoading || !input.trim()"
+        />
+        <AtomsButton
+          variant="ghost"
+          size="sm"
+          text="Try an example"
+          :disabled="isLoading"
+          @click="input = EXAMPLE"
+        />
+      </div>
+
+      <MoleculesStatusAlert id="ade-planner-status" :message="error" type="error" />
+    </form>
+
+    <p v-if="playlist" class="text-sm text-content-muted">
+      Read "{{ playlist.title }}": {{ playlist.trackCount }} tracks, {{ playlist.artists.length }} artists.
+    </p>
+
+    <AdePlannerResults
+      v-if="result"
+      :days="days"
+      :match-count="result.matches.length"
+      :query-count="result.matches.length + result.unmatched.length"
+      :unmatched="result.unmatched"
+      :artists-without-events="artistsWithoutEvents"
+      :source="result.source"
+    />
+  </div>
+</template>
+
+<script setup>
+import { useAdePlanner } from '~/composables/useAdePlanner.js'
+
+const EXAMPLE = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
+
+const { input, isLoading, error, playlist, result, days, artistsWithoutEvents, isPlaylistLink, run } = useAdePlanner()
+</script>
