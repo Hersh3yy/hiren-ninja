@@ -25,6 +25,13 @@ A parametric 3D curve generation tool for creating LED light sculptures. Feature
 3. View real-time updates in the 3D viewer
 4. Export your design as PNG or JSON from the Export panel
 
+### ADE Radar
+**Location**: `/experiments/ade-radar` (not built yet)
+**Status**: Planned
+**Plan**: [`docs/experiments/ade-radar-plan.md`](docs/experiments/ade-radar-plan.md)
+
+Give it your music (a public Spotify or Apple Music playlist, or a plain list of artist names) and it shows which of those artists play Amsterdam Dance Event 2026 (21-25 Oct), when and where, plus lineup artists you would probably like.
+
 ## Architecture
 
 ### Directory Structure
