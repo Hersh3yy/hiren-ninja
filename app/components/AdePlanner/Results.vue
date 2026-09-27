@@ -22,6 +22,7 @@
           :sold-out="item.event.soldOut"
           :ade-url="item.event.adeUrl"
           :artists="item.artists"
+          :lineup="item.event.lineupNames || []"
         />
       </ul>
     </div>

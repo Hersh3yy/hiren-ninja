@@ -13,8 +13,8 @@ const data: AdeData = {
     { id: '4', name: 'Wezol', country: 'nl', spotifyId: null, adeUrl: 'https://ade/4', eventIds: ['e2'] },
   ],
   events: [
-    { id: 'e1', title: 'Drumcode', subtitle: null, startsAt: '2026-10-24T23:00:00+02:00', endsAt: null, venue: 'Gashouder', categories: null, soldOut: true, adeUrl: 'https://ade/e1' },
-    { id: 'e2', title: 'Early', subtitle: null, startsAt: '2026-10-22T20:00:00+02:00', endsAt: null, venue: 'Paradiso', categories: null, soldOut: false, adeUrl: 'https://ade/e2' },
+    { id: 'e1', title: 'Drumcode', subtitle: null, startsAt: '2026-10-24T23:00:00+02:00', endsAt: null, venue: 'Gashouder', categories: null, soldOut: true, adeUrl: 'https://ade/e1', lineup: ['1', '2'] },
+    { id: 'e2', title: 'Early', subtitle: null, startsAt: '2026-10-22T20:00:00+02:00', endsAt: null, venue: 'Paradiso', categories: null, soldOut: false, adeUrl: 'https://ade/e2', lineup: ['1', '4'] },
   ],
 }
 
@@ -39,6 +39,7 @@ describe('matchArtists', () => {
     const { matches, unmatched } = matchArtists(data, [{ name: 'adam beyer', weight: 1 }, { name: 'Nobody', weight: 1 }])
     expect(matches.map(m => m.artist.name)).toEqual(['Adam Beyer'])
     expect(matches[0]!.events.map(e => e.id)).toEqual(['e2', 'e1'])
+    expect(matches[0]!.events[1]!.lineupNames).toEqual(['Adam Beyer', 'Mr. Belt & Wezol'])
     expect(unmatched).toEqual(['Nobody'])
   })
 

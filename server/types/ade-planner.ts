@@ -17,6 +17,12 @@ export interface AdeEvent {
   categories: string | null
   soldOut: boolean
   adeUrl: string
+  /** ade-artist ids on this event */
+  lineup: string[]
+}
+
+export interface MatchedEvent extends AdeEvent {
+  lineupNames: string[]
 }
 
 export interface AdeData {
@@ -32,7 +38,7 @@ export interface ArtistMatch {
   weight: number
   matchType: MatchType
   artist: AdeArtist
-  events: AdeEvent[]
+  events: MatchedEvent[]
 }
 
 export interface MatchResult {

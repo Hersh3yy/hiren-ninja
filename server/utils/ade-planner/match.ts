@@ -1,4 +1,4 @@
-import type { AdeArtist, AdeData, AdeEvent, ArtistMatch, MatchResult, MatchType } from '../../types/ade-planner'
+import type { AdeArtist, AdeData, AdeEvent, ArtistMatch, MatchedEvent, MatchResult, MatchType } from '../../types/ade-planner'
 import { normalizeArtistName, splitCompositeAct } from './normalize'
 
 interface IndexEntry {
@@ -9,6 +9,7 @@ interface IndexEntry {
 interface AdeIndex {
   byName: Map<string, IndexEntry[]>
   eventsById: Map<string, AdeEvent>
+  artistNamesById: Map<string, string>
 }
 
 const indexCache = new WeakMap<AdeData, AdeIndex>()
@@ -32,15 +33,26 @@ function buildIndex(data: AdeData): AdeIndex {
     }
   }
 
-  const index = { byName, eventsById: new Map(data.events.map(event => [event.id, event])) }
+  const index = {
+    byName,
+    eventsById: new Map(data.events.map(event => [event.id, event])),
+    artistNamesById: new Map(data.artists.map(artist => [artist.id, artist.name])),
+  }
   indexCache.set(data, index)
   return index
 }
 
-function eventsFor(artist: AdeArtist, index: AdeIndex): AdeEvent[] {
+function eventsFor(artist: AdeArtist, index: AdeIndex): MatchedEvent[] {
   return artist.eventIds
     .map(id => index.eventsById.get(id))
     .filter((event): event is AdeEvent => Boolean(event))
+    .map(event => ({
+      ...event,
+      lineupNames: (event.lineup ?? [])
+        .map(id => index.artistNamesById.get(id))
+        .filter((name): name is string => Boolean(name))
+        .sort((a, b) => a.localeCompare(b)),
+    }))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
 }
 

@@ -1,4 +1,4 @@
-import type { AdeArtist, AdeData, AdeEvent } from '../../types/ade-planner'
+import type { AdeData, AdeEvent } from '../../types/ade-planner'
 
 async function loadFromVams(): Promise<AdeData | null> {
   if (!isVamsConfigured()) return null
@@ -12,8 +12,20 @@ async function loadFromVams(): Promise<AdeData | null> {
 
     return {
       source: 'vams',
-      artists: artistEntries.map(({ title, content }) => ({ ...content, id: content.externalId, name: title }) as AdeArtist),
-      events: eventEntries.map(({ title, content }) => ({ ...content, id: content.externalId, title }) as AdeEvent),
+      artists: artistEntries.map(({ id, title, content }) => ({
+        id,
+        name: title,
+        country: (content.country as string) ?? null,
+        spotifyId: (content.spotifyId as string) ?? null,
+        adeUrl: content.adeUrl as string,
+        eventIds: (content.events as string[]) ?? [],
+      })),
+      events: eventEntries.map(({ id, title, content }) => ({
+        ...(content as Omit<AdeEvent, 'id' | 'title' | 'lineup'>),
+        id,
+        title,
+        lineup: (content.lineup as string[]) ?? [],
+      })),
     }
   } catch (error) {
     console.warn('[ade-planner] VAMS unavailable, using snapshot:', (error as Error).message)

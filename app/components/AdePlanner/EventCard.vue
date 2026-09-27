@@ -22,8 +22,11 @@
 
     <p v-if="venue" class="text-sm text-content-muted">{{ venue }}</p>
 
-    <p class="mt-2 text-sm text-content">
-      <span class="text-content-muted">Your artists:</span> {{ artists.join(', ') }}
+    <p class="mt-2 text-sm text-content-muted">
+      <span>{{ 'Lineup: ' }}</span>
+      <template v-for="(name, i) in lineupWithYours" :key="name">
+        <span :class="artists.includes(name) ? 'font-semibold text-accent' : 'text-content'">{{ name }}</span>{{ i < lineupWithYours.length - 1 ? ', ' : '' }}
+      </template>
     </p>
   </li>
 </template>
@@ -36,8 +39,15 @@ const props = defineProps({
   venue: { type: String, default: '' },
   soldOut: { type: Boolean, default: false },
   adeUrl: { type: String, required: true },
-  artists: { type: Array, default: () => [] }
+  artists: { type: Array, default: () => [] },
+  lineup: { type: Array, default: () => [] }
 })
+
+// Your artists first, then the rest of the bill.
+const lineupWithYours = computed(() => [
+  ...props.artists,
+  ...props.lineup.filter(name => !props.artists.includes(name))
+])
 
 const clock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' })
 
