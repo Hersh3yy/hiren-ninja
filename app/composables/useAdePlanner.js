@@ -21,8 +21,8 @@ export function parseArtistList(text) {
     .map(name => ({ name, weight: 1 }))
 }
 
-/** One entry per event, listing every matched artist who plays it, grouped by Amsterdam day. */
-export function groupByDay(matches) {
+/** One entry per event, listing every matched artist who plays it. */
+export function eventsFromMatches(matches) {
   const events = new Map()
   for (const match of matches) {
     for (const event of match.events) {
@@ -31,9 +31,13 @@ export function groupByDay(matches) {
       events.set(event.id, entry)
     }
   }
+  return [...events.values()]
+}
 
+/** [{ event, artists }] grouped by Amsterdam day, sorted by start time. */
+export function groupEventsByDay(items) {
   const days = new Map()
-  for (const entry of [...events.values()].sort((a, b) => a.event.startsAt.localeCompare(b.event.startsAt))) {
+  for (const entry of [...items].sort((a, b) => a.event.startsAt.localeCompare(b.event.startsAt))) {
     const date = new Date(entry.event.startsAt)
     const key = dayKey.format(date)
     const day = days.get(key) ?? { key, label: dayLabel.format(date), items: [] }
@@ -43,15 +47,37 @@ export function groupByDay(matches) {
   return [...days.values()]
 }
 
+export function groupByDay(matches) {
+  return groupEventsByDay(eventsFromMatches(matches))
+}
+
+/** Genre -> number of your events, most common first. */
+export function genreProfile(items) {
+  const counts = new Map()
+  for (const { event } of items) {
+    for (const genre of event.genres ?? []) counts.set(genre, (counts.get(genre) ?? 0) + 1)
+  }
+  return [...counts].map(([genre, count]) => ({ genre, count })).sort((a, b) => b.count - a.count)
+}
+
 export function useAdePlanner() {
   const input = ref('')
   const isLoading = ref(false)
   const error = ref('')
   const playlist = ref(null)
   const result = ref(null)
+  const suggestions = ref([])
+  const suggestionsLoading = ref(false)
+  const genreFilter = ref('')
 
   const isPlaylistLink = computed(() => PLAYLIST_URL.test(input.value.trim()))
-  const days = computed(() => (result.value ? groupByDay(result.value.matches) : []))
+  const matchedEvents = computed(() => (result.value ? eventsFromMatches(result.value.matches) : []))
+  const sound = computed(() => genreProfile(matchedEvents.value))
+  const days = computed(() => groupEventsByDay(
+    genreFilter.value
+      ? matchedEvents.value.filter(({ event }) => event.genres?.includes(genreFilter.value))
+      : matchedEvents.value,
+  ))
   const artistsWithoutEvents = computed(() => (result.value?.matches ?? []).filter(match => match.events.length === 0))
 
   async function run() {
@@ -62,6 +88,8 @@ export function useAdePlanner() {
     error.value = ''
     playlist.value = null
     result.value = null
+    suggestions.value = []
+    genreFilter.value = ''
 
     try {
       let artists
@@ -73,6 +101,7 @@ export function useAdePlanner() {
       }
 
       result.value = await $fetch('/api/ade-planner/match', { method: 'POST', body: { artists } })
+      loadSuggestions(artists)
     } catch (err) {
       error.value = err?.data?.statusMessage || err?.statusMessage || 'Something went wrong. Try again.'
     } finally {
@@ -80,5 +109,28 @@ export function useAdePlanner() {
     }
   }
 
-  return { input, isLoading, error, playlist, result, days, artistsWithoutEvents, isPlaylistLink, run }
+  // Your matched artists seed first: their related artists are the likeliest to play ADE.
+  async function loadSuggestions(artists) {
+    const matchedNames = new Set(result.value.matches.map(match => match.query))
+    const seeds = [
+      ...artists.filter(artist => matchedNames.has(artist.name)).map(artist => ({ ...artist, weight: artist.weight + 1000 })),
+      ...artists.filter(artist => !matchedNames.has(artist.name)),
+    ]
+    suggestionsLoading.value = true
+    try {
+      suggestions.value = await $fetch('/api/ade-planner/suggestions', {
+        method: 'POST',
+        body: { artists: seeds, matchedArtistIds: result.value.matches.map(match => match.artist.id) },
+      })
+    } catch {
+      suggestions.value = []
+    } finally {
+      suggestionsLoading.value = false
+    }
+  }
+
+  return {
+    input, isLoading, error, playlist, result, days, sound, genreFilter,
+    suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
+  }
 }

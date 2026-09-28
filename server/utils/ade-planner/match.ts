@@ -1,12 +1,12 @@
 import type { AdeArtist, AdeData, AdeEvent, ArtistMatch, MatchedEvent, MatchResult, MatchType } from '../../types/ade-planner'
 import { normalizeArtistName, splitCompositeAct } from './normalize'
 
-interface IndexEntry {
+export interface IndexEntry {
   artist: AdeArtist
   matchType: MatchType
 }
 
-interface AdeIndex {
+export interface AdeIndex {
   byName: Map<string, IndexEntry[]>
   eventsById: Map<string, AdeEvent>
   artistNamesById: Map<string, string>
@@ -21,7 +21,7 @@ function addToIndex(byName: Map<string, IndexEntry[]>, key: string, entry: Index
   byName.set(key, list)
 }
 
-function buildIndex(data: AdeData): AdeIndex {
+export function buildIndex(data: AdeData): AdeIndex {
   const cached = indexCache.get(data)
   if (cached) return cached
 
@@ -42,7 +42,7 @@ function buildIndex(data: AdeData): AdeIndex {
   return index
 }
 
-function eventsFor(artist: AdeArtist, index: AdeIndex): MatchedEvent[] {
+export function eventsFor(artist: AdeArtist, index: AdeIndex): MatchedEvent[] {
   return artist.eventIds
     .map(id => index.eventsById.get(id))
     .filter((event): event is AdeEvent => Boolean(event))

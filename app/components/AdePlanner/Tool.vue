@@ -35,19 +35,28 @@
       <MoleculesStatusAlert id="ade-planner-status" :message="error" type="error" />
     </form>
 
+    <ClientOnly>
+      <AdePlannerMyPlan />
+    </ClientOnly>
+
     <p v-if="playlist" class="text-sm text-content-muted">
       Read "{{ playlist.title }}": {{ playlist.trackCount }} tracks, {{ playlist.artists.length }} artists.
     </p>
 
     <AdePlannerResults
       v-if="result"
+      v-model:genre-filter="genreFilter"
       :days="days"
+      :sound="sound"
       :match-count="result.matches.length"
       :query-count="result.matches.length + result.unmatched.length"
       :unmatched="result.unmatched"
       :artists-without-events="artistsWithoutEvents"
       :source="result.source"
     />
+
+    <AdePlannerSuggestions v-if="result" :suggestions="suggestions" :loading="suggestionsLoading" />
+
   </div>
 </template>
 
@@ -56,5 +65,8 @@ import { useAdePlanner } from '~/composables/useAdePlanner.js'
 
 const EXAMPLE = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
 
-const { input, isLoading, error, playlist, result, days, artistsWithoutEvents, isPlaylistLink, run } = useAdePlanner()
+const {
+  input, isLoading, error, playlist, result, days, sound, genreFilter,
+  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run
+} = useAdePlanner()
 </script>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
-import { groupByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
+import { genreProfile, groupByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
 
 const data: AdeData = {
@@ -71,5 +71,16 @@ describe('groupByDay', () => {
     const days = groupByDay(matches)
     expect(days.map(d => d.key)).toEqual(['2026-10-22', '2026-10-24'])
     expect(days[1]!.items[0]!.artists.sort()).toEqual(['Adam Beyer', 'Mr. Belt & Wezol'])
+  })
+})
+
+describe('genreProfile', () => {
+  it('counts genres across your events, most common first', () => {
+    const items = [
+      { event: { genres: ['Techno', 'House'] } },
+      { event: { genres: ['Techno'] } },
+      { event: {} },
+    ]
+    expect(genreProfile(items)).toEqual([{ genre: 'Techno', count: 2 }, { genre: 'House', count: 1 }])
   })
 })

@@ -1,7 +1,8 @@
 <template>
   <section class="w-full">
     <div class="container mx-auto px-4 sm:px-6 py-8 relative z-10">
-      <AtomsHeading text="ADE Planner" :level="1" size="xl" variant="page" />
+      <p class="text-sm font-bold uppercase tracking-widest text-accent">Amsterdam Dance Event · 21-25 Oct 2026</p>
+      <AtomsHeading text="ADE Planner" :level="1" size="2xl" variant="page" class="uppercase tracking-tight" />
       <MoleculesCard>
         <AdePlannerTool />
       </MoleculesCard>

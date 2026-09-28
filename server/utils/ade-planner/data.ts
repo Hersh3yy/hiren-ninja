@@ -1,5 +1,23 @@
 import type { AdeData, AdeEvent } from '../../types/ade-planner'
 
+// ADE's top-level genres plus the common sub-genres, for events synced before
+// ade:sync classified categories into `genres`.
+const KNOWN_GENRES = new Set([
+  'Hard Dance', 'House', 'Techno', 'Trance', 'Bass & UK', 'Disco, Funk & Soul', 'Electro & Wave',
+  'Afro, Latin & Global', 'Ambient & Listening', 'Beyond the Dancefloor', 'Tech-house', 'Deep House',
+  'Melodic House', 'Progressive House', 'Afro House', 'Minimal-Techno', 'Melodic Techno', 'Hard Techno',
+  'Hardstyle', 'Hard Groove', 'Disco House', 'Organic House',
+])
+
+function withDerivedFields(event: AdeEvent): AdeEvent {
+  const labels = (event.categories ?? '').split(' / ').map(label => label.trim()).filter(Boolean)
+  return {
+    ...event,
+    genres: event.genres ?? labels.filter(label => KNOWN_GENRES.has(label)),
+    ticketStatus: event.ticketStatus ?? (event.soldOut ? 'sold out' : 'unknown'),
+  }
+}
+
 async function loadFromVams(): Promise<AdeData | null> {
   if (!isVamsConfigured()) return null
 
@@ -20,7 +38,7 @@ async function loadFromVams(): Promise<AdeData | null> {
         adeUrl: content.adeUrl as string,
         eventIds: (content.events as string[]) ?? [],
       })),
-      events: eventEntries.map(({ id, title, content }) => ({
+      events: eventEntries.map(({ id, title, content }) => withDerivedFields({
         ...(content as Omit<AdeEvent, 'id' | 'title' | 'lineup'>),
         id,
         title,
@@ -38,7 +56,7 @@ async function loadFromSnapshot(): Promise<AdeData> {
   if (!snapshot) {
     throw createError({ statusCode: 503, statusMessage: 'ADE data is not available yet.' })
   }
-  return { source: 'snapshot', ...snapshot }
+  return { source: 'snapshot', ...snapshot, events: snapshot.events.map(withDerivedFields) }
 }
 
 /** The ADE program: VAMS when reachable, otherwise the bundled snapshot. Cached for an hour. */
