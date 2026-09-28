@@ -1,4 +1,4 @@
-import type { AdeData, AdeEvent } from '../../types/ade-planner'
+import type { AdeArtist, AdeData, AdeEvent } from '../../types/ade-planner'
 import { eventKinds, isPartyEvent, timeOfDay } from './classify'
 
 // ADE's top-level genres plus the common sub-genres, for events synced before
@@ -26,7 +26,7 @@ function withDerivedFields(event: AdeEvent): AdeEvent {
     kinds: event.kinds ?? eventKinds(withGenres),
     timeOfDay: event.timeOfDay ?? timeOfDay(withGenres),
     isParty: event.isParty ?? isPartyEvent(withGenres),
-    access: event.access ?? (ticketStatus === 'free' ? 'free' : 'ticket'),
+    access: event.access ?? (event.program === 'pro' ? 'pro' : ticketStatus === 'free' ? 'free' : 'ticket'),
   }
 }
 
@@ -47,6 +47,8 @@ async function loadFromVams(): Promise<AdeData | null> {
         name: title,
         country: (content.country as string) ?? null,
         spotifyId: (content.spotifyId as string) ?? null,
+        role: (content.role as AdeArtist['role']) ?? 'artist',
+        subtitle: (content.subtitle as string) ?? null,
         adeUrl: content.adeUrl as string,
         eventIds: (content.events as string[]) ?? [],
       })),

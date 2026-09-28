@@ -110,3 +110,11 @@ describe('classify', () => {
     expect(timeOfDay({ startsAt: '2026-10-21T10:00:00+02:00', endsAt: null })).toBe('morning')
   })
 })
+
+describe('ADE Pro sessions', () => {
+  it('are never parties and show time TBA when unscheduled', () => {
+    const session = { program: 'pro' as const, title: 'Meet The AI Players', eventTypes: [], tags: [], genres: ['Techno'], startsAt: '2026-10-22T12:00:00+02:00', endsAt: '2026-10-22T12:00:00+02:00' }
+    expect(isPartyEvent(session)).toBe(false)
+    expect(timeOfDay(session)).toBe('tba')
+  })
+})

@@ -21,7 +21,8 @@ export const TIME_LABELS = {
   afternoon: 'Afternoon',
   evening: 'Evening',
   night: 'Late',
-  'all-day': 'All day'
+  'all-day': 'All day',
+  tba: 'Time TBA'
 }
 
 export const ACCESS_LABELS = { free: 'Free', ticket: 'Ticket', pro: 'ADE Pro pass' }

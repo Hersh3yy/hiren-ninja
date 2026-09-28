@@ -42,6 +42,8 @@ function facetCounts(events: AdeEvent[], filters: BrowseFilters, key: FacetKey):
 /** Non-party events for the daytime tab, filtered, searched and paged. */
 export function browseDaytime(data: AdeData, filters: BrowseFilters, offset: number, limit: number): BrowseResult {
   const index = buildIndex(data)
+  // Speakers' job and company make "labels" or "Spotify" find the right panels.
+  const subtitles = new Map(data.artists.filter(artist => artist.subtitle).map(artist => [artist.id, artist.subtitle!]))
   const terms = filters.q.split(',')
     .map(term => normalizeArtistName(term).split(' ').filter(Boolean))
     .filter(words => words.length > 0)
@@ -49,7 +51,7 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters, offset: num
   const searched = data.events.filter((event) => {
     if (event.isParty) return false
     if (terms.length === 0) return true
-    const lineup = (event.lineup ?? []).map(id => index.artistNamesById.get(id) ?? '').join(' ')
+    const lineup = (event.lineup ?? []).map(id => `${index.artistNamesById.get(id) ?? ''} ${subtitles.get(id) ?? ''}`).join(' ')
     const haystack = ` ${normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup}`)} `
     return matchesQuery(haystack, terms)
   })

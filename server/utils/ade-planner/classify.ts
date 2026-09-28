@@ -32,6 +32,8 @@ function clock(iso: string | null | undefined): [number, number] | null {
 }
 
 export function timeOfDay(event: Pick<AdeEvent, 'startsAt' | 'endsAt'>): TimeOfDay {
+  // ADE Pro lists unscheduled sessions with the same start and end time.
+  if (event.endsAt && event.startsAt === event.endsAt) return 'tba'
   const start = clock(event.startsAt)
   const end = clock(event.endsAt)
   // Installations and hubs run 00:00-23:59: that's "all day", not a night event.
@@ -48,7 +50,8 @@ export function timeOfDay(event: Pick<AdeEvent, 'startsAt' | 'endsAt'>): TimeOfD
  * an event is daytime only when it has a clearly non-party kind (talk, workshop, showcase,
  * ...) or no music genre at all; a 16:00 rave or an evening concert is still a party.
  */
-export function isPartyEvent(event: Pick<AdeEvent, 'eventTypes' | 'tags' | 'title' | 'genres' | 'startsAt' | 'endsAt'>): boolean {
+export function isPartyEvent(event: Pick<AdeEvent, 'program' | 'eventTypes' | 'tags' | 'title' | 'genres' | 'startsAt' | 'endsAt'>): boolean {
+  if (event.program === 'pro') return false
   const types = event.eventTypes ?? []
   if (types.some(type => PARTY_TYPES.has(type))) return true
   if (eventKinds(event).some(kind => kind !== 'culture')) return false

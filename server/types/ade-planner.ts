@@ -1,6 +1,9 @@
 export interface AdeArtist {
   id: string
   name: string
+  role?: 'artist' | 'speaker' | 'artist and speaker'
+  /** speakers: job and company */
+  subtitle?: string | null
   country: string | null
   spotifyId: string | null
   adeUrl: string
@@ -19,6 +22,7 @@ export interface AdeEvent {
   adeUrl: string
   /** ade-artist ids on this event */
   lineup: string[]
+  program?: 'festival' | 'pro'
   ticketStatus?: TicketStatus
   ticketUrl?: string | null
   ticketLabel?: string | null
@@ -34,12 +38,12 @@ export interface AdeEvent {
   access?: Access
 }
 
-export type TicketStatus = 'available' | 'sold out' | 'free' | 'unknown'
+export type TicketStatus = 'available' | 'sold out' | 'free' | 'pro pass' | 'unknown'
 
 export type EventKind = 'talks' | 'masterclasses' | 'gear' | 'listening' | 'showcases' | 'instore'
   | 'networking' | 'art' | 'film' | 'wellbeing' | 'culture'
 
-export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day'
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day' | 'tba'
 
 export type Access = 'free' | 'ticket' | 'pro'
 

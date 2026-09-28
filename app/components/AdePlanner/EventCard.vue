@@ -66,6 +66,7 @@
         :text="event.ticketLabel || 'Tickets'"
       />
       <AtomsButton
+        v-if="event.program !== 'pro'"
         :href="ticketSwapUrl"
         external
         size="sm"
@@ -93,6 +94,7 @@ const STATUSES = {
   available: { label: 'Tickets available', classes: 'bg-success-muted text-success' },
   'sold out': { label: 'Sold out', classes: 'bg-danger-muted text-danger' },
   free: { label: 'Free', classes: 'bg-accent text-ink' },
+  'pro pass': { label: 'ADE Pro', classes: 'border border-accent text-accent' },
   unknown: { label: 'Check tickets', classes: 'bg-elevated text-content-muted' }
 }
 
@@ -102,6 +104,7 @@ const kindLabels = computed(() => (props.event.isParty === false ? (props.event.
 const status = computed(() => STATUSES[props.event.ticketStatus] ?? STATUSES.unknown)
 
 const timeRange = computed(() => {
+  if (props.event.timeOfDay === 'tba') return 'Time TBA'
   const start = clock.format(new Date(props.event.startsAt))
   return props.event.endsAt ? `${start} - ${clock.format(new Date(props.event.endsAt))}` : start
 })
