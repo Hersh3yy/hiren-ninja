@@ -110,6 +110,11 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-09-28 (night) — ADE Planner feedback round
+- Friends' feedback implemented: ticket status + ticket shop + TicketSwap resale link per event; genre chips and a "your sound" genre filter; suggestions ("You'd probably like") from Deezer related artists (no key) plus co-billed acts; starred events in a localStorage "My plan".
+- Site restyled to ADE: accent `#ffff07`, ink `#0d0d0d`, surface `#1c1c1c`, Helvetica Neue stack with Inter Tight fallback (Space Grotesk removed); pixel logo font kept.
+- Waiting on VAMS `ade:sync --only=events` (ticket status, ticket links, genres, address). Until it runs, genres are derived from ADE's raw categories and every event shows "Check tickets".
+
 ### 2026-09-28 — ADE Planner live locally, projects on VAMS
 - ADE Planner is a page at `/ade-planner` (moved out of experiments): paste names or a public Spotify / Apple Music link. Full data synced into VAMS (3,356 artists, 1,104 events) and bundled as `server/assets/ade-planner/snapshot.json` for when VAMS is unreachable. 8 Vitest tests.
 - Projects now load through `server/api/projects.get.ts` from VAMS (all 9 already migrated there, images still on the Hygraph CDN). Removed `@nuxtjs/apollo`, `graphql`, `graphql-request`; Hygraph's public CDN is the fallback. Shared VAMS client in `server/utils/vams.ts`, key server-side only.
