@@ -64,3 +64,36 @@ Two new entry types owned by `info@hiren.ninja`:
   - Paste "Adam Beyer, Amelie Lens, Paul Kalkbrenner" in the browser pane.
   - Paste a public Spotify link and an Apple Music link.
   - `npm run build` stays green.
+
+## Next round: parties vs daytime & networking (agreed 2026-09-28)
+
+Main rule: calmer than the ADE website. One clear action per screen, sensible defaults, filters folded away until asked for, short lists with "show more", no walls of cards.
+
+Feedback from the first users: they have an ADE Pro pass; there are several users, so no one person's taste decides the order; interest search is wanted; a small map is wanted.
+
+### Data (VAMS `ade:sync`)
+- Add the ADE Pro conference (type 8264): about 117 sessions and 302 speakers. Sessions become `ade-event` with `program: pro`; speakers become `ade-artist` with `role: speaker` and their subtitle (job and company). Sessions without a published time show "time TBA".
+- Derive `timeOfDay` (morning, afternoon, evening, night), `isParty` (Nighttime events, All night long, Club nights) and `access` (free, ticket, Pro pass).
+- Derive a `kind` for non-party events from ADE types, tags and title keywords: talks & panels, masterclasses & workshops, gear & demos, listening sessions, showcases & expos, record store & meet-and-greet, networking & meetups, exhibitions & AV art, film, wellbeing, music culture.
+- Geocode each unique venue address once (OpenStreetMap Nominatim, 1 request/second, cached in VAMS as lat/lng) for the map.
+
+### Planner UI
+- Two tabs: **Parties & concerts** (today's flow) and **Daytime & networking**.
+- Daytime tab input: interests ("labels, marketing, AI, synths") or artists; plain keyword search over titles, tracks, speaker roles and companies. No AI.
+- Filters behind a single "Filters" button: kind, genre, time of day, access (free / ticket / Pro), area. Show at most three active filter chips at a time.
+- Genre filter in both tabs (exists as "your sound" in the party tab).
+- Small map: only for the current results or My plan, pins per venue, tap a pin to see that venue's events. Leaflet + OpenStreetMap tiles, loaded on demand.
+
+### My plan
+- Toggle button with a count ("My plan (4)"), closed by default.
+- Per-day timeline with clashes marked and gaps shown; grouped by area.
+- Calendar: download the whole plan as .ics, or one event.
+- Share link: plan event ids in the URL, opens read-only for friends; no accounts.
+
+### Build order
+1. Toggle for My plan, two tabs, filters drawer (UI only, current data).
+2. VAMS: Pro program, speakers, timeOfDay / isParty / access / kind; resync.
+3. Interest search and the daytime tab results.
+4. Calendar export and share link.
+5. Venue geocoding and the map.
+6. Timeline with clashes and gaps.

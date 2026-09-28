@@ -93,6 +93,12 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - [x] Public playlist link input: Spotify embed page, Apple Music page <!-- id:a4 -->
 - [ ] Set `VAMS_API_URL=https://app.use-vams.me/api` + `VAMS_API_KEY` on Netlify, remove `HYGRAPH_TOKEN`; until then prod uses Hygraph (projects) and the snapshot (ADE) <!-- id:a7 -->
 - [ ] Add ADE Planner to the projects list (Hygraph/VAMS content) and deploy <!-- id:a8 -->
+- [ ] My plan toggle, Parties / Daytime & networking tabs, filters drawer <!-- id:a9 -->
+- [ ] VAMS: ADE Pro sessions + speakers, timeOfDay / isParty / access / kind, resync <!-- id:a10 -->
+- [ ] Interest search for the daytime tab <!-- id:a11 -->
+- [ ] Calendar export (.ics) and share-my-plan link <!-- id:a12 -->
+- [ ] Venue geocoding (Nominatim) and a small map <!-- id:a13 -->
+- [ ] Day timeline with clashes and gaps <!-- id:a14 -->
 - [ ] Discovery: Last.fm similar artists, co-billed artists, genres, clash warnings, `.ics` export <!-- id:a5 -->
 - [ ] Optional logins: Spotify (5-user dev limit), Apple Music ($99/yr developer account) <!-- id:a6 -->
 
