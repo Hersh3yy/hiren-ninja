@@ -26,9 +26,39 @@ export interface AdeEvent {
   eventTypes?: string[]
   area?: string | null
   address?: string | null
+  tags?: string[]
+  /** derived in classify.ts until ade:sync stores them */
+  kinds?: EventKind[]
+  timeOfDay?: TimeOfDay
+  isParty?: boolean
+  access?: Access
 }
 
 export type TicketStatus = 'available' | 'sold out' | 'free' | 'unknown'
+
+export type EventKind = 'talks' | 'masterclasses' | 'gear' | 'listening' | 'showcases' | 'instore'
+  | 'networking' | 'art' | 'film' | 'wellbeing' | 'culture'
+
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day'
+
+export type Access = 'free' | 'ticket' | 'pro'
+
+export interface BrowseFilters {
+  q: string
+  kinds: EventKind[]
+  times: TimeOfDay[]
+  access: Access[]
+  areas: string[]
+  genres: string[]
+}
+
+export interface Facet { value: string, count: number }
+
+export interface BrowseResult {
+  total: number
+  events: MatchedEvent[]
+  facets: Record<'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
+}
 
 export interface MatchedEvent extends AdeEvent {
   lineupNames: string[]

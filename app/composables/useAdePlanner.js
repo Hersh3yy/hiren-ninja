@@ -71,7 +71,12 @@ export function useAdePlanner() {
   const genreFilter = ref('')
 
   const isPlaylistLink = computed(() => PLAYLIST_URL.test(input.value.trim()))
-  const matchedEvents = computed(() => (result.value ? eventsFromMatches(result.value.matches) : []))
+  const allMatchedEvents = computed(() => (result.value ? eventsFromMatches(result.value.matches) : []))
+  // This tab is for parties; daytime sessions of your artists live in the other tab.
+  const matchedEvents = computed(() => allMatchedEvents.value.filter(({ event }) => event.isParty !== false))
+  const daytimeEvents = computed(() => allMatchedEvents.value.filter(({ event }) => event.isParty === false))
+  const daytimeWithYourArtists = computed(() => daytimeEvents.value.length)
+  const daytimeQuery = computed(() => [...new Set(daytimeEvents.value.flatMap(({ artists }) => artists))].join(', '))
   const sound = computed(() => genreProfile(matchedEvents.value))
   const days = computed(() => groupEventsByDay(
     genreFilter.value
@@ -132,5 +137,6 @@ export function useAdePlanner() {
   return {
     input, isLoading, error, playlist, result, days, sound, genreFilter,
     suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
+    daytimeWithYourArtists, daytimeQuery,
   }
 }

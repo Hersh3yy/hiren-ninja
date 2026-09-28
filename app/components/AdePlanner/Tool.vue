@@ -1,72 +1,86 @@
 <template>
   <div class="space-y-6">
-    <p class="text-content-muted max-w-2xl">
-      Paste a public Spotify or Apple Music playlist link, or a list of artist names.
-      See who plays Amsterdam Dance Event 2026 (21-25 October), when and where.
-    </p>
-
-    <form class="space-y-4" @submit.prevent="run">
-      <MoleculesFormField
-        v-model="input"
-        label="Playlist link or artist names"
-        name="ade-planner-input"
-        type="textarea"
-        :rows="isPlaylistLink ? 2 : 5"
-        placeholder="https://open.spotify.com/playlist/...  or one artist per line"
-        :described-by="error ? 'ade-planner-status' : ''"
-      />
-
-      <div class="flex flex-wrap items-center gap-3">
-        <AtomsButton
-          type="submit"
-          :text="isLoading ? 'Scanning the lineup...' : 'Find my ADE'"
-          :loading="isLoading"
-          :disabled="isLoading || !input.trim()"
-        />
-        <AtomsButton
-          variant="ghost"
-          size="sm"
-          text="Try an example"
-          :disabled="isLoading"
-          @click="input = EXAMPLE"
-        />
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div role="tablist" aria-label="ADE Planner" class="inline-flex rounded-full border border-border-default p-1">
+        <button
+          v-for="t in TABS"
+          :id="`ade-tab-${t.id}`"
+          :key="t.id"
+          type="button"
+          role="tab"
+          :aria-selected="tab === t.id"
+          :aria-controls="`ade-panel-${t.id}`"
+          class="rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          :class="tab === t.id ? 'bg-accent text-ink' : 'text-content-muted hover:text-content'"
+          @click="selectTab(t.id)"
+        >
+          {{ t.label }}
+        </button>
       </div>
 
-      <MoleculesStatusAlert id="ade-planner-status" :message="error" type="error" />
-    </form>
+      <button
+        type="button"
+        :aria-expanded="planOpen"
+        aria-controls="ade-my-plan"
+        class="rounded-full border px-4 py-1.5 text-sm font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        :class="planOpen ? 'border-accent text-accent' : 'border-border-default text-content hover:border-accent-muted'"
+        @click="planOpen = !planOpen"
+      >
+        ★ My plan<ClientOnly> ({{ favorites.length }})</ClientOnly>
+      </button>
+    </div>
 
     <ClientOnly>
-      <AdePlannerMyPlan />
+      <AdePlannerMyPlan v-if="planOpen" id="ade-my-plan" />
     </ClientOnly>
 
-    <p v-if="playlist" class="text-sm text-content-muted">
-      Read "{{ playlist.title }}": {{ playlist.trackCount }} tracks, {{ playlist.artists.length }} artists.
-    </p>
+    <div
+      v-show="tab === 'parties'"
+      id="ade-panel-parties"
+      role="tabpanel"
+      aria-labelledby="ade-tab-parties"
+    >
+      <AdePlannerPartiesPanel @show-daytime="showDaytime" />
+    </div>
 
-    <AdePlannerResults
-      v-if="result"
-      v-model:genre-filter="genreFilter"
-      :days="days"
-      :sound="sound"
-      :match-count="result.matches.length"
-      :query-count="result.matches.length + result.unmatched.length"
-      :unmatched="result.unmatched"
-      :artists-without-events="artistsWithoutEvents"
-      :source="result.source"
-    />
-
-    <AdePlannerSuggestions v-if="result" :suggestions="suggestions" :loading="suggestionsLoading" />
-
+    <div
+      v-if="daytimeVisited"
+      v-show="tab === 'daytime'"
+      id="ade-panel-daytime"
+      role="tabpanel"
+      aria-labelledby="ade-tab-daytime"
+    >
+      <AdePlannerDaytimePanel :initial-query="daytimeQuery" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useAdePlanner } from '~/composables/useAdePlanner.js'
+import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 
-const EXAMPLE = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
+const TABS = [
+  { id: 'parties', label: 'Parties & concerts' },
+  { id: 'daytime', label: 'Daytime & networking' }
+]
 
-const {
-  input, isLoading, error, playlist, result, days, sound, genreFilter,
-  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run
-} = useAdePlanner()
+const route = useRoute()
+const router = useRouter()
+const { favorites } = useAdeFavorites()
+
+const tab = ref(route.query.tab === 'daytime' ? 'daytime' : 'parties')
+// Mount the daytime panel on first visit, then keep it (and its filters) alive.
+const daytimeVisited = ref(tab.value === 'daytime')
+const daytimeQuery = ref('')
+const planOpen = ref(false)
+
+function selectTab(id) {
+  tab.value = id
+  if (id === 'daytime') daytimeVisited.value = true
+  router.replace({ query: { ...route.query, tab: id === 'parties' ? undefined : id } })
+}
+
+function showDaytime(query) {
+  daytimeQuery.value = query
+  selectTab('daytime')
+}
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <section v-if="favorites.length" class="space-y-4 rounded-xl border border-accent-muted p-4" aria-labelledby="ade-my-plan-heading">
+  <section class="space-y-4 rounded-xl border border-accent-muted p-4" aria-labelledby="ade-my-plan-heading">
     <AtomsHeading
       id="ade-my-plan-heading"
       :text="`My plan (${favorites.length})`"
@@ -7,8 +7,10 @@
       size="xl"
       class="uppercase tracking-wide"
     />
-    <p class="text-sm text-content-muted">Starred events, saved in this browser only.</p>
-    <AdePlannerDayGroups :days="days" />
+    <p class="text-sm text-content-muted">
+      {{ favorites.length ? 'Starred events, saved in this browser only.' : 'Star events (☆) in either tab to build your plan.' }}
+    </p>
+    <AdePlannerDayGroups v-if="favorites.length" :days="days" />
   </section>
 </template>
 

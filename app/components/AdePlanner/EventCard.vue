@@ -33,7 +33,14 @@
       {{ event.venue }}<span v-if="event.address"> · {{ event.address }}</span>
     </p>
 
-    <ul v-if="event.genres?.length" class="mt-2 flex flex-wrap gap-1" aria-label="Genres">
+    <ul v-if="event.genres?.length || kindLabels.length" class="mt-2 flex flex-wrap gap-1" aria-label="Kind and genres">
+      <li
+        v-for="kind in kindLabels"
+        :key="kind"
+        class="rounded-full bg-elevated px-2 py-0.5 text-xs font-semibold text-content"
+      >
+        {{ kind }}
+      </li>
       <li
         v-for="genre in event.genres"
         :key="genre"
@@ -70,6 +77,8 @@
 </template>
 
 <script setup>
+import { KIND_LABELS } from '~/composables/useDaytimeBrowse.js'
+
 const props = defineProps({
   event: { type: Object, required: true },
   artists: { type: Array, default: () => [] },
@@ -86,6 +95,9 @@ const STATUSES = {
   free: { label: 'Free', classes: 'bg-accent text-ink' },
   unknown: { label: 'Check tickets', classes: 'bg-elevated text-content-muted' }
 }
+
+// Kinds only mean something for daytime events; a club night is just a club night.
+const kindLabels = computed(() => (props.event.isParty === false ? (props.event.kinds ?? []).slice(0, 2).map(kind => KIND_LABELS[kind]) : []))
 
 const status = computed(() => STATUSES[props.event.ticketStatus] ?? STATUSES.unknown)
 

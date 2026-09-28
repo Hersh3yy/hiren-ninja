@@ -1,4 +1,5 @@
 import type { AdeData, AdeEvent } from '../../types/ade-planner'
+import { eventKinds, isPartyEvent, timeOfDay } from './classify'
 
 // ADE's top-level genres plus the common sub-genres, for events synced before
 // ade:sync classified categories into `genres`.
@@ -9,12 +10,23 @@ const KNOWN_GENRES = new Set([
   'Hardstyle', 'Hard Groove', 'Disco House', 'Organic House',
 ])
 
+// ADE files some events under these "genres"; they don't help anyone choose.
+const NOISE_GENRES = new Set(['Other', 'Live'])
+
 function withDerivedFields(event: AdeEvent): AdeEvent {
   const labels = (event.categories ?? '').split(' / ').map(label => label.trim()).filter(Boolean)
-  return {
+  const ticketStatus = event.ticketStatus ?? (event.soldOut ? 'sold out' : 'unknown')
+  const withGenres = {
     ...event,
-    genres: event.genres ?? labels.filter(label => KNOWN_GENRES.has(label)),
-    ticketStatus: event.ticketStatus ?? (event.soldOut ? 'sold out' : 'unknown'),
+    genres: (event.genres ?? labels.filter(label => KNOWN_GENRES.has(label))).filter(genre => !NOISE_GENRES.has(genre)),
+  }
+  return {
+    ...withGenres,
+    ticketStatus,
+    kinds: event.kinds ?? eventKinds(withGenres),
+    timeOfDay: event.timeOfDay ?? timeOfDay(withGenres),
+    isParty: event.isParty ?? isPartyEvent(withGenres),
+    access: event.access ?? (ticketStatus === 'free' ? 'free' : 'ticket'),
   }
 }
 
