@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-ink min-h-screen flex flex-col relative font-space-grotesk">
+  <div class="bg-ink min-h-screen flex flex-col relative font-sans">
     <a
       href="#main-content"
       class="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:z-50 focus-visible:top-2 focus-visible:left-2 focus-visible:bg-accent focus-visible:text-ink focus-visible:px-4 focus-visible:py-2 focus-visible:rounded"
@@ -37,5 +37,5 @@ useHead({
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700&display=swap");
 </style>

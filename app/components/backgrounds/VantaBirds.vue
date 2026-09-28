@@ -6,8 +6,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
-  // Original site used 0xfffe00 — brighter than design-token yellow-300 (0xfde047)
-  color1: { type: Number, default: 0xfffe00 },
+  // Matches the accent token (ADE yellow #ffff07).
+  color1: { type: Number, default: 0xffff07 },
   color2: { type: Number, default: 0x333333 },
   backgroundColor: { type: Number, default: 0x000000 },
   backgroundAlpha: { type: Number, default: 0 },

@@ -48,14 +48,14 @@ palette utilities like `bg-gray-700` or `bg-blue-600`.
 
 | Token                | Value (zinc/yellow) | Usage                          |
 | -------------------- | ------------------- | ------------------------------ |
-| `ink`                | zinc-950 `#09090b`  | page background / dark text    |
-| `surface`            | zinc-900 `#18181b`  | cards / panels                 |
+| `ink`                | ADE black `#0d0d0d` | page background / dark text    |
+| `surface`            | ADE grey `#1c1c1c`  | cards / panels                 |
 | `elevated`           | zinc-800 `#27272a`  | raised elements / inputs       |
 | `border-subtle`      | zinc-800            | default borders                |
 | `border-default`     | zinc-700            | stronger borders / hover       |
-| `accent`             | yellow-300 `#fde047`| brand accent                   |
-| `accent-hover`       | yellow-400 `#facc15`| accent hover                   |
-| `accent-muted`       | yellow-300 @ 40%    | subtle accent borders          |
+| `accent`             | ADE yellow `#ffff07`| brand accent                   |
+| `accent-hover`       | `#e6e600`           | accent hover                   |
+| `accent-muted`       | ADE yellow @ 40%    | subtle accent borders          |
 | `content`            | zinc-100            | primary text                   |
 | `content-muted`      | zinc-400            | secondary text                 |
 | `success`            | green-300           | success text                   |
