@@ -31,12 +31,20 @@ export interface AdeEvent {
   area?: string | null
   address?: string | null
   tags?: string[]
-  /** derived in classify.ts until ade:sync stores them */
+  /** derived by VAMS AdeEventClassifier on every sync */
   kinds?: EventKind[]
+  intent?: Intent
   timeOfDay?: TimeOfDay
   isParty?: boolean
   access?: Access
+  format?: 'session' | 'drop-in' | 'tba'
+  durationMinutes?: number | null
+  /** same event at the same venue on several days */
+  series?: string | null
+  seriesDates?: string[]
 }
+
+export type Intent = 'party' | 'learn' | 'meet' | 'listen' | 'recharge' | 'other'
 
 export type TicketStatus = 'available' | 'sold out' | 'free' | 'pro pass' | 'unknown'
 
@@ -49,6 +57,10 @@ export type Access = 'free' | 'ticket' | 'pro'
 
 export interface BrowseFilters {
   q: string
+  /** YYYY-MM-DD in Amsterdam; empty = every day */
+  day: string
+  hasProPass: boolean
+  intents: Intent[]
   kinds: EventKind[]
   times: TimeOfDay[]
   access: Access[]
@@ -60,8 +72,11 @@ export interface Facet { value: string, count: number }
 
 export interface BrowseResult {
   total: number
-  events: MatchedEvent[]
-  facets: Record<'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
+  sessions: MatchedEvent[]
+  dropIns: MatchedEvent[]
+  tba: MatchedEvent[]
+  days: Facet[]
+  facets: Record<'intents' | 'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
 }
 
 export interface MatchedEvent extends AdeEvent {

@@ -7,16 +7,18 @@ const list = (value: unknown): string[] =>
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
+  const day = String(query.day ?? '')
   const filters = {
     q: String(query.q ?? '').slice(0, 200),
+    day: /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : '',
+    hasProPass: query.pro === '1',
+    intents: list(query.intents),
     kinds: list(query.kinds),
     times: list(query.times),
     access: list(query.access),
     areas: list(query.areas),
     genres: list(query.genres),
   } as BrowseFilters
-  const offset = Math.max(0, Number(query.offset) || 0)
-  const limit = Math.min(50, Math.max(1, Number(query.limit) || 20))
 
-  return browseDaytime(await loadAdeData(), filters, offset, limit)
+  return browseDaytime(await loadAdeData(), filters)
 })

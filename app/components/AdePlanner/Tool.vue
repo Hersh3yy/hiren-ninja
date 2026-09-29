@@ -1,33 +1,26 @@
 <template>
   <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <div role="tablist" aria-label="ADE Planner" class="inline-flex rounded-full border border-border-default p-1">
-        <button
-          v-for="t in TABS"
-          :id="`ade-tab-${t.id}`"
-          :key="t.id"
-          type="button"
-          role="tab"
-          :aria-selected="tab === t.id"
-          :aria-controls="`ade-panel-${t.id}`"
-          class="rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          :class="tab === t.id ? 'bg-accent text-ink' : 'text-content-muted hover:text-content'"
-          @click="selectTab(t.id)"
-        >
-          {{ t.label }}
-        </button>
-      </div>
+      <MoleculesSegmentedTabs
+        :model-value="tab"
+        :items="TABS"
+        label="ADE Planner"
+        id-prefix="ade"
+        @update:model-value="selectTab"
+      />
 
-      <button
-        type="button"
-        :aria-expanded="planOpen"
-        aria-controls="ade-my-plan"
-        class="rounded-full border px-4 py-1.5 text-sm font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        :class="planOpen ? 'border-accent text-accent' : 'border-border-default text-content hover:border-accent-muted'"
-        @click="planOpen = !planOpen"
-      >
-        ★ My plan<ClientOnly> ({{ favorites.length }})</ClientOnly>
-      </button>
+      <ClientOnly>
+        <AtomsChip
+          :text="`★ My plan (${favorites.length})`"
+          :pressed="planOpen"
+          :aria-expanded="planOpen"
+          aria-controls="ade-my-plan"
+          @click="planOpen = !planOpen"
+        />
+        <template #fallback>
+          <AtomsChip text="★ My plan" />
+        </template>
+      </ClientOnly>
     </div>
 
     <ClientOnly>

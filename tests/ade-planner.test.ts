@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
-import { eventKinds, isPartyEvent, timeOfDay } from '../server/utils/ade-planner/classify'
 import { genreProfile, groupByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
 
@@ -83,38 +82,5 @@ describe('genreProfile', () => {
       { event: {} },
     ]
     expect(genreProfile(items)).toEqual([{ genre: 'Techno', count: 2 }, { genre: 'House', count: 1 }])
-  })
-})
-
-describe('classify', () => {
-  const base = { startsAt: '2026-10-22T19:00:00+02:00', endsAt: '2026-10-22T22:30:00+02:00', tags: [] as string[] }
-
-  it('keeps club nights, daytime raves and concerts under parties', () => {
-    expect(isPartyEvent({ ...base, title: 'Drumcode', eventTypes: ['Nighttime events'], genres: ['Techno'] })).toBe(true)
-    expect(isPartyEvent({ ...base, title: 'Audio Obscura x EXHALE', eventTypes: ['Daytime events'], genres: ['Techno'] })).toBe(true)
-    expect(isPartyEvent({ ...base, title: 'Paul Kalkbrenner LIVE', eventTypes: ['Live Performances'], genres: ['Techno'] })).toBe(true)
-  })
-
-  it('sends talks, meetups and exhibitions to daytime', () => {
-    expect(isPartyEvent({ ...base, title: 'VOYA Business & Networking Event', eventTypes: ['Daytime events'], genres: ['House'] })).toBe(false)
-    expect(isPartyEvent({ ...base, title: 'Slam Bam! A Photography Exhibition', eventTypes: ['Exhibitions'], genres: [] })).toBe(false)
-  })
-
-  it('names kinds from ADE labels and title words', () => {
-    expect(eventKinds({ title: 'Record Store – Crate Digging – Meet & Greet', eventTypes: [], tags: [] })).toEqual(['instore'])
-    expect(eventKinds({ title: 'Techno Yoga', eventTypes: ['Wellbeing'], tags: [] })).toEqual(['wellbeing'])
-  })
-
-  it('treats 00:00-23:59 installations as all day', () => {
-    expect(timeOfDay({ startsAt: '2026-10-21T00:00:00+02:00', endsAt: '2026-10-21T23:59:00+02:00' })).toBe('all-day')
-    expect(timeOfDay({ startsAt: '2026-10-21T10:00:00+02:00', endsAt: null })).toBe('morning')
-  })
-})
-
-describe('ADE Pro sessions', () => {
-  it('are never parties and show time TBA when unscheduled', () => {
-    const session = { program: 'pro' as const, title: 'Meet The AI Players', eventTypes: [], tags: [], genres: ['Techno'], startsAt: '2026-10-22T12:00:00+02:00', endsAt: '2026-10-22T12:00:00+02:00' }
-    expect(isPartyEvent(session)).toBe(false)
-    expect(timeOfDay(session)).toBe('tba')
   })
 })

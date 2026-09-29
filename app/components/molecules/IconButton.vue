@@ -7,7 +7,7 @@
     :class="buttonClasses"
     @click="$emit('click', $event)"
   >
-    <AtomsIcon :path="iconPath" :size="iconSize" />
+    <AtomsIcon :path="iconPath" :size="iconSize" :filled="filled" />
   </button>
 </template>
 
@@ -39,6 +39,11 @@ const props = defineProps({
     default: 'ghost',
     validator: (value) => ['ghost', 'bordered'].includes(value)
   },
+  // Solid icon, e.g. a filled star when the item is saved.
+  filled: {
+    type: Boolean,
+    default: false
+  },
   iconSize: {
     type: String,
     default: 'sm',
@@ -56,6 +61,6 @@ const buttonClasses = computed(() => {
     bordered: 'border border-border-default text-content-muted hover:text-content hover:border-accent-muted'
   }
 
-  return [base, variants[props.variant]].join(' ')
+  return [base, props.pressed ? 'text-accent hover:text-accent-hover' : variants[props.variant]].join(' ')
 })
 </script>

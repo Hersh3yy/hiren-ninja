@@ -20,8 +20,8 @@
           >{{ suggestion.artist.name }}</a>
           <span class="ml-2 text-sm text-content-muted">{{ reasonText(suggestion.reasons) }}</span>
         </p>
-        <ul class="grid gap-3 md:grid-cols-2">
-          <AdePlannerEventCard
+        <ul class="space-y-2">
+          <AdePlannerEventItem
             v-for="event in suggestion.events"
             :key="event.id"
             :event="event"

@@ -2,7 +2,7 @@
   <svg
     :class="sizeClasses"
     :viewBox="viewBox"
-    fill="none"
+    :fill="filled ? 'currentColor' : 'none'"
     stroke="currentColor"
     :stroke-width="strokeWidth"
     stroke-linecap="round"
@@ -15,6 +15,10 @@
 
 <script setup>
 const props = defineProps({
+  filled: {
+    type: Boolean,
+    default: false
+  },
   path: {
     type: String,
     required: true

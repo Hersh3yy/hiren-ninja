@@ -1,27 +1,46 @@
 <template>
   <div class="space-y-8">
-    <div v-for="day in days" :key="day.key">
-      <AtomsHeading :text="day.label" :level="3" size="lg" class="mb-3 uppercase tracking-wide" />
-      <ul class="grid gap-3 md:grid-cols-2">
-        <AdePlannerEventCard
+    <div v-for="day in visibleDays" :key="day.key">
+      <AtomsHeading v-if="showDayHeadings" :text="day.label" :level="3" size="lg" class="mb-3 uppercase tracking-wide" />
+      <ul class="space-y-2">
+        <AdePlannerEventItem
           v-for="item in day.items"
           :key="item.event.id"
           :event="item.event"
           :artists="item.artists"
           :favorite="isFavorite(item.event.id)"
+          :hidden="isHidden(item.event.id)"
           @toggle-favorite="toggleFavorite(item.event, item.artists)"
+          @toggle-hidden="toggleHidden(item.event.id)"
         />
       </ul>
     </div>
+
+    <p v-if="hiddenCount" class="text-sm text-content-muted">
+      {{ hiddenCount }} hidden.
+      <button type="button" class="text-accent underline underline-offset-2" @click="showHidden = !showHidden">
+        {{ showHidden ? 'Hide them again' : 'Show them' }}
+      </button>
+    </p>
   </div>
 </template>
 
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
+import { useAdeHidden } from '~/composables/useAdeHidden.js'
 
-defineProps({
-  days: { type: Array, required: true }
+const props = defineProps({
+  days: { type: Array, required: true },
+  showDayHeadings: { type: Boolean, default: true }
 })
 
 const { isFavorite, toggleFavorite } = useAdeFavorites()
+const { isHidden, toggleHidden } = useAdeHidden()
+const showHidden = ref(false)
+
+const hiddenCount = computed(() => props.days.reduce((sum, day) => sum + day.items.filter(item => isHidden(item.event.id)).length, 0))
+
+const visibleDays = computed(() => props.days
+  .map(day => ({ ...day, items: showHidden.value ? day.items : day.items.filter(item => !isHidden(item.event.id)) }))
+  .filter(day => day.items.length))
 </script>
