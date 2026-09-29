@@ -32,6 +32,18 @@ level is visible at every call site:
 | `molecules/SkillCard.vue`              | `<MoleculesSkillCard />`     |
 | `organisms/SiteHeader.vue`             | `<OrganismsSiteHeader />`    |
 
+## Shared UI pieces worth knowing
+
+| Component                  | Use it for                                                        |
+| -------------------------- | ----------------------------------------------------------------- |
+| `AtomsChip`                | Every pill toggle: filters, genres, intents, "My plan". `pressed`, `count`, `removable`, `size` |
+| `AtomsBadge`               | Short status labels (Sold out, Free, ADE Pro). `tone`             |
+| `MoleculesSegmentedTabs`   | Tab bars and day pickers (`role="tablist"`, v-model)              |
+| `MoleculesEventCard`       | Compact event row: time, title, one line, one badge, star. Details belong one level up |
+| `MoleculesIconButton`      | Icon-only buttons; `pressed` turns accent, `filled` for a solid icon |
+
+Text colour rule: body text `text-content`, secondary text `text-content-muted`, interactive or highlighted text `text-accent`.
+
 ## The slot rule (props over slots)
 
 - **Atoms**: props only. No `<slot>`. Content comes in via props (e.g. `Heading` takes a `text` prop).

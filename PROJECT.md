@@ -116,6 +116,12 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-09-29 — calmer planner, enriched ADE data
+- VAMS `AdeEventClassifier` (PHP, Pest) now stores kinds, intent, time of day, party/daytime, access, format (session / drop-in / tba), duration and a series key on every ADE event; `classify.ts` removed here. ADE Pro program and speakers synced (124 sessions, 279 speakers, 41 artist-speakers).
+- New shared atoms/molecules: AtomsBadge, AtomsChip, MoleculesSegmentedTabs, MoleculesEventCard; Icon `filled`, IconButton `pressed`. Planner pills now use them (audit found 10 hand-built buttons).
+- Daytime tab: day picker, intent chips, "I have an ADE Pro pass" setting, Sessions / Drop in any time / Pro TBA sections, "Not for me" hidden list. Compact card with tap-to-expand details in both tabs.
+- End-of-day list (Hiren): text colour nitpicks, declutter pass. 56 new ADE events have no lineup until a full artist sync.
+
 ### 2026-09-28 (night) — ADE Planner feedback round
 - Friends' feedback implemented: ticket status + ticket shop + TicketSwap resale link per event; genre chips and a "your sound" genre filter; suggestions ("You'd probably like") from Deezer related artists (no key) plus co-billed acts; starred events in a localStorage "My plan".
 - Site restyled to ADE: accent `#ffff07`, ink `#0d0d0d`, surface `#1c1c1c`, Helvetica Neue stack with Inter Tight fallback (Space Grotesk removed); pixel logo font kept.
