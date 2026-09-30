@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { track } from '../utils/track'
 
 const STORAGE_KEY = 'ade-planner:favorites'
 
@@ -47,6 +48,7 @@ export function useAdeFavorites() {
   }
 
   function toggleFavorite(event, artists = []) {
+    track('ade-favorite', { action: isFavorite(event.id) ? 'remove' : 'add', party: event.isParty !== false, pro: event.program === 'pro' })
     favorites.value = isFavorite(event.id)
       ? favorites.value.filter(favorite => favorite.id !== event.id)
       : [...favorites.value, snapshotOf(event, artists)]

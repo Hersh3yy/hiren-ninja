@@ -11,7 +11,7 @@
       :favorite="favorite"
       :expanded="expanded"
       :details-id="detailsId"
-      @toggle-details="expanded = !expanded"
+      @toggle-details="expanded = !expanded; expanded && track('ade-event-details', { party: event.isParty !== false })"
       @toggle-favorite="$emit('toggle-favorite')"
     />
 
@@ -38,6 +38,8 @@
           external
           size="sm"
           :text="event.ticketLabel || 'Tickets'"
+          data-umami-event="ade-ticket"
+          data-umami-event-kind="shop"
         />
         <AtomsButton
           v-if="event.program !== 'pro'"
@@ -46,8 +48,10 @@
           size="sm"
           :variant="event.ticketStatus === 'sold out' ? 'primary' : 'outline'"
           text="Resale on TicketSwap"
+          data-umami-event="ade-ticket"
+          data-umami-event-kind="ticketswap"
         />
-        <AtomsButton :href="event.adeUrl" external size="sm" variant="ghost" text="ADE page" />
+        <AtomsButton :href="event.adeUrl" external size="sm" variant="ghost" text="ADE page" data-umami-event="ade-ticket" data-umami-event-kind="ade-page" />
         <AtomsButton size="sm" variant="ghost" :text="hidden ? 'Show again' : 'Not for me'" @click="$emit('toggle-hidden')" />
       </div>
     </div>
@@ -56,6 +60,7 @@
 
 <script setup>
 import { KIND_LABELS } from '~/composables/useDaytimeBrowse.js'
+import { track } from '~/utils/track'
 
 const props = defineProps({
   event: { type: Object, required: true },

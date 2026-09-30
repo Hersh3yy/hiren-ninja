@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { track } from '../utils/track'
 
 const STORAGE_KEY = 'ade-planner:hidden'
 
@@ -35,6 +36,7 @@ export function useAdeHidden() {
   }
 
   function toggleHidden(id) {
+    if (!isHidden(id)) track('ade-hide')
     hiddenIds.value = isHidden(id) ? hiddenIds.value.filter(existing => existing !== id) : [...hiddenIds.value, id]
     save()
   }

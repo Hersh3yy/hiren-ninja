@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-5">
-    <form class="flex flex-col gap-3 sm:flex-row sm:items-end" @submit.prevent="load()">
+    <form class="flex flex-col gap-3 sm:flex-row sm:items-end" @submit.prevent="load(); track('ade-daytime-search', { hasQuery: Boolean(q.trim()) })">
       <MoleculesFormField
         v-model="q"
         class="flex-1"
@@ -87,6 +87,7 @@
 
 <script setup>
 import { INTENT_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
+import { track } from '~/utils/track'
 
 const props = defineProps({
   initialQuery: { type: String, default: '' }

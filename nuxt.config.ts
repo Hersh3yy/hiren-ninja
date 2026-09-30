@@ -24,6 +24,8 @@ export default defineNuxtConfig({
         {
           src: 'https://cloud.umami.is/script.js',
           'data-website-id': '377d79c7-f68d-430e-88cd-1ac5628995d5',
+          // Only count the live site, not localhost or Netlify preview deploys.
+          'data-domains': 'hiren.ninja',
           defer: true
         }
       ]

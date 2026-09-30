@@ -73,6 +73,8 @@
             text="Launch"
             :href="project.url"
             external
+            data-umami-event="project-launch"
+            :data-umami-event-project="project.title"
             :trailing-icon-path="ICONS.externalLink"
           />
         </div>

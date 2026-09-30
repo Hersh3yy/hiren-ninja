@@ -1,4 +1,5 @@
 import { computed, reactive, ref, watch } from 'vue'
+import { track } from '../utils/track'
 
 export const INTENT_LABELS = {
   learn: 'Learn',
@@ -110,10 +111,12 @@ export function useDaytimeBrowse(initialQuery = '') {
 
   function toggle(groupKey, value) {
     const list = filters[groupKey]
+    if (!list.includes(value)) track('ade-filter', { group: groupKey, value })
     filters[groupKey] = list.includes(value) ? list.filter(item => item !== value) : [...list, value]
   }
 
   function toggleIntent(value) {
+    if (!intents.value.includes(value)) track('ade-intent', { intent: value })
     intents.value = intents.value.includes(value) ? intents.value.filter(item => item !== value) : [...intents.value, value]
   }
 
@@ -123,6 +126,7 @@ export function useDaytimeBrowse(initialQuery = '') {
 
   function setProPass(value) {
     hasProPass.value = value
+    track('ade-pro-pass', { on: value })
     try {
       window.localStorage.setItem(PRO_KEY, value ? '1' : '0')
     } catch {

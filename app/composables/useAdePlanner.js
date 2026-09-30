@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { track } from '../utils/track'
 
 const TIME_ZONE = 'Europe/Amsterdam'
 const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|www\.|m\.)?youtube\.com)\//
@@ -123,9 +124,17 @@ export function useAdePlanner() {
       }
 
       result.value = await $fetch('/api/ade-planner/match', { method: 'POST', body: { artists } })
+      track('ade-search', {
+        input: playlist.value?.source ?? 'names',
+        artists: artists.length,
+        matches: result.value.matches.length,
+        events: allMatchedEvents.value.length,
+        partial: Boolean(playlist.value?.partial)
+      })
       loadSuggestions(artists)
     } catch (err) {
       error.value = err?.data?.statusMessage || err?.statusMessage || 'Something went wrong. Try again.'
+      track('ade-search-failed', { input: isPlaylistLink.value ? 'playlist' : 'names', status: err?.statusCode ?? err?.status ?? 0 })
     } finally {
       isLoading.value = false
     }
@@ -144,6 +153,7 @@ export function useAdePlanner() {
         method: 'POST',
         body: { artists: seeds, matchedArtistIds: result.value.matches.map(match => match.artist.id) },
       })
+      track('ade-suggestions', { artists: suggestions.value.length })
     } catch {
       suggestions.value = []
     } finally {

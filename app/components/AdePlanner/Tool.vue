@@ -15,7 +15,7 @@
           :pressed="planOpen"
           :aria-expanded="planOpen"
           aria-controls="ade-my-plan"
-          @click="planOpen = !planOpen"
+          @click="planOpen = !planOpen; planOpen && track('ade-plan-open', { saved: favorites.length })"
         />
         <template #fallback>
           <AtomsChip text="★ My plan" />
@@ -50,6 +50,7 @@
 
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
+import { track } from '~/utils/track'
 
 const TABS = [
   { id: 'parties', label: 'Parties & concerts', shortLabel: 'Parties' },
@@ -68,6 +69,7 @@ const planOpen = ref(false)
 const partiesPrefill = ref([])
 
 function selectTab(id) {
+  if (tab.value !== id) track('ade-tab', { tab: id })
   tab.value = id
   if (id === 'daytime') daytimeVisited.value = true
   router.replace({ query: { ...route.query, tab: id === 'parties' ? undefined : id } })
