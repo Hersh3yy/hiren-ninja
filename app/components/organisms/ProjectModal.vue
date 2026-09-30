@@ -4,14 +4,38 @@
     :title="project?.title || 'Project'"
     :title-id="titleId"
     close-label="Close project details"
-    panel-class="w-full max-w-5xl max-h-[min(90vh,52rem)] overflow-y-auto relative"
+    panel-class="w-full max-w-5xl max-h-[90vh] lg:h-[min(90vh,44rem)] overflow-y-auto relative"
     @close="requestClose"
   >
     <template #header="{ titleId: id, close }">
       <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
         <p class="text-xs uppercase tracking-widest text-content-muted">Project</p>
         <span :id="id" class="sr-only">{{ project?.title }}</span>
-        <AtomsModalCloseButton label="Close project details" @click="close" />
+        <!-- Previous/next live in the sticky header so they never move while you click through. -->
+        <div class="flex items-center gap-2">
+          <template v-if="projects.length > 1">
+            <span class="text-sm text-content-muted tabular-nums" aria-live="polite">
+              {{ currentIndex + 1 }}/{{ projects.length }}
+            </span>
+            <MoleculesIconButton
+              :icon-path="ICONS.chevronLeft"
+              label="Previous project"
+              variant="bordered"
+              :disabled="currentIndex <= 0"
+              aria-keyshortcuts="ArrowLeft"
+              @click="emit('navigate', currentIndex - 1)"
+            />
+            <MoleculesIconButton
+              :icon-path="ICONS.chevronRight"
+              label="Next project"
+              variant="bordered"
+              :disabled="currentIndex >= projects.length - 1"
+              aria-keyshortcuts="ArrowRight"
+              @click="emit('navigate', currentIndex + 1)"
+            />
+          </template>
+          <AtomsModalCloseButton label="Close project details" @click="close" />
+        </div>
       </div>
     </template>
 
@@ -53,28 +77,6 @@
           />
         </div>
 
-        <div
-          v-if="projects.length > 1"
-          class="mt-auto pt-4 flex items-center justify-end gap-3 border-t border-border-subtle"
-        >
-          <span class="text-sm text-content-muted tabular-nums" aria-live="polite">
-            {{ currentIndex + 1 }}/{{ projects.length }}
-          </span>
-          <MoleculesIconButton
-            :icon-path="ICONS.chevronLeft"
-            label="Previous project"
-            variant="bordered"
-            :disabled="currentIndex <= 0"
-            @click="emit('navigate', currentIndex - 1)"
-          />
-          <MoleculesIconButton
-            :icon-path="ICONS.chevronRight"
-            label="Next project"
-            variant="bordered"
-            :disabled="currentIndex >= projects.length - 1"
-            @click="emit('navigate', currentIndex + 1)"
-          />
-        </div>
       </div>
     </div>
   </MoleculesModalShell>
@@ -108,7 +110,7 @@
 </template>
 
 <script setup>
-import { computed, ref, useId, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { ICONS } from '~/utils/icons'
 import { escapeHtml } from '~/utils/escapeHtml'
 
@@ -134,6 +136,22 @@ const lightboxRef = ref(null)
 const expandedImageUrl = ref(null)
 
 const isLightboxOpen = computed(() => !!expandedImageUrl.value)
+
+// ← and → step through projects; not while the full-size image is open or while typing.
+function onArrowKey(event) {
+  if (!props.project || isLightboxOpen.value || event.altKey || event.metaKey || event.ctrlKey) return
+  if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select, [contenteditable="true"]')) return
+  if (event.key === 'ArrowLeft' && props.currentIndex > 0) {
+    event.preventDefault()
+    emit('navigate', props.currentIndex - 1)
+  } else if (event.key === 'ArrowRight' && props.currentIndex < props.projects.length - 1) {
+    event.preventDefault()
+    emit('navigate', props.currentIndex + 1)
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', onArrowKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onArrowKey))
 
 function requestClose() {
   if (expandedImageUrl.value) {

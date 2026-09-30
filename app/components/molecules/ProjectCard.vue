@@ -1,6 +1,6 @@
 <template>
   <MoleculesCard
-    as="article"
+    as="div"
     role="button"
     tabindex="0"
     :padded="false"

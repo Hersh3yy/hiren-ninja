@@ -33,6 +33,7 @@
       :items="dayTabs"
       label="Day"
       id-prefix="ade-day"
+      :controls-panels="false"
     />
 
     <AdePlannerFiltersDrawer
@@ -57,7 +58,7 @@
     </p>
 
     <section v-if="result.sessions.length" aria-labelledby="ade-sessions-heading" class="space-y-2">
-      <AtomsHeading id="ade-sessions-heading" :text="`Sessions (${result.sessions.length})`" :level="3" size="md" class="uppercase tracking-wide" />
+      <AtomsHeading id="ade-sessions-heading" :text="`Sessions (${result.sessions.length})`" :level="2" size="md" class="uppercase tracking-wide" />
       <AdePlannerDayGroups :days="asDay(visibleSessions)" :show-day-headings="false" />
       <AtomsButton
         v-if="result.sessions.length > sessionLimit"
