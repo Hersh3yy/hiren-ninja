@@ -116,6 +116,11 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-09-30 (evening) — projects fully on VAMS, Qinip added
+- Project images moved from the Hygraph CDN to VAMS Spaces as resized WebP (71 MB -> 2.9 MB); Hygraph fallback removed, bundled `server/assets/projects-snapshot.json` is the fallback now. Backup of the pre-migration entries kept outside the repo.
+- Qinip added as a project (desktop app, private repo so no link). Project typos fixed in VAMS ("bob", "an company", "Seemless", "specilizing").
+- Spotify: partial reads flagged in the UI (embed token got a 21h 429 during testing); extra names can go under a playlist link. Suggestions grouped per event.
+
 ### 2026-09-30 — YouTube Music playlists, playlist cache bug
 - YouTube Music (and youtube.com) playlist links: public or unlisted, read from the page's embedded data (artists as separate linked names), continuation up to 500 tracks. Liked music (`list=LM`) gets a clear "private" message. Parser tests with a fixture.
 - Bug fixed: the cached playlist reader keyed on the raw URL, which the storage layer cut to "https", so every playlist shared one cache entry for 10 minutes.

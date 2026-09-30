@@ -1,8 +1,5 @@
 import type { Project, ProjectImage } from '../types/projects'
 
-// Images still live on the Hygraph asset CDN; VAMS stores those URLs.
-const HYGRAPH_ENDPOINT = 'https://eu-central-1-shared-euc1-02.cdn.hygraph.com/content/clvkp3ut01ajw07wc38106mxt/master'
-
 interface VamsImage { url?: string, path?: string }
 
 function toImages(value: unknown): ProjectImage[] {
@@ -13,8 +10,7 @@ function toImages(value: unknown): ProjectImage[] {
     .map(url => ({ id: url, url }))
 }
 
-async function loadFromVams(): Promise<Project[]> {
-  const entries = await fetchVamsEntries('projects')
+function toProjects(entries: VamsEntry[]): Project[] {
   return entries.map(({ id, title, content }) => ({
     id,
     title,
@@ -29,28 +25,21 @@ async function loadFromVams(): Promise<Project[]> {
   }))
 }
 
-async function loadFromHygraph(): Promise<Project[]> {
-  const { data } = await $fetch<{ data: { projects: Project[] } }>(HYGRAPH_ENDPOINT, {
-    method: 'POST',
-    body: {
-      query: `{ projects(first: 100) {
-        id title shortDescription fullDescription year url projectType slug
-        coverImage { id url } screenshots { id url }
-      } }`,
-    },
-    timeout: 15_000,
-  })
-  return data.projects
+// Bundled copy of the VAMS projects (server/assets/projects-snapshot.json), for when
+// VAMS is unreachable or not configured. Refresh it by re-exporting from VAMS.
+async function loadSnapshot(): Promise<Project[]> {
+  const entries = await useStorage('assets:server').getItem<VamsEntry[]>('projects-snapshot.json')
+  return toProjects(entries ?? [])
 }
 
-/** Projects from VAMS; Hygraph's public CDN only while VAMS is unreachable. */
+/** Projects from VAMS; the bundled snapshot only while VAMS is unreachable. */
 export const loadProjects = defineCachedFunction(async (): Promise<Project[]> => {
   if (isVamsConfigured()) {
     try {
-      return await loadFromVams()
+      return toProjects(await fetchVamsEntries('projects'))
     } catch (error) {
-      console.warn('[projects] VAMS unavailable, using Hygraph:', (error as Error).message)
+      console.warn('[projects] VAMS unavailable, using snapshot:', (error as Error).message)
     }
   }
-  return loadFromHygraph()
+  return loadSnapshot()
 }, { name: 'projects', maxAge: 60 * 10, swr: true })

@@ -191,6 +191,7 @@ const formattedDescription = computed(() => {
 function formatProjectType(type) {
   if (type === 'website') return 'Website'
   if (type === 'webApplication') return 'Web Application'
+  if (type === 'desktopApplication') return 'Desktop App'
   return type
 }
 </script>

@@ -16,7 +16,7 @@ export async function fetchVamsEntries(slug: string): Promise<VamsEntry[]> {
   const response = await $fetch<{ data?: { entries: VamsEntry[] } }>(
     `${vamsApiUrl}/entries/by-type/${slug}`,
     // Short on purpose: Netlify functions stop at 10s, and a slow VAMS must still leave
-    // time to fall back to the bundled snapshot (ADE) or Hygraph (projects).
+    // time to fall back to the bundled snapshots (ADE, projects).
     { headers: { 'X-API-Key': vamsApiKey, Accept: 'application/json' }, timeout: 4_000 },
   )
   return response.data?.entries ?? []
