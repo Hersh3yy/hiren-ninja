@@ -118,10 +118,10 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ### 2026-09-30 (night) — daytime tab for pass holders, ADE Planner in nav and projects
 - Daytime tab rebuilt around ADE Pro: the "I have an ADE Pro pass" checkbox is gone (the tab is for pass holders, Pro was hidden by default), ADE Pro & Lab sessions come first, festival daytime events under "More by day". Kind chips (Talks & panels, Interviews & Q&As, Meet the… sessions, Demos & gear, …) replace the Learn/Meet/Listen intents.
-- Root cause of "missing" Pro sessions: ADE published the Pro timetable on 30 Sep, after that morning's sync, so 121 of 125 sessions sat under "time TBA". Resynced; daily `ade:sync --reuse-pages` on Hiren's Mac until 26 Oct.
+- Root cause of "missing" Pro sessions: ADE published the Pro timetable on 30 Sep, after that morning's sync, so 121 of 125 sessions sat under "time TBA". Resynced. No schedule: rerun `php artisan ade:sync --reuse-pages` in VAMS by hand when needed.
 - ADE Lab Discovery (product demos, Radio Radio listening sessions) is mostly not on ADE's API yet; only the Gear Test Lab is, and it's now marked free.
 - Planner card: no backdrop-blur (tall blurred layers made the card flicker and the Vanta birds draw on top). Full nav from `lg`; ADE Planner in the nav and first on the projects page.
-- Anonymous counters in VAMS: every match adds 1 to `hits` on the found ade-artist entries, every star/unstar adds or removes 1 on the ade-event's `favorites` (`/api/ade-planner/favorite`, same visitor+event counts once per instance). Only when data came from VAMS; failures are ignored. Daily resync runs on Hiren's Mac (launchd), not a DO worker; `ade:sync` keeps both counters.
+- Anonymous counters in VAMS: every match adds 1 to `hits` on the found ade-artist entries, every star/unstar adds or removes 1 on the ade-event's `favorites` (`/api/ade-planner/favorite`, same visitor+event counts once per instance). Only when data came from VAMS; failures are ignored. `ade:sync` keeps both counters.
 
 ### 2026-09-30 (evening) — projects fully on VAMS, Qinip added
 - Project images moved from the Hygraph CDN to VAMS Spaces as resized WebP (71 MB -> 2.9 MB); Hygraph fallback removed, bundled `server/assets/projects-snapshot.json` is the fallback now. Backup of the pre-migration entries kept outside the repo.
