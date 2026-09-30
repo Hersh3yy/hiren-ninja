@@ -65,9 +65,9 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
 
   const withLineup = (event: AdeEvent): MatchedEvent => ({
     ...event,
-    lineupNames: (event.lineup ?? [])
+    lineupNames: [...new Set((event.lineup ?? [])
       .map(id => index.artistNamesById.get(id))
-      .filter((name): name is string => Boolean(name))
+      .filter((name): name is string => Boolean(name)))]
       .sort((a, b) => a.localeCompare(b)),
   })
 

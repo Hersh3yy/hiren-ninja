@@ -19,7 +19,7 @@ useSeoMeta({
   ogTitle: 'Services - Hiren',
   description: 'Websites, practical AI, workflow automation, and reliable systems for creative businesses and growing teams.',
   ogDescription: 'Technology services for artists, designers, founders and creative businesses — websites, AI, automation and more.',
-  ogImage: '/path/to/service-image.jpg',
+  ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'
 })
 </script>

@@ -22,12 +22,14 @@
         </p>
         <ul class="space-y-2">
           <AdePlannerEventItem
-            v-for="event in suggestion.events"
+            v-for="event in suggestion.events.filter(event => !isHidden(event.id))"
             :key="event.id"
             :event="event"
             :artists="[suggestion.artist.name]"
             :favorite="isFavorite(event.id)"
+            :hidden="isHidden(event.id)"
             @toggle-favorite="toggleFavorite(event, [suggestion.artist.name])"
+            @toggle-hidden="toggleHidden(event.id)"
           />
         </ul>
       </li>
@@ -37,6 +39,7 @@
 
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
+import { useAdeHidden } from '~/composables/useAdeHidden.js'
 
 defineProps({
   suggestions: { type: Array, default: () => [] },
@@ -44,6 +47,7 @@ defineProps({
 })
 
 const { isFavorite, toggleFavorite } = useAdeFavorites()
+const { isHidden, toggleHidden } = useAdeHidden()
 
 function reasonText(reasons) {
   const similar = reasons.filter(r => r.kind === 'similar').map(r => r.via)

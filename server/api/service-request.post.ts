@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  rateLimit(event, 'lead', 5, 600)
   const data = parseServiceRequest(await readBody(event))
   const task = await createClickUpTask(buildServiceRequestTask(data))
 

@@ -34,11 +34,23 @@ export function eventsFromMatches(matches) {
   return [...events.values()]
 }
 
-/** [{ event, artists }] grouped by Amsterdam day, sorted by start time. */
+const hourIn = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, hour: '2-digit', hourCycle: 'h23' })
+const NIGHT_ENDS_AT = 6
+
+/** A party starting at 00:30 on Friday is Thursday night, so it belongs under Thursday. */
+function planningDate(event) {
+  const date = new Date(event.startsAt)
+  if (event.isParty !== false && Number(hourIn.format(date)) < NIGHT_ENDS_AT) {
+    return new Date(date.getTime() - NIGHT_ENDS_AT * 60 * 60 * 1000)
+  }
+  return date
+}
+
+/** [{ event, artists }] grouped by Amsterdam day (nights until 06:00 count as the day before), sorted by start time. */
 export function groupEventsByDay(items) {
   const days = new Map()
   for (const entry of [...items].sort((a, b) => a.event.startsAt.localeCompare(b.event.startsAt))) {
-    const date = new Date(entry.event.startsAt)
+    const date = planningDate(entry.event)
     const key = dayKey.format(date)
     const day = days.get(key) ?? { key, label: dayLabel.format(date), items: [] }
     day.items.push(entry)

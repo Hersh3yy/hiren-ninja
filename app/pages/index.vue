@@ -11,7 +11,7 @@ useSeoMeta({
   ogTitle: 'Hiren - Technology for Creative Businesses',
   description: 'Websites, AI, automation and reliable systems for artists, designers, agencies and growing businesses.',
   ogDescription: 'A developer who specialises in translating creative ideas into technology. Based in Amsterdam.',
-  ogImage: '/path/to/home-image.jpg',
+  ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'
 })
 </script>

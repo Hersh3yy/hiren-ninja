@@ -27,8 +27,14 @@ function save() {
 
 /** The fields a saved event needs to render without re-running a match. */
 function snapshotOf(event, artists) {
-  const { id, title, startsAt, endsAt, venue, address, adeUrl, ticketUrl, ticketLabel, ticketStatus, genres, lineupNames } = event
-  return { id, title, startsAt, endsAt, venue, address, adeUrl, ticketUrl, ticketLabel, ticketStatus, genres, lineupNames, artists }
+  const {
+    id, title, subtitle, startsAt, endsAt, venue, address, area, adeUrl, ticketUrl, ticketLabel, ticketStatus,
+    genres, kinds, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates
+  } = event
+  return {
+    id, title, subtitle, startsAt, endsAt, venue, address, area, adeUrl, ticketUrl, ticketLabel, ticketStatus,
+    genres, kinds, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates, artists
+  }
 }
 
 export function useAdeFavorites() {

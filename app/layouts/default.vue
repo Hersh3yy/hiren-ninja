@@ -25,7 +25,9 @@ useHead({
     { property: 'og:site_name', content: 'Hiren.ninja' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'theme-color', content: '#09090b' },
+    // Default share image; pages override it with useSeoMeta({ ogImage }).
+    { property: 'og:image', content: 'https://hiren.ninja/og/og-site.png', key: 'og:image' },
+    { name: 'theme-color', content: '#0d0d0d' },
     { name: 'apple-mobile-web-app-capable', content: 'yes' },
     { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }
   ],

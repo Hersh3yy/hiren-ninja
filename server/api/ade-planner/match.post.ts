@@ -5,7 +5,8 @@ const MAX_ARTISTS = 500
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ artists?: { name: string, weight?: number }[] }>(event)
-  const queries = (body?.artists ?? [])
+  rateLimit(event, 'match', 60, 60)
+  const queries = (Array.isArray(body?.artists) ? body.artists : [])
     .filter(item => typeof item?.name === 'string' && item.name.trim())
     .slice(0, MAX_ARTISTS)
     .map(item => ({ name: item.name.trim().slice(0, 200), weight: Number(item.weight) || 1 }))

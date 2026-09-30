@@ -6,6 +6,13 @@
       <MoleculesCard>
         <AdePlannerTool />
       </MoleculesCard>
+
+      <p class="mt-6 max-w-2xl text-sm text-content-muted">
+        Built by Hiren, an Amsterdam developer who makes websites and tools for artists, labels and events.
+        Need something like this?
+        <NuxtLink to="/contact" class="text-accent underline underline-offset-2">Get in touch</NuxtLink>.
+        <span class="mt-2 block text-xs">Based on ADE's public program data. Not affiliated with Amsterdam Dance Event.</span>
+      </p>
     </div>
   </section>
 </template>
@@ -14,8 +21,10 @@
 useSeoMeta({
   title: 'ADE Planner - Hiren',
   ogTitle: 'ADE Planner - Hiren',
-  description: 'Paste a Spotify or Apple Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
-  ogDescription: 'Find your artists on the Amsterdam Dance Event 2026 lineup.',
+  description: 'Paste a Spotify, Apple Music or YouTube Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
+  ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
+  ogImage: 'https://hiren.ninja/og/og-ade.png',
+  ogUrl: 'https://hiren.ninja/ade-planner',
   twitterCard: 'summary_large_image'
 })
 </script>

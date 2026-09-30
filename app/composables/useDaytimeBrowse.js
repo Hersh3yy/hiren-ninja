@@ -64,7 +64,10 @@ export function useDaytimeBrowse(initialQuery = '') {
   const intents = ref([])
   const filters = reactive({ kinds: [], times: [], access: [], areas: [], genres: [] })
   const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [] })
-  const isLoading = ref(false)
+  // True until the first answer arrives, so the empty state never flashes on load.
+  const isLoading = ref(true)
+  let latestRequest = 0
+  let ready = false
   const error = ref('')
 
   const dayTabs = computed(() => result.value.days.map(({ value, count }) => ({
@@ -78,10 +81,11 @@ export function useDaytimeBrowse(initialQuery = '') {
   ))
 
   async function load() {
+    const request = ++latestRequest
     isLoading.value = true
     error.value = ''
     try {
-      result.value = await $fetch('/api/ade-planner/browse', {
+      const response = await $fetch('/api/ade-planner/browse', {
         query: {
           q: q.value.trim() || undefined,
           day: day.value || undefined,
@@ -90,14 +94,17 @@ export function useDaytimeBrowse(initialQuery = '') {
           ...Object.fromEntries(FILTER_GROUPS.map(group => [group.key, filters[group.key].join(',') || undefined]))
         }
       })
+      // A slower, older request must not overwrite a newer answer.
+      if (request !== latestRequest) return
+      result.value = response
       // First load: open on the first day that has something.
-      if (!day.value && result.value.days.length) {
-        day.value = result.value.days[0].value
+      if (!day.value && response.days.length) {
+        day.value = response.days[0].value
       }
     } catch {
-      error.value = 'Could not load daytime events. Try again.'
+      if (request === latestRequest) error.value = 'Could not load daytime events. Try again.'
     } finally {
-      isLoading.value = false
+      if (request === latestRequest) isLoading.value = false
     }
   }
 
@@ -123,12 +130,17 @@ export function useDaytimeBrowse(initialQuery = '') {
     }
   }
 
-  function init() {
+  async function init() {
     hasProPass.value = readProPass()
-    return load()
+    await load()
+    ready = true
+    // The first answer picks the opening day; now load just that day.
+    if (day.value) await load()
   }
 
-  watch([filters, intents, day, hasProPass], () => load(), { deep: true })
+  watch([filters, intents, day, hasProPass], () => {
+    if (ready) load()
+  }, { deep: true })
 
   return {
     q, day, hasProPass, intents, filters, result, isLoading, error, dayTabs, activeFilters,

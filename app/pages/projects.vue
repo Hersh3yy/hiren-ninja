@@ -16,7 +16,7 @@ useSeoMeta({
   ogTitle: 'Projects - Hiren',
   description: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
   ogDescription: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
-  ogImage: '/path/to/project-image.jpg',
+  ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'
 })
 </script>

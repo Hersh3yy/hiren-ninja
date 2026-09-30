@@ -8,15 +8,21 @@ const MAX_SEEDS = 12
 const MAX_SUGGESTIONS = 24
 
 interface DeezerArtist { id: number, name: string }
+interface DeezerResponse { data?: DeezerArtist[], error?: { message?: string } }
+
+// Deezer reports quota errors as HTTP 200 with an error body. Throw, so an empty
+// answer caused by a quota hit is never cached for a week.
+async function deezer(path: string, query: Record<string, string | number>): Promise<DeezerArtist[]> {
+  const response = await $fetch<DeezerResponse>(`${DEEZER}${path}`, { query, timeout: 5_000 })
+  if (response.error) throw new Error(`Deezer: ${response.error.message ?? 'error'}`)
+  return response.data ?? []
+}
 
 const relatedOnDeezer = defineCachedFunction(async (name: string): Promise<string[]> => {
-  const search = await $fetch<{ data?: DeezerArtist[] }>(`${DEEZER}/search/artist`, { query: { q: name, limit: 1 }, timeout: 10_000 })
-  const found = search.data?.[0]
+  const found = (await deezer('/search/artist', { q: name, limit: 1 }))[0]
   if (!found || normalizeArtistName(found.name) !== normalizeArtistName(name)) return []
-
-  const related = await $fetch<{ data?: DeezerArtist[] }>(`${DEEZER}/artist/${found.id}/related`, { query: { limit: 30 }, timeout: 10_000 })
-  return (related.data ?? []).map(artist => artist.name)
-}, { name: 'ade-planner-deezer-related', maxAge: 60 * 60 * 24 * 7, getKey: (name: string) => normalizeArtistName(name) })
+  return (await deezer(`/artist/${found.id}/related`, { limit: 30 })).map(artist => artist.name)
+}, { name: 'ade-planner-deezer-related', maxAge: 60 * 60 * 24 * 7, getKey: (name: string) => normalizeArtistName(name).replace(/ /g, '_') || '_empty' })
 
 /**
  * Lineup artists you'd probably like: Deezer's related artists of your top artists,

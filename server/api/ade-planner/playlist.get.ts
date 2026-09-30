@@ -8,6 +8,7 @@ const readCached = defineCachedFunction(readPlaylistArtists, {
 })
 
 export default defineEventHandler(async (event) => {
+  rateLimit(event, 'playlist', 20, 60)
   const url = String(getQuery(event).url ?? '').trim()
   return readCached(url)
 })

@@ -50,9 +50,9 @@ export function eventsFor(artist: AdeArtist, index: AdeIndex): MatchedEvent[] {
     .filter((event): event is AdeEvent => Boolean(event))
     .map(event => ({
       ...event,
-      lineupNames: (event.lineup ?? [])
+      lineupNames: [...new Set((event.lineup ?? [])
         .map(id => index.artistNamesById.get(id))
-        .filter((name): name is string => Boolean(name))
+        .filter((name): name is string => Boolean(name)))]
         .sort((a, b) => a.localeCompare(b)),
     }))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
@@ -68,6 +68,8 @@ export function matchArtists(data: AdeData, queries: { name: string, weight: num
   const matches: ArtistMatch[] = []
   const unmatched: string[] = []
   const seenArtistIds = new Set<string>()
+  // ADE lists some artists twice ("Ado" and "Ado"); show them as one match with all events.
+  const matchByName = new Map<string, ArtistMatch>()
 
   for (const { name, weight } of queries) {
     const hits = index.byName.get(normalizeArtistName(name)) ?? index.byName.get(`~${compactArtistName(name)}`) ?? []
@@ -82,7 +84,17 @@ export function matchArtists(data: AdeData, queries: { name: string, weight: num
     for (const { artist, matchType } of chosen) {
       if (seenArtistIds.has(artist.id)) continue
       seenArtistIds.add(artist.id)
-      matches.push({ query: name, weight, matchType, artist, events: eventsFor(artist, index) })
+      const events = eventsFor(artist, index)
+      const twin = matchByName.get(normalizeArtistName(artist.name))
+      if (twin) {
+        const known = new Set(twin.events.map(event => event.id))
+        twin.events = [...twin.events, ...events.filter(event => !known.has(event.id))]
+          .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+        continue
+      }
+      const match = { query: name, weight, matchType, artist, events }
+      matchByName.set(normalizeArtistName(artist.name), match)
+      matches.push(match)
     }
   }
 

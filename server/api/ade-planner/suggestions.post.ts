@@ -2,12 +2,13 @@ import { loadAdeData } from '../../utils/ade-planner/data'
 import { suggestArtists } from '../../utils/ade-planner/similar'
 
 export default defineEventHandler(async (event) => {
+  rateLimit(event, 'suggestions', 20, 60)
   const body = await readBody<{ artists?: { name: string, weight?: number }[], matchedArtistIds?: string[] }>(event)
-  const seeds = (body?.artists ?? [])
+  const seeds = (Array.isArray(body?.artists) ? body.artists : [])
     .filter(item => typeof item?.name === 'string' && item.name.trim())
     .slice(0, 500)
     .map(item => ({ name: item.name.trim().slice(0, 200), weight: Number(item.weight) || 1 }))
-  const matchedArtistIds = (body?.matchedArtistIds ?? []).filter(id => typeof id === 'string').slice(0, 500)
+  const matchedArtistIds = (Array.isArray(body?.matchedArtistIds) ? body.matchedArtistIds : []).filter(id => typeof id === 'string').slice(0, 500)
 
   return suggestArtists(await loadAdeData(), seeds, matchedArtistIds)
 })

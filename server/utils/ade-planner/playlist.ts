@@ -24,7 +24,11 @@ function tally(names: string[]): PlaylistArtists['artists'] {
 }
 
 async function fetchPage(url: string): Promise<string> {
-  return $fetch<string>(url, { headers: { 'User-Agent': USER_AGENT }, responseType: 'text', timeout: 15_000 })
+  try {
+    return await $fetch<string>(url, { headers: { 'User-Agent': USER_AGENT }, responseType: 'text', timeout: 8_000 })
+  } catch {
+    throw createError({ statusCode: 502, statusMessage: 'Could not open that playlist. Is it public, and is the link complete?' })
+  }
 }
 
 function extractScript(html: string, pattern: RegExp): unknown {

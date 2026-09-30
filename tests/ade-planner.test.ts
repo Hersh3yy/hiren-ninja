@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
-import { genreProfile, groupByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
+import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
@@ -131,5 +131,27 @@ describe('YouTube Music', () => {
     ])
     expect(youTubeMusicTitle(parsed, html)).toBe('ADE warm-up')
     expect(youTubeMusicContinuation(parsed)).toBe('TOKEN123')
+  })
+})
+
+describe('launch fixes', () => {
+  it('puts a party starting after midnight under the night before', () => {
+    const afterMidnight = { event: { id: 'n', startsAt: '2026-10-23T00:30:00+02:00', isParty: true } }
+    const morningTalk = { event: { id: 't', startsAt: '2026-10-23T10:00:00+02:00', isParty: false } }
+    expect(groupEventsByDay([afterMidnight, morningTalk]).map(day => [day.key, day.items.map(item => item.event.id)]))
+      .toEqual([['2026-10-22', ['n']], ['2026-10-23', ['t']]])
+  })
+
+  it('merges artists ADE lists twice under the same name', () => {
+    const twins: AdeData = {
+      ...data,
+      artists: [
+        { id: 'a1', name: 'Ado', country: null, spotifyId: null, adeUrl: 'https://ade/a1', eventIds: ['e1'] },
+        { id: 'a2', name: 'ADO', country: null, spotifyId: null, adeUrl: 'https://ade/a2', eventIds: ['e2'] },
+      ],
+    }
+    const { matches } = matchArtists(twins, [{ name: 'Ado', weight: 1 }])
+    expect(matches).toHaveLength(1)
+    expect(matches[0]!.events.map(e => e.id)).toEqual(['e2', 'e1'])
   })
 })
