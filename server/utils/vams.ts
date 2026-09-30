@@ -21,3 +21,14 @@ export async function fetchVamsEntries(slug: string): Promise<VamsEntry[]> {
   )
   return response.data?.entries ?? []
 }
+
+/** A write to VAMS (only the ADE Planner counters accept one). Short timeout: callers wait on it. */
+export async function postVams<T>(path: string, body: Record<string, unknown>, timeout = 1_500): Promise<T> {
+  const { vamsApiUrl, vamsApiKey } = useRuntimeConfig()
+  return $fetch<T>(`${vamsApiUrl}${path}`, {
+    method: 'POST',
+    body,
+    headers: { 'X-API-Key': vamsApiKey, Accept: 'application/json' },
+    timeout,
+  })
+}

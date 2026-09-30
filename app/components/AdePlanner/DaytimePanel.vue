@@ -4,27 +4,31 @@
       <MoleculesFormField
         v-model="q"
         class="flex-1"
-        label="Talks, meetups, workshops. Search by interest or name"
+        label="ADE Pro talks, interviews, Meet the… sessions and demos. Search by topic or name"
         name="ade-daytime-query"
-        placeholder="labels, marketing, synths, Adam Beyer"
+        placeholder="labels, AI, sync, Luciano"
       />
       <AtomsButton type="submit" text="Search" :loading="isLoading" />
     </form>
 
-    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="What are you after?">
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="What kind of session?">
       <AtomsChip
-        v-for="intent in intentOptions"
-        :key="intent.value"
+        v-for="kind in visibleKinds"
+        :key="kind.value"
         size="sm"
-        :text="INTENT_LABELS[intent.value]"
-        :count="intent.count"
-        :pressed="intents.includes(intent.value)"
-        @click="toggleIntent(intent.value)"
+        :text="KIND_LABELS[kind.value] ?? kind.value"
+        :count="kind.count"
+        :pressed="filters.kinds.includes(kind.value)"
+        @click="toggle('kinds', kind.value)"
       />
-      <label class="ml-auto inline-flex items-center gap-2 text-sm text-content-muted">
-        <input type="checkbox" class="accent-accent" :checked="hasProPass" @change="setProPass($event.target.checked)">
-        I have an ADE Pro pass
-      </label>
+      <button
+        v-if="!showAllKinds && kindOptions.length > KINDS_SHOWN"
+        type="button"
+        class="text-sm text-content-muted underline underline-offset-2 hover:text-content"
+        @click="showAllKinds = true"
+      >
+        {{ kindOptions.length - KINDS_SHOWN }} more
+      </button>
     </div>
 
     <MoleculesSegmentedTabs
@@ -57,15 +61,16 @@
       Nothing matches on this day. Try another day or fewer filters.
     </p>
 
-    <section v-if="result.sessions.length" aria-labelledby="ade-sessions-heading" class="space-y-2">
-      <AtomsHeading id="ade-sessions-heading" :text="`Sessions (${result.sessions.length})`" :level="2" size="md" class="uppercase tracking-wide" />
-      <AdePlannerDayGroups :days="asDay(visibleSessions)" :show-day-headings="false" />
+    <section v-for="group in sessionGroups" :key="group.id" :aria-labelledby="`ade-sessions-${group.id}`" class="space-y-2">
+      <AtomsHeading :id="`ade-sessions-${group.id}`" :text="`${group.title} (${group.events.length})`" :level="2" size="md" class="uppercase tracking-wide" />
+      <p v-if="group.hint" class="text-sm text-content-muted">{{ group.hint }}</p>
+      <AdePlannerDayGroups :days="asDay(group.events.slice(0, limits[group.id]))" :show-day-headings="false" />
       <AtomsButton
-        v-if="result.sessions.length > sessionLimit"
+        v-if="group.events.length > limits[group.id]"
         variant="ghost"
         size="sm"
-        :text="`Show ${result.sessions.length - sessionLimit} more`"
-        @click="sessionLimit += 15"
+        :text="`Show ${group.events.length - limits[group.id]} more`"
+        @click="limits[group.id] += 15"
       />
     </section>
 
@@ -78,7 +83,7 @@
 
     <details v-if="result.tba.length" class="space-y-2">
       <summary class="cursor-pointer text-sm font-bold uppercase tracking-wide text-content-muted">
-        ADE Pro, time not announced yet ({{ result.tba.length }})
+        Time not announced yet ({{ result.tba.length }})
       </summary>
       <AdePlannerDayGroups class="mt-2" :days="asDay(result.tba)" :show-day-headings="false" />
     </details>
@@ -86,7 +91,7 @@
 </template>
 
 <script setup>
-import { INTENT_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
+import { KIND_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
@@ -96,21 +101,38 @@ const props = defineProps({
 defineEmits(['show-parties'])
 
 const {
-  q, day, hasProPass, intents, filters, result, isLoading, error, dayTabs, activeFilters,
-  load, init, toggle, toggleIntent, clearFilters, setProPass
+  q, day, filters, result, isLoading, error, dayTabs, activeFilters,
+  load, init, toggle, clearFilters
 } = useDaytimeBrowse(props.initialQuery)
 
 const partyArtistsText = computed(() => result.value.partyArtists
   .map(artist => `${artist.name} plays ${artist.parties} ${artist.parties === 1 ? 'party or concert' : 'parties or concerts'}`)
   .join('; ') + '.')
 
-const sessionLimit = ref(15)
-const visibleSessions = computed(() => result.value.sessions.slice(0, sessionLimit.value))
+// ADE Pro (and ADE Lab) first: the conference is why you plan a day at ADE.
+const sessionGroups = computed(() => [
+  { id: 'pro', title: 'ADE Pro & Lab', hint: '', events: result.value.sessions.filter(event => event.program === 'pro') },
+  { id: 'more', title: 'More by day', hint: 'Festival daytime events: showcases, record stores, art, wellbeing.', events: result.value.sessions.filter(event => event.program !== 'pro') }
+].filter(group => group.events.length))
 
-// Main intents only; "other" lives in the drawer's kinds.
-const intentOptions = computed(() => (result.value.facets.intents ?? []).filter(option => option.value !== 'other'))
+const limits = reactive({ pro: 15, more: 10 })
 
-watch(day, () => { sessionLimit.value = 15 })
+// Pro formats first (the reason to come by day), then the rest by how much is on.
+const PRO_FIRST = ['talks', 'interviews', 'meet-the', 'masterclasses', 'gear']
+const kindOptions = computed(() => {
+  const options = result.value.facets.kinds ?? []
+  const rank = kind => (PRO_FIRST.includes(kind) ? PRO_FIRST.indexOf(kind) : PRO_FIRST.length)
+  return [...options].sort((a, b) => rank(a.value) - rank(b.value) || b.count - a.count)
+})
+
+// A phone shows two rows of chips, not seven; a selected kind always stays visible.
+const KINDS_SHOWN = 6
+const showAllKinds = ref(false)
+const visibleKinds = computed(() => showAllKinds.value
+  ? kindOptions.value
+  : kindOptions.value.filter((kind, i) => i < KINDS_SHOWN || filters.kinds.includes(kind.value)))
+
+watch(day, () => { Object.assign(limits, { pro: 15, more: 10 }) })
 
 function asDay(events) {
   return [{ key: day.value || 'all', label: '', items: events.map(event => ({ event, artists: [] })) }]

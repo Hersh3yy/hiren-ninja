@@ -1,24 +1,19 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { track } from '../utils/track'
 
-export const INTENT_LABELS = {
-  learn: 'Learn',
-  meet: 'Meet',
-  listen: 'Listen & watch',
-  recharge: 'Recharge',
-  other: 'Other'
-}
-
 export const KIND_LABELS = {
   talks: 'Talks & panels',
+  interviews: 'Interviews & Q&As',
   masterclasses: 'Masterclasses & workshops',
-  gear: 'Gear & demos',
+  'meet-the': 'Meet the… sessions',
+  gear: 'Demos & gear',
   listening: 'Listening sessions',
   showcases: 'Showcases & expos',
   instore: 'Record stores & meet-and-greets',
-  networking: 'Networking & meetups',
+  networking: 'Networking & drinks',
   art: 'Exhibitions & AV art',
   film: 'Film',
+  performances: 'Live performances',
   wellbeing: 'Wellbeing & sports',
   culture: 'Music culture'
 }
@@ -34,35 +29,26 @@ export const TIME_LABELS = {
 
 export const ACCESS_LABELS = { free: 'Free', ticket: 'Ticket', pro: 'ADE Pro pass' }
 
-// The drawer holds the detail; intents and days sit on the page itself.
+// Kinds and days sit on the page itself; the drawer holds the rest.
 export const FILTER_GROUPS = [
-  { key: 'kinds', label: 'Kind', labels: KIND_LABELS },
+  { key: 'kinds', label: 'Kind', labels: KIND_LABELS, onPage: true },
   { key: 'times', label: 'Time of day', labels: TIME_LABELS },
   { key: 'access', label: 'Price', labels: ACCESS_LABELS },
   { key: 'areas', label: 'Area', labels: null },
   { key: 'genres', label: 'Genre', labels: null }
 ]
 
-const PRO_KEY = 'ade-planner:pro-pass'
 const dayName = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', weekday: 'short' })
+
+export const DRAWER_GROUPS = FILTER_GROUPS.filter(group => !group.onPage)
 
 export function labelFor(groupKey, value) {
   return FILTER_GROUPS.find(group => group.key === groupKey)?.labels?.[value] ?? value
 }
 
-function readProPass() {
-  try {
-    return window.localStorage.getItem(PRO_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
 export function useDaytimeBrowse(initialQuery = '') {
   const q = ref(initialQuery)
   const day = ref('')
-  const hasProPass = ref(false)
-  const intents = ref([])
   const filters = reactive({ kinds: [], times: [], access: [], areas: [], genres: [] })
   const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [] })
   // True until the first answer arrives, so the empty state never flashes on load.
@@ -77,7 +63,8 @@ export function useDaytimeBrowse(initialQuery = '') {
     count
   })))
 
-  const activeFilters = computed(() => FILTER_GROUPS.flatMap(group =>
+  // Drawer filters only: kinds already show as pressed chips on the page.
+  const activeFilters = computed(() => DRAWER_GROUPS.flatMap(group =>
     filters[group.key].map(value => ({ group: group.key, value, label: labelFor(group.key, value) }))
   ))
 
@@ -90,8 +77,6 @@ export function useDaytimeBrowse(initialQuery = '') {
         query: {
           q: q.value.trim() || undefined,
           day: day.value || undefined,
-          pro: hasProPass.value ? '1' : undefined,
-          intents: intents.value.join(',') || undefined,
           ...Object.fromEntries(FILTER_GROUPS.map(group => [group.key, filters[group.key].join(',') || undefined]))
         }
       })
@@ -115,39 +100,23 @@ export function useDaytimeBrowse(initialQuery = '') {
     filters[groupKey] = list.includes(value) ? list.filter(item => item !== value) : [...list, value]
   }
 
-  function toggleIntent(value) {
-    if (!intents.value.includes(value)) track('ade-intent', { intent: value })
-    intents.value = intents.value.includes(value) ? intents.value.filter(item => item !== value) : [...intents.value, value]
-  }
-
   function clearFilters() {
-    for (const group of FILTER_GROUPS) filters[group.key] = []
-  }
-
-  function setProPass(value) {
-    hasProPass.value = value
-    track('ade-pro-pass', { on: value })
-    try {
-      window.localStorage.setItem(PRO_KEY, value ? '1' : '0')
-    } catch {
-      // Remembered for this visit only.
-    }
+    for (const group of DRAWER_GROUPS) filters[group.key] = []
   }
 
   async function init() {
-    hasProPass.value = readProPass()
     await load()
     ready = true
     // The first answer picks the opening day; now load just that day.
     if (day.value) await load()
   }
 
-  watch([filters, intents, day, hasProPass], () => {
+  watch([filters, day], () => {
     if (ready) load()
   }, { deep: true })
 
   return {
-    q, day, hasProPass, intents, filters, result, isLoading, error, dayTabs, activeFilters,
-    load, init, toggle, toggleIntent, clearFilters, setProPass
+    q, day, filters, result, isLoading, error, dayTabs, activeFilters,
+    load, init, toggle, clearFilters
   }
 }

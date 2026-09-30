@@ -11,8 +11,6 @@ export default defineEventHandler(async (event) => {
   const filters = {
     q: String(query.q ?? '').slice(0, 200),
     day: /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : '',
-    hasProPass: query.pro === '1',
-    intents: list(query.intents),
     kinds: list(query.kinds),
     times: list(query.times),
     access: list(query.access),

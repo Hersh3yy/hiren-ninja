@@ -116,6 +116,13 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-09-30 (night) — daytime tab for pass holders, ADE Planner in nav and projects
+- Daytime tab rebuilt around ADE Pro: the "I have an ADE Pro pass" checkbox is gone (the tab is for pass holders, Pro was hidden by default), ADE Pro & Lab sessions come first, festival daytime events under "More by day". Kind chips (Talks & panels, Interviews & Q&As, Meet the… sessions, Demos & gear, …) replace the Learn/Meet/Listen intents.
+- Root cause of "missing" Pro sessions: ADE published the Pro timetable on 30 Sep, after that morning's sync, so 121 of 125 sessions sat under "time TBA". Resynced; daily `ade:sync --reuse-pages` on Hiren's Mac until 26 Oct.
+- ADE Lab Discovery (product demos, Radio Radio listening sessions) is mostly not on ADE's API yet; only the Gear Test Lab is, and it's now marked free.
+- Planner card: no backdrop-blur (tall blurred layers made the card flicker and the Vanta birds draw on top). Full nav from `lg`; ADE Planner in the nav and first on the projects page.
+- Anonymous counters in VAMS: every match adds 1 to `hits` on the found ade-artist entries, every star/unstar adds or removes 1 on the ade-event's `favorites` (`/api/ade-planner/favorite`, same visitor+event counts once per instance). Only when data came from VAMS; failures are ignored. Daily resync runs on Hiren's Mac (launchd), not a DO worker; `ade:sync` keeps both counters.
+
 ### 2026-09-30 (evening) — projects fully on VAMS, Qinip added
 - Project images moved from the Hygraph CDN to VAMS Spaces as resized WebP (71 MB -> 2.9 MB); Hygraph fallback removed, bundled `server/assets/projects-snapshot.json` is the fallback now. Backup of the pre-migration entries kept outside the repo.
 - Qinip added as a project (desktop app, private repo so no link). Project typos fixed in VAMS ("bob", "an company", "Seemless", "specilizing").
@@ -130,7 +137,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 ### 2026-09-29 — calmer planner, enriched ADE data
 - VAMS `AdeEventClassifier` (PHP, Pest) now stores kinds, intent, time of day, party/daytime, access, format (session / drop-in / tba), duration and a series key on every ADE event; `classify.ts` removed here. ADE Pro program and speakers synced (124 sessions, 279 speakers, 41 artist-speakers).
 - New shared atoms/molecules: AtomsBadge, AtomsChip, MoleculesSegmentedTabs, MoleculesEventCard; Icon `filled`, IconButton `pressed`. Planner pills now use them (audit found 10 hand-built buttons).
-- Daytime tab: day picker, intent chips, "I have an ADE Pro pass" setting, Sessions / Drop in any time / Pro TBA sections, "Not for me" hidden list. Compact card with tap-to-expand details in both tabs.
+- Daytime tab: day picker, intent chips (replaced 30 Sep by kind chips), "I have an ADE Pro pass" setting (removed 30 Sep), Sessions / Drop in any time / Pro TBA sections, "Not for me" hidden list. Compact card with tap-to-expand details in both tabs.
 - End-of-day list (Hiren): text colour nitpicks, declutter pass. 56 new ADE events have no lineup until a full artist sync.
 
 ### 2026-09-28 (night) — ADE Planner feedback round

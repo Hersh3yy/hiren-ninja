@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
+import { browseDaytime } from '../server/utils/ade-planner/browse'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
@@ -153,5 +154,34 @@ describe('launch fixes', () => {
     const { matches } = matchArtists(twins, [{ name: 'Ado', weight: 1 }])
     expect(matches).toHaveLength(1)
     expect(matches[0]!.events.map(e => e.id)).toEqual(['e2', 'e1'])
+  })
+})
+
+describe('browseDaytime', () => {
+  const session = (id: string, title: string, kinds: string[], access: 'pro' | 'free') => ({
+    id, title, subtitle: null, startsAt: '2026-10-21T13:00:00+02:00', endsAt: '2026-10-21T14:00:00+02:00', venue: 'Felix Meritis',
+    categories: null, soldOut: false, adeUrl: `https://ade/${id}`, lineup: [], isParty: false, format: 'session' as const, access, kinds,
+  })
+  const daytime: AdeData = {
+    ...data,
+    events: [
+      ...data.events,
+      session('p1', 'Luciano In Conversation with Marcel Dettman', ['interviews'], 'pro'),
+      session('p2', 'Meet The Agents', ['meet-the'], 'pro'),
+      session('f1', 'Gear Test Lab', ['gear'], 'free'),
+    ] as AdeData['events'],
+  }
+  const none = { q: '', day: '', kinds: [], times: [], access: [], areas: [], genres: [] }
+
+  it('always includes ADE Pro, and leaves parties out', () => {
+    const result = browseDaytime(daytime, none)
+    expect(result.sessions.map(event => event.id)).toEqual(['f1', 'p1', 'p2'])
+    expect(result.facets.kinds.map(facet => facet.value).sort()).toEqual(['gear', 'interviews', 'meet-the'])
+  })
+
+  it('filters on kind, keeping the other kinds countable', () => {
+    const result = browseDaytime(daytime, { ...none, kinds: ['interviews'] })
+    expect(result.sessions.map(event => event.id)).toEqual(['p1'])
+    expect(result.facets.kinds).toHaveLength(3)
   })
 })

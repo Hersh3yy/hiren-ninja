@@ -26,6 +26,11 @@ function save() {
   }
 }
 
+/** Anonymous star count on the event in VAMS; fire and forget, the plan works without it. */
+function countFavorite(eventId, action) {
+  globalThis.$fetch?.('/api/ade-planner/favorite', { method: 'POST', body: { eventId, action } }).catch(() => {})
+}
+
 /** The fields a saved event needs to render without re-running a match. */
 function snapshotOf(event, artists) {
   const {
@@ -48,7 +53,9 @@ export function useAdeFavorites() {
   }
 
   function toggleFavorite(event, artists = []) {
-    track('ade-favorite', { action: isFavorite(event.id) ? 'remove' : 'add', party: event.isParty !== false, pro: event.program === 'pro' })
+    const action = isFavorite(event.id) ? 'remove' : 'add'
+    track('ade-favorite', { action, party: event.isParty !== false, pro: event.program === 'pro' })
+    countFavorite(event.id, action)
     favorites.value = isFavorite(event.id)
       ? favorites.value.filter(favorite => favorite.id !== event.id)
       : [...favorites.value, snapshotOf(event, artists)]

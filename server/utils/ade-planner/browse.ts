@@ -5,7 +5,6 @@ import { compactArtistName, normalizeArtistName } from './normalize'
 type FacetKey = keyof BrowseResult['facets']
 
 const valuesOf: Record<FacetKey, (event: AdeEvent) => string[]> = {
-  intents: event => (event.intent ? [event.intent] : []),
   kinds: event => event.kinds ?? [],
   times: event => (event.timeOfDay ? [event.timeOfDay] : []),
   access: event => (event.access ? [event.access] : []),
@@ -41,7 +40,8 @@ function count(values: string[][]): Facet[] {
 
 /**
  * The daytime tab for one day: fixed-time sessions, drop-ins (long, all day or running
- * several days) and ADE Pro sessions without a time yet. Facets count the whole
+ * several days) and sessions without a time yet. ADE Pro is always in: this tab is for
+ * people with a pass. Facets count the whole
  * search, each ignoring its own filter so its other options stay visible.
  */
 export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResult {
@@ -51,7 +51,6 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
 
   const searched = data.events.filter((event) => {
     if (event.isParty !== false) return false
-    if (!filters.hasProPass && event.access === 'pro') return false
     if (terms.length === 0) return true
     const lineup = (event.lineup ?? []).map(id => `${index.artistNamesById.get(id) ?? ''} ${subtitles.get(id) ?? ''}`).join(' ')
     const text = normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup}`)
@@ -91,7 +90,6 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
     tba: onDay.filter(event => event.format === 'tba').map(withLineup),
     days: count(filtered.map(event => [eventDay(event)])).sort((a, b) => a.value.localeCompare(b.value)),
     facets: {
-      intents: facetOf('intents'),
       kinds: facetOf('kinds'),
       times: facetOf('times'),
       access: facetOf('access'),

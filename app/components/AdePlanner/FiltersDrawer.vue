@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { FILTER_GROUPS, labelFor } from '~/composables/useDaytimeBrowse.js'
+import { DRAWER_GROUPS, labelFor } from '~/composables/useDaytimeBrowse.js'
 
 const props = defineProps({
   filters: { type: Object, required: true },
@@ -67,7 +67,7 @@ const LIMIT = 8
 
 const open = ref(false)
 const expanded = reactive({})
-const groups = FILTER_GROUPS
+const groups = DRAWER_GROUPS
 
 function isOn(groupKey, value) {
   return props.filters[groupKey].includes(value)

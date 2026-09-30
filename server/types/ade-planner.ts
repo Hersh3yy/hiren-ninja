@@ -33,6 +33,8 @@ export interface AdeEvent {
   tags?: string[]
   /** derived by VAMS AdeEventClassifier on every sync */
   kinds?: EventKind[]
+  /** people who starred it in ADE Planner (VAMS counter) */
+  favorites?: number
   intent?: Intent
   timeOfDay?: TimeOfDay
   isParty?: boolean
@@ -48,8 +50,8 @@ export type Intent = 'party' | 'learn' | 'meet' | 'listen' | 'recharge' | 'other
 
 export type TicketStatus = 'available' | 'sold out' | 'free' | 'pro pass' | 'unknown'
 
-export type EventKind = 'talks' | 'masterclasses' | 'gear' | 'listening' | 'showcases' | 'instore'
-  | 'networking' | 'art' | 'film' | 'wellbeing' | 'culture'
+export type EventKind = 'talks' | 'interviews' | 'masterclasses' | 'gear' | 'listening' | 'showcases' | 'instore'
+  | 'meet-the' | 'networking' | 'art' | 'film' | 'wellbeing' | 'performances' | 'culture'
 
 export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night' | 'all-day' | 'tba'
 
@@ -59,8 +61,6 @@ export interface BrowseFilters {
   q: string
   /** YYYY-MM-DD in Amsterdam; empty = every day */
   day: string
-  hasProPass: boolean
-  intents: Intent[]
   kinds: EventKind[]
   times: TimeOfDay[]
   access: Access[]
@@ -78,7 +78,7 @@ export interface BrowseResult {
   dropIns: MatchedEvent[]
   tba: MatchedEvent[]
   days: Facet[]
-  facets: Record<'intents' | 'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
+  facets: Record<'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
 }
 
 export interface MatchedEvent extends AdeEvent {

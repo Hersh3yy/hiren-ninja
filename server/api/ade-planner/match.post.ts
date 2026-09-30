@@ -1,5 +1,6 @@
 import { loadAdeData } from '../../utils/ade-planner/data'
 import { matchArtists } from '../../utils/ade-planner/match'
+import { recordAdeStats } from '../../utils/ade-planner/stats'
 
 const MAX_ARTISTS = 500
 
@@ -16,5 +17,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await loadAdeData()
-  return { source: data.source, ...matchArtists(data, queries) }
+  const result = matchArtists(data, queries)
+  await recordAdeStats(data, { hits: result.matches.map(match => match.artist.id) })
+  return { source: data.source, ...result }
 })
