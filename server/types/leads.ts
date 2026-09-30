@@ -14,7 +14,8 @@ export interface ContactPayload {
 
 export interface ClickUpTaskPayload {
   name: string
-  description: string
+  /** ClickUp renders this as markdown; plain `description` shows the raw ### and ** */
+  markdown_description: string
   status: string
   tags: string[]
   priority?: number

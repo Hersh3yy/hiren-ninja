@@ -79,7 +79,7 @@ ${data.description}
 
   return {
     name: `[${data.serviceType.toUpperCase()}] ${data.name} - New Lead`,
-    description,
+    markdown_description: description,
     status: 'NEW',
     tags: SERVICE_TAGS[data.serviceType] ?? ['Lead'],
     priority: TIMELINE_PRIORITY[data.timeline] ?? 3,
@@ -102,7 +102,7 @@ ${data.message}
 
   return {
     name: `[CONTACT] ${data.name} - New Lead`,
-    description,
+    markdown_description: description,
     status: 'NEW',
     tags: ['Lead', 'Contact'],
     priority: 3,
