@@ -4,8 +4,12 @@ import { readYouTubeMusic, youTubeMusicListId } from './youtube-music'
 // Public pages, not official APIs: the Spotify Web API refuses playlists the
 // caller doesn't own, Apple's API needs a paid developer account, and YouTube's
 // needs a key. Each page ships its track list as JSON for its own front end.
-// Spotify's embed stops at 100 tracks; YouTube Music pages on to 500.
+// Spotify's embed stops at 100 tracks, then we page on with the embed's own
+// anonymous token (user playlists only; Spotify's editorial ones 404). YouTube
+// Music pages on through its browse endpoint. Both stop at MAX_TRACKS.
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36'
+
+const MAX_TRACKS = 500
 
 const SPOTIFY_URL = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album)\/([A-Za-z0-9]{10,40})/
 const APPLE_URL = /^https:\/\/music\.apple\.com\/([a-z]{2})\/(playlist|album)\/[^/?#]+\/((?:pl\.)?[A-Za-z0-9.-]+)/
@@ -31,19 +35,44 @@ function extractScript(html: string, pattern: RegExp): unknown {
   return JSON.parse(match[1])
 }
 
+interface SpotifyPage { next?: string | null, items?: { track?: { artists?: { name?: string }[] } | null }[] }
+
+/** Tracks 101 and up, as artist lists. Stops quietly on any error: the first 100 still stand. */
+async function spotifyTracksAfterEmbed(id: string, token: string, have: number): Promise<string[][]> {
+  const pages: string[][] = []
+  let url: string | null = `https://api.spotify.com/v1/playlists/${id}/tracks?offset=${have}&limit=100&fields=next,items(track(artists(name)))`
+  while (url && have + pages.length < MAX_TRACKS) {
+    const page: SpotifyPage | null = await $fetch<SpotifyPage>(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 10_000 }).catch(() => null)
+    if (!page?.items?.length) break
+    pages.push(...page.items.map(item => (item.track?.artists ?? []).map(artist => artist.name ?? '').filter(Boolean)))
+    url = page.next ?? null
+  }
+  return pages.slice(0, MAX_TRACKS - have)
+}
+
 async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
   const html = await fetchPage(`https://open.spotify.com/embed/${kind}/${id}`)
   const nextData = extractScript(html, /<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s) as {
-    props: { pageProps: { state: { data: { entity: { name?: string, title?: string, trackList?: { subtitle?: string }[] } } } } }
+    props: { pageProps: { state: {
+      data: { entity: { name?: string, title?: string, trackList?: { subtitle?: string }[] } }
+      settings?: { session?: { accessToken?: string } }
+    } } }
   }
-  const entity = nextData.props.pageProps.state.data.entity
-  const tracks = entity.trackList ?? []
+  const { data, settings } = nextData.props.pageProps.state
+  const embedTracks = (data.entity.trackList ?? []).map(track => (track.subtitle ?? '').split(','))
+  const token = settings?.session?.accessToken
+
+  // The embed shows at most 100; a full page of 100 means there may be more.
+  const moreTracks = kind === 'playlist' && embedTracks.length === 100 && token
+    ? await spotifyTracksAfterEmbed(id, token, embedTracks.length)
+    : []
+  const tracks = [...embedTracks, ...moreTracks]
 
   return {
     source: 'spotify',
-    title: entity.name ?? entity.title ?? 'Spotify playlist',
+    title: data.entity.name ?? data.entity.title ?? 'Spotify playlist',
     trackCount: tracks.length,
-    artists: tally(tracks.flatMap(track => (track.subtitle ?? '').split(','))),
+    artists: tally(tracks.flat()),
   }
 }
 
