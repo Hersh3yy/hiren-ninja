@@ -1,5 +1,5 @@
 <template>
-  <section v-if="loading || suggestions.length" class="space-y-4" aria-labelledby="ade-suggestions-heading">
+  <section v-if="loading || events.length" class="space-y-4" aria-labelledby="ade-suggestions-heading">
     <div>
       <AtomsHeading id="ade-suggestions-heading" text="You'd probably like" :level="2" size="xl" class="uppercase tracking-wide" />
       <p class="text-sm text-content-muted">
@@ -9,31 +9,28 @@
 
     <AtomsLoader v-if="loading" type="spinner" size="md" color="accent" text="Finding similar artists" />
 
-    <ul v-else class="space-y-6">
-      <li v-for="suggestion in suggestions" :key="suggestion.artist.id" class="space-y-2">
-        <p>
-          <a
-            :href="suggestion.artist.adeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-lg font-bold text-content hover:text-accent"
-          >{{ suggestion.artist.name }}</a>
-          <span class="ml-2 text-sm text-content-muted">{{ reasonText(suggestion.reasons) }}</span>
-        </p>
-        <ul class="space-y-2">
+    <template v-else>
+      <ul class="space-y-2">
+        <template v-for="item in visibleEvents" :key="item.event.id">
           <AdePlannerEventItem
-            v-for="event in suggestion.events.filter(event => !isHidden(event.id))"
-            :key="event.id"
-            :event="event"
-            :artists="[suggestion.artist.name]"
-            :favorite="isFavorite(event.id)"
-            :hidden="isHidden(event.id)"
-            @toggle-favorite="toggleFavorite(event, [suggestion.artist.name])"
-            @toggle-hidden="toggleHidden(event.id)"
+            :event="item.event"
+            :artists="item.artists"
+            :favorite="isFavorite(item.event.id)"
+            :hidden="isHidden(item.event.id)"
+            @toggle-favorite="toggleFavorite(item.event, item.artists)"
+            @toggle-hidden="toggleHidden(item.event.id)"
           />
-        </ul>
-      </li>
-    </ul>
+          <li class="-mt-1 pb-1 pl-4 text-xs text-content-muted">{{ item.reason }}</li>
+        </template>
+      </ul>
+      <AtomsButton
+        v-if="events.length > limit"
+        variant="ghost"
+        size="sm"
+        :text="`Show ${events.length - limit} more`"
+        @click="limit += 6"
+      />
+    </template>
   </section>
 </template>
 
@@ -41,20 +38,42 @@
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { useAdeHidden } from '~/composables/useAdeHidden.js'
 
-defineProps({
+const props = defineProps({
   suggestions: { type: Array, default: () => [] },
-  loading: { type: Boolean, default: false }
+  loading: { type: Boolean, default: false },
+  // Events already in your results; no need to suggest them again.
+  excludeEventIds: { type: Array, default: () => [] }
 })
 
 const { isFavorite, toggleFavorite } = useAdeFavorites()
 const { isHidden, toggleHidden } = useAdeHidden()
+const limit = ref(6)
 
 function reasonText(reasons) {
-  const similar = reasons.filter(r => r.kind === 'similar').map(r => r.via)
-  const sameBill = reasons.filter(r => r.kind === 'same-bill').map(r => r.via)
+  const similar = [...new Set(reasons.filter(r => r.kind === 'similar').map(r => r.via))]
+  const sameBill = [...new Set(reasons.filter(r => r.kind === 'same-bill').map(r => r.via))]
   return [
     similar.length ? `Similar to ${similar.slice(0, 3).join(', ')}` : '',
     sameBill.length ? `On the bill with ${sameBill.slice(0, 3).join(', ')}` : ''
   ].filter(Boolean).join(' · ')
 }
+
+// One entry per event (a big lineup would otherwise repeat the same night for every
+// suggested artist), ordered by the best suggestion on it.
+const events = computed(() => {
+  const exclude = new Set(props.excludeEventIds)
+  const byEvent = new Map()
+  for (const suggestion of props.suggestions) {
+    for (const event of suggestion.events) {
+      if (exclude.has(event.id)) continue
+      const entry = byEvent.get(event.id) ?? { event, artists: [], reasons: [] }
+      entry.artists.push(suggestion.artist.name)
+      entry.reasons.push(...suggestion.reasons)
+      byEvent.set(event.id, entry)
+    }
+  }
+  return [...byEvent.values()].map(entry => ({ ...entry, reason: reasonText(entry.reasons) }))
+})
+
+const visibleEvents = computed(() => events.value.filter(item => !isHidden(item.event.id)).slice(0, limit.value))
 </script>

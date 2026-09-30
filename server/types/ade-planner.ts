@@ -110,6 +110,8 @@ export interface PlaylistArtists {
   source: 'spotify' | 'apple-music' | 'youtube-music'
   title: string
   trackCount: number
+  /** the service stopped us before the end of the playlist */
+  partial?: boolean
   artists: { name: string, tracks: number }[]
 }
 

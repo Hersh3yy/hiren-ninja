@@ -82,7 +82,9 @@ export function useAdePlanner() {
   const suggestionsLoading = ref(false)
   const genreFilter = ref('')
 
-  const isPlaylistLink = computed(() => PLAYLIST_URL.test(input.value.trim()))
+  // First line may be a playlist link; any lines after it are extra artist names.
+  const firstLine = computed(() => input.value.trim().split('\n')[0].trim())
+  const isPlaylistLink = computed(() => PLAYLIST_URL.test(firstLine.value))
   const allMatchedEvents = computed(() => (result.value ? eventsFromMatches(result.value.matches) : []))
   // This tab is for parties; daytime sessions of your artists live in the other tab.
   const matchedEvents = computed(() => allMatchedEvents.value.filter(({ event }) => event.isParty !== false))
@@ -111,8 +113,11 @@ export function useAdePlanner() {
     try {
       let artists
       if (isPlaylistLink.value) {
-        playlist.value = await $fetch('/api/ade-planner/playlist', { query: { url: value } })
-        artists = playlist.value.artists.map(artist => ({ name: artist.name, weight: artist.tracks }))
+        playlist.value = await $fetch('/api/ade-planner/playlist', { query: { url: firstLine.value } })
+        const fromPlaylist = playlist.value.artists.map(artist => ({ name: artist.name, weight: artist.tracks }))
+        const known = new Set(fromPlaylist.map(artist => artist.name.toLowerCase()))
+        const extra = parseArtistList(value.split('\n').slice(1).join('\n')).filter(artist => !known.has(artist.name.toLowerCase()))
+        artists = [...fromPlaylist, ...extra]
       } else {
         artists = parseArtistList(value)
       }

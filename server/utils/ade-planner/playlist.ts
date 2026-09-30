@@ -41,17 +41,20 @@ function extractScript(html: string, pattern: RegExp): unknown {
 
 interface SpotifyPage { next?: string | null, items?: { track?: { artists?: { name?: string }[] } | null }[] }
 
-/** Tracks 101 and up, as artist lists. Stops quietly on any error: the first 100 still stand. */
-async function spotifyTracksAfterEmbed(id: string, token: string, have: number): Promise<string[][]> {
-  const pages: string[][] = []
+/**
+ * Tracks 101 and up, as artist lists. Spotify rate-limits the embed token hard (a 429
+ * can ask for a day's wait), so any failure stops here and reports the result as partial.
+ */
+async function spotifyTracksAfterEmbed(id: string, token: string, have: number): Promise<{ tracks: string[][], complete: boolean }> {
+  const tracks: string[][] = []
   let url: string | null = `https://api.spotify.com/v1/playlists/${id}/tracks?offset=${have}&limit=100&fields=next,items(track(artists(name)))`
-  while (url && have + pages.length < MAX_TRACKS) {
-    const page: SpotifyPage | null = await $fetch<SpotifyPage>(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 10_000 }).catch(() => null)
-    if (!page?.items?.length) break
-    pages.push(...page.items.map(item => (item.track?.artists ?? []).map(artist => artist.name ?? '').filter(Boolean)))
+  while (url && have + tracks.length < MAX_TRACKS) {
+    const page: SpotifyPage | null = await $fetch<SpotifyPage>(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 8_000 }).catch(() => null)
+    if (!page) return { tracks, complete: false }
+    tracks.push(...(page.items ?? []).map(item => (item.track?.artists ?? []).map(artist => artist.name ?? '').filter(Boolean)))
     url = page.next ?? null
   }
-  return pages.slice(0, MAX_TRACKS - have)
+  return { tracks: tracks.slice(0, MAX_TRACKS - have), complete: !url }
 }
 
 async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
@@ -67,15 +70,16 @@ async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
   const token = settings?.session?.accessToken
 
   // The embed shows at most 100; a full page of 100 means there may be more.
-  const moreTracks = kind === 'playlist' && embedTracks.length === 100 && token
+  const more = kind === 'playlist' && embedTracks.length === 100 && token
     ? await spotifyTracksAfterEmbed(id, token, embedTracks.length)
-    : []
-  const tracks = [...embedTracks, ...moreTracks]
+    : { tracks: [], complete: kind !== 'playlist' || embedTracks.length < 100 }
+  const tracks = [...embedTracks, ...more.tracks]
 
   return {
     source: 'spotify',
     title: data.entity.name ?? data.entity.title ?? 'Spotify playlist',
     trackCount: tracks.length,
+    partial: !more.complete,
     artists: tally(tracks.flat()),
   }
 }

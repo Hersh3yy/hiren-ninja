@@ -11,7 +11,7 @@
         label="Playlist link or artist names"
         name="ade-planner-input"
         type="textarea"
-        :rows="isPlaylistLink ? 2 : 5"
+        :rows="isPlaylistLink ? 3 : 5"
         placeholder="https://open.spotify.com/playlist/...  or one artist per line"
         :described-by="error ? 'ade-planner-status' : ''"
       />
@@ -37,6 +37,10 @@
 
     <p v-if="playlist" class="text-sm text-content-muted">
       Read "{{ playlist.title }}": {{ playlist.trackCount }} tracks, {{ playlist.artists.length }} artists.
+      <span v-if="playlist.partial" class="block text-danger">
+        Spotify only let us read the first {{ playlist.trackCount }} tracks of this playlist right now.
+        Missing someone? Add their names on new lines below the link and search again.
+      </span>
     </p>
 
     <AdePlannerResults
@@ -59,7 +63,12 @@
       </button>
     </p>
 
-    <AdePlannerSuggestions v-if="result" :suggestions="suggestions" :loading="suggestionsLoading" />
+    <AdePlannerSuggestions
+      v-if="result"
+      :suggestions="suggestions"
+      :loading="suggestionsLoading"
+      :exclude-event-ids="matchedEventIds"
+    />
 
   </div>
 </template>
@@ -81,6 +90,8 @@ const {
   suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
   daytimeWithYourArtists, daytimeQuery
 } = useAdePlanner()
+
+const matchedEventIds = computed(() => (result.value?.matches ?? []).flatMap(match => match.events.map(event => event.id)))
 
 watch(() => props.prefill, (names) => {
   if (names.length) {
