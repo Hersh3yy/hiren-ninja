@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 
 const TIME_ZONE = 'Europe/Amsterdam'
-const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com)\//
+const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|www\.|m\.)?youtube\.com)\//
 
 const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' })
 const dayLabel = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, weekday: 'long', day: 'numeric', month: 'long' })

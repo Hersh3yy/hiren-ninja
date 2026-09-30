@@ -1,16 +1,14 @@
 import type { PlaylistArtists } from '../../types/ade-planner'
+import { readYouTubeMusic, youTubeMusicListId } from './youtube-music'
 
 // Public pages, not official APIs: the Spotify Web API refuses playlists the
-// caller doesn't own, and Apple's API needs a paid developer account. Both
-// pages ship the track list as JSON for their own front end.
+// caller doesn't own, Apple's API needs a paid developer account, and YouTube's
+// needs a key. Each page ships its track list as JSON for its own front end.
+// Spotify's embed stops at 100 tracks; YouTube Music pages on to 500.
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36'
 
 const SPOTIFY_URL = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album)\/([A-Za-z0-9]{10,40})/
 const APPLE_URL = /^https:\/\/music\.apple\.com\/([a-z]{2})\/(playlist|album)\/[^/?#]+\/((?:pl\.)?[A-Za-z0-9.-]+)/
-
-export function isPlaylistUrl(value: string): boolean {
-  return SPOTIFY_URL.test(value) || APPLE_URL.test(value)
-}
 
 function tally(names: string[]): PlaylistArtists['artists'] {
   const counts = new Map<string, number>()
@@ -83,5 +81,15 @@ export async function readPlaylistArtists(url: string): Promise<PlaylistArtists>
   const apple = url.match(APPLE_URL)
   if (apple) return readAppleMusic(apple[1]!, apple[2]!, apple[3]!, url)
 
-  throw createError({ statusCode: 400, statusMessage: 'Paste a public Spotify or Apple Music playlist link.' })
+  const listId = youTubeMusicListId(url)
+  if (listId) {
+    const { title, tracks } = await readYouTubeMusic(listId)
+    return { source: 'youtube-music', title, trackCount: tracks.length, artists: tally(tracks.flatMap(track => track.artists)) }
+  }
+
+  if (/[?&]list=LM(&|$)/.test(url)) {
+    throw createError({ statusCode: 400, statusMessage: 'Liked music is private. Copy the songs into a public or unlisted playlist and paste that link.' })
+  }
+
+  throw createError({ statusCode: 400, statusMessage: 'Paste a public Spotify, Apple Music or YouTube Music playlist link.' })
 }

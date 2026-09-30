@@ -116,6 +116,12 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-09-30 — YouTube Music playlists, playlist cache bug
+- YouTube Music (and youtube.com) playlist links: public or unlisted, read from the page's embedded data (artists as separate linked names), continuation up to 500 tracks. Liked music (`list=LM`) gets a clear "private" message. Parser tests with a fixture.
+- Bug fixed: the cached playlist reader keyed on the raw URL, which the storage layer cut to "https", so every playlist shared one cache entry for 10 minutes.
+- Track limits: Spotify embed 100, Apple = what the page embeds (not measured over 100), YouTube Music 500; match and suggestions cap at 500 unique artists.
+- Mobile pass: tabs, day picker, card layout, lineup back on the collapsed card.
+
 ### 2026-09-29 — calmer planner, enriched ADE data
 - VAMS `AdeEventClassifier` (PHP, Pest) now stores kinds, intent, time of day, party/daytime, access, format (session / drop-in / tba), duration and a series key on every ADE event; `classify.ts` removed here. ADE Pro program and speakers synced (124 sessions, 279 speakers, 41 artist-speakers).
 - New shared atoms/molecules: AtomsBadge, AtomsChip, MoleculesSegmentedTabs, MoleculesEventCard; Icon `filled`, IconButton `pressed`. Planner pills now use them (audit found 10 hand-built buttons).

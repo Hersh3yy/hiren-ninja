@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <p class="text-content-muted max-w-2xl">
-      Paste a public Spotify or Apple Music playlist link, or a list of artist names.
+      Paste a public Spotify, Apple Music or YouTube Music playlist link, or a list of artist names.
       See who plays Amsterdam Dance Event 2026 (21-25 October), when and where.
     </p>
 

@@ -105,7 +105,7 @@ export interface MatchResult {
 }
 
 export interface PlaylistArtists {
-  source: 'spotify' | 'apple-music'
+  source: 'spotify' | 'apple-music' | 'youtube-music'
   title: string
   trackCount: number
   artists: { name: string, tracks: number }[]

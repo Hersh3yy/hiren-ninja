@@ -3,6 +3,7 @@ import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-plan
 import { matchArtists } from '../server/utils/ade-planner/match'
 import { genreProfile, groupByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
+import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
 const data: AdeData = {
   source: 'snapshot',
@@ -82,5 +83,46 @@ describe('genreProfile', () => {
       { event: {} },
     ]
     expect(genreProfile(items)).toEqual([{ genre: 'Techno', count: 2 }, { genre: 'House', count: 1 }])
+  })
+})
+
+describe('YouTube Music', () => {
+  const artist = (name: string) => ({ text: name, navigationEndpoint: { browseEndpoint: { browseEndpointContextSupportedConfigs: { browseEndpointContextMusicConfig: { pageType: 'MUSIC_PAGE_TYPE_ARTIST' } } } } })
+  const row = (title: string, byline: object[]) => ({
+    musicResponsiveListItemRenderer: {
+      flexColumns: [
+        { musicResponsiveListItemFlexColumnRenderer: { text: { runs: [{ text: title }] } } },
+        { musicResponsiveListItemFlexColumnRenderer: { text: { runs: byline } } },
+      ],
+    },
+  })
+  const data = {
+    header: { musicResponsiveHeaderRenderer: { title: { runs: [{ text: 'ADE warm-up' }] } } },
+    contents: [
+      row('BELLAKEO', [artist('Peso Pluma'), { text: ' & ' }, artist('Anitta')]),
+      row('Home recording', [{ text: 'Some Uploader' }]),
+    ],
+    continuations: [{ nextContinuationData: { continuation: 'TOKEN123' } }],
+  }
+  // The page pushes its data as a \xNN-escaped JSON string.
+  const escaped = JSON.stringify(data).replace(/[{}"[\]]/g, char => `\\x${char.charCodeAt(0).toString(16)}`)
+  const html = `<script>"INNERTUBE_CLIENT_VERSION":"1.20260927"</script><script>initialData.push({path: '\\/guide', params: {}, data: '{}'});initialData.push({path: '\\/browse', params: {}, data: '${escaped}'});</script>`
+
+  it('reads the playlist id from YouTube and YouTube Music links, not Liked music', () => {
+    expect(youTubeMusicListId('https://music.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI&si=x')).toBe('PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')
+    expect(youTubeMusicListId('https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')).toBe('PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')
+    expect(youTubeMusicListId('https://music.youtube.com/playlist?list=LM')).toBeNull()
+    expect(youTubeMusicListId('https://evil.example.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI')).toBeNull()
+  })
+
+  it('decodes the embedded page data into tracks, artists, title and next page', () => {
+    const { data: parsed, clientVersion } = parseYouTubeMusicPage(html)
+    expect(clientVersion).toBe('1.20260927')
+    expect(youTubeMusicTracks(parsed)).toEqual([
+      { title: 'BELLAKEO', artists: ['Peso Pluma', 'Anitta'] },
+      { title: 'Home recording', artists: ['Some Uploader'] },
+    ])
+    expect(youTubeMusicTitle(parsed, html)).toBe('ADE warm-up')
+    expect(youTubeMusicContinuation(parsed)).toBe('TOKEN123')
   })
 })
