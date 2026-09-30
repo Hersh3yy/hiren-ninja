@@ -25,7 +25,7 @@ const props = defineProps({
 const cardClasses = computed(() => {
   return [
     'bg-surface/80 backdrop-blur-xl rounded-xl border border-border-subtle transition-all',
-    props.padded ? 'p-6' : '',
+    props.padded ? 'p-4 sm:p-6' : '',
     props.interactive ? 'hover:border-accent-muted cursor-pointer' : ''
   ].filter(Boolean).join(' ')
 })

@@ -5,6 +5,8 @@
       :duration-label="durationLabel"
       :title="event.title"
       :meta="meta"
+      :people="people"
+      :people-max="PEOPLE_ON_CARD"
       :badge="badge"
       :favorite="favorite"
       :expanded="expanded"
@@ -13,11 +15,11 @@
       @toggle-favorite="$emit('toggle-favorite')"
     />
 
-    <div v-if="expanded" :id="detailsId" class="mx-4 space-y-3 border-x border-b border-accent-muted rounded-b-lg bg-surface px-4 pb-4 pt-3 -mt-1">
+    <div v-if="expanded" :id="detailsId" class="space-y-3 rounded-b-lg border-x border-b border-accent-muted bg-surface px-4 pb-4 pt-3">
       <p v-if="event.subtitle" class="text-sm text-content">{{ event.subtitle }}</p>
 
-      <p v-if="lineup.length" class="text-sm text-content-muted">
-        <span>{{ 'Lineup: ' }}</span>
+      <p v-if="lineup.length > PEOPLE_ON_CARD" class="text-sm text-content-muted">
+        <span>{{ 'Full lineup: ' }}</span>
         <template v-for="(name, i) in lineup" :key="name">
           <span :class="artists.includes(name) ? 'font-bold text-accent' : 'text-content'">{{ name }}</span>{{ i < lineup.length - 1 ? ', ' : '' }}
         </template>
@@ -64,6 +66,8 @@ const props = defineProps({
 
 defineEmits(['toggle-favorite', 'toggle-hidden'])
 
+const PEOPLE_ON_CARD = 6
+
 const expanded = ref(false)
 const detailsId = useId()
 
@@ -87,7 +91,8 @@ const timeLabel = computed(() => {
 
 const durationLabel = computed(() => {
   const minutes = props.event.durationMinutes
-  if (!minutes) return ''
+  // ADE sometimes lists an end before the start; show no duration rather than a negative one.
+  if (!minutes || minutes <= 0) return ''
   const hours = Math.floor(minutes / 60)
   const rest = minutes % 60
   return hours ? `${hours}h${rest ? String(rest).padStart(2, '0') : ''}` : `${rest}m`
@@ -113,6 +118,8 @@ const lineup = computed(() => [
   ...props.artists,
   ...(props.event.lineupNames ?? []).filter(name => !props.artists.includes(name))
 ])
+
+const people = computed(() => lineup.value.map(name => ({ name, highlight: props.artists.includes(name) })))
 
 const tags = computed(() => [
   ...(props.event.isParty === false ? (props.event.kinds ?? []).map(kind => KIND_LABELS[kind]).filter(Boolean) : []),

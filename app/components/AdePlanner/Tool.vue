@@ -52,8 +52,8 @@
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 
 const TABS = [
-  { id: 'parties', label: 'Parties & concerts' },
-  { id: 'daytime', label: 'Daytime & networking' }
+  { id: 'parties', label: 'Parties & concerts', shortLabel: 'Parties' },
+  { id: 'daytime', label: 'Daytime & networking', shortLabel: 'Daytime' }
 ]
 
 const route = useRoute()
