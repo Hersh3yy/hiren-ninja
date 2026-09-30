@@ -71,6 +71,8 @@ export interface BrowseFilters {
 export interface Facet { value: string, count: number }
 
 export interface BrowseResult {
+  /** artists named in the search who play parties, which this tab leaves out */
+  partyArtists: { name: string, parties: number }[]
   total: number
   sessions: MatchedEvent[]
   dropIns: MatchedEvent[]

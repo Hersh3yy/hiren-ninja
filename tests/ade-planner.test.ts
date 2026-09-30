@@ -54,6 +54,13 @@ describe('matchArtists', () => {
     expect(matches.map(m => [m.artist.name, m.matchType])).toEqual([['Mr. Belt & Wezol', 'part-of-act']])
   })
 
+  it('ignores case, spaces and dashes in names', () => {
+    const withHiLo: AdeData = { ...data, artists: [...data.artists, { id: '9', name: 'HI-LO', country: 'nl', spotifyId: null, adeUrl: 'https://ade/9', eventIds: [] }] }
+    for (const typed of ['Hi-LO', 'HI-LO', 'hi lo', 'HiLo', 'hilo']) {
+      expect(matchArtists(withHiLo, [{ name: typed, weight: 1 }]).matches.map(m => m.artist.name)).toEqual(['HI-LO'])
+    }
+  })
+
   it('finds names that carry hidden characters in the ADE data', () => {
     expect(matchArtists(data, [{ name: 'Psylent Ninja', weight: 1 }]).matches).toHaveLength(1)
   })

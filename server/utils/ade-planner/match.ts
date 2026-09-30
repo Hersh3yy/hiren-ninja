@@ -1,5 +1,5 @@
 import type { AdeArtist, AdeData, AdeEvent, ArtistMatch, MatchedEvent, MatchResult, MatchType } from '../../types/ade-planner'
-import { normalizeArtistName, splitCompositeAct } from './normalize'
+import { compactArtistName, normalizeArtistName, splitCompositeAct } from './normalize'
 
 export interface IndexEntry {
   artist: AdeArtist
@@ -28,6 +28,8 @@ export function buildIndex(data: AdeData): AdeIndex {
   const byName = new Map<string, IndexEntry[]>()
   for (const artist of data.artists) {
     addToIndex(byName, normalizeArtistName(artist.name), { artist, matchType: 'exact' })
+    // Spaces and dashes are how people differ most ("HiLo" vs "HI-LO"); keep a spaceless key too.
+    addToIndex(byName, `~${compactArtistName(artist.name)}`, { artist, matchType: 'exact' })
     for (const part of splitCompositeAct(artist.name)) {
       addToIndex(byName, normalizeArtistName(part), { artist, matchType: 'part-of-act' })
     }
@@ -68,7 +70,7 @@ export function matchArtists(data: AdeData, queries: { name: string, weight: num
   const seenArtistIds = new Set<string>()
 
   for (const { name, weight } of queries) {
-    const hits = index.byName.get(normalizeArtistName(name)) ?? []
+    const hits = index.byName.get(normalizeArtistName(name)) ?? index.byName.get(`~${compactArtistName(name)}`) ?? []
     const exact = hits.filter(hit => hit.matchType === 'exact')
     const chosen = exact.length > 0 ? exact : hits
 

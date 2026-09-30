@@ -1,6 +1,6 @@
 import type { AdeData, AdeEvent, BrowseFilters, BrowseResult, Facet, MatchedEvent } from '../../types/ade-planner'
 import { buildIndex } from './match'
-import { normalizeArtistName } from './normalize'
+import { compactArtistName, normalizeArtistName } from './normalize'
 
 type FacetKey = keyof BrowseResult['facets']
 
@@ -24,9 +24,13 @@ function passes(event: AdeEvent, filters: BrowseFilters, skip?: FacetKey): boole
   })
 }
 
-/** "labels, marketing" = either term; within a term every word must start a word in the text. */
-function matchesQuery(haystack: string, terms: string[][]): boolean {
-  return terms.some(words => words.every(word => haystack.includes(` ${word}`)))
+/**
+ * "labels, marketing" = either term. A term matches as a phrase at a word start
+ * ("hi lo" won't match "Hiren ... Lounge"), or with spaces and dashes ignored
+ * ("hilo" finds "HI-LO").
+ */
+function matchesQuery(haystack: string, compactHaystack: string, terms: string[]): boolean {
+  return terms.some(term => haystack.includes(` ${term}`) || (term.length >= 4 && compactHaystack.includes(term.replace(/ /g, ''))))
 }
 
 function count(values: string[][]): Facet[] {
@@ -43,16 +47,15 @@ function count(values: string[][]): Facet[] {
 export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResult {
   const index = buildIndex(data)
   const subtitles = new Map(data.artists.filter(artist => artist.subtitle).map(artist => [artist.id, artist.subtitle!]))
-  const terms = filters.q.split(',')
-    .map(term => normalizeArtistName(term).split(' ').filter(Boolean))
-    .filter(words => words.length > 0)
+  const terms = filters.q.split(',').map(term => normalizeArtistName(term)).filter(Boolean)
 
   const searched = data.events.filter((event) => {
     if (event.isParty !== false) return false
     if (!filters.hasProPass && event.access === 'pro') return false
     if (terms.length === 0) return true
     const lineup = (event.lineup ?? []).map(id => `${index.artistNamesById.get(id) ?? ''} ${subtitles.get(id) ?? ''}`).join(' ')
-    return matchesQuery(` ${normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup}`)} `, terms)
+    const text = normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup}`)
+    return matchesQuery(` ${text} `, text.replace(/ /g, ''), terms)
   })
 
   const filtered = searched.filter(event => passes(event, filters))
@@ -71,7 +74,17 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
   const facetOf = (key: FacetKey): Facet[] =>
     count(searched.filter(event => (!filters.day || eventDay(event) === filters.day) && passes(event, filters, key)).map(valuesOf[key]))
 
+  // Someone typed an artist who only plays parties: say so instead of showing nothing.
+  const partyArtists = terms.flatMap((term) => {
+    const hits = index.byName.get(term) ?? index.byName.get(`~${compactArtistName(term)}`) ?? []
+    return hits
+      .filter(hit => hit.matchType === 'exact')
+      .map(hit => ({ name: hit.artist.name, parties: hit.artist.eventIds.filter(id => index.eventsById.get(id)?.isParty).length }))
+      .filter(artist => artist.parties > 0)
+  })
+
   return {
+    partyArtists,
     total: onDay.length,
     sessions: onDay.filter(event => event.format === 'session').map(withLineup),
     dropIns: onDay.filter(event => event.format === 'drop-in').map(withLineup),

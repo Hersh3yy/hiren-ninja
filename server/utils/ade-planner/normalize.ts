@@ -14,6 +14,11 @@ export function normalizeArtistName(name: string): string {
     .replace(/^the /, '')
 }
 
+/** "HI-LO", "Hi Lo" and "HiLo" all become "hilo". */
+export function compactArtistName(name: string): string {
+  return normalizeArtistName(name).replace(/ /g, '')
+}
+
 /** "Mr. Belt & Wezol" -> ["Mr. Belt", "Wezol"]. Returns [] for a single act. */
 export function splitCompositeAct(name: string): string[] {
   const parts = name

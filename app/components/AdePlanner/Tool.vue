@@ -33,7 +33,7 @@
       role="tabpanel"
       aria-labelledby="ade-tab-parties"
     >
-      <AdePlannerPartiesPanel @show-daytime="showDaytime" />
+      <AdePlannerPartiesPanel :prefill="partiesPrefill" @show-daytime="showDaytime" />
     </div>
 
     <div
@@ -43,7 +43,7 @@
       role="tabpanel"
       aria-labelledby="ade-tab-daytime"
     >
-      <AdePlannerDaytimePanel :initial-query="daytimeQuery" />
+      <AdePlannerDaytimePanel :initial-query="daytimeQuery" @show-parties="showParties" />
     </div>
   </div>
 </template>
@@ -65,11 +65,17 @@ const tab = ref(route.query.tab === 'daytime' ? 'daytime' : 'parties')
 const daytimeVisited = ref(tab.value === 'daytime')
 const daytimeQuery = ref('')
 const planOpen = ref(false)
+const partiesPrefill = ref([])
 
 function selectTab(id) {
   tab.value = id
   if (id === 'daytime') daytimeVisited.value = true
   router.replace({ query: { ...route.query, tab: id === 'parties' ? undefined : id } })
+}
+
+function showParties(names) {
+  partiesPrefill.value = names
+  selectTab('parties')
 }
 
 function showDaytime(query) {

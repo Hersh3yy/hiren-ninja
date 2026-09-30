@@ -63,7 +63,7 @@ export function useDaytimeBrowse(initialQuery = '') {
   const hasProPass = ref(false)
   const intents = ref([])
   const filters = reactive({ kinds: [], times: [], access: [], areas: [], genres: [] })
-  const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {} })
+  const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [] })
   const isLoading = ref(false)
   const error = ref('')
 

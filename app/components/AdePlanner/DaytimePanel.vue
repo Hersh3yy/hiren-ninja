@@ -45,6 +45,13 @@
 
     <MoleculesStatusAlert :message="error" type="error" />
 
+    <p v-if="result.partyArtists.length" class="text-sm text-content-muted">
+      {{ partyArtistsText }}
+      <button type="button" class="text-accent underline underline-offset-2" @click="$emit('show-parties', result.partyArtists.map(artist => artist.name))">
+        See them in Parties &amp; concerts
+      </button>
+    </p>
+
     <p v-if="!isLoading && !result.total" class="text-sm text-content-muted">
       Nothing matches on this day. Try another day or fewer filters.
     </p>
@@ -84,10 +91,16 @@ const props = defineProps({
   initialQuery: { type: String, default: '' }
 })
 
+defineEmits(['show-parties'])
+
 const {
   q, day, hasProPass, intents, filters, result, isLoading, error, dayTabs, activeFilters,
   load, init, toggle, toggleIntent, clearFilters, setProPass
 } = useDaytimeBrowse(props.initialQuery)
+
+const partyArtistsText = computed(() => result.value.partyArtists
+  .map(artist => `${artist.name} plays ${artist.parties} ${artist.parties === 1 ? 'party or concert' : 'parties or concerts'}`)
+  .join('; ') + '.')
 
 const sessionLimit = ref(15)
 const visibleSessions = computed(() => result.value.sessions.slice(0, sessionLimit.value))

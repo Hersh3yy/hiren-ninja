@@ -67,6 +67,11 @@
 <script setup>
 import { useAdePlanner } from '~/composables/useAdePlanner.js'
 
+const props = defineProps({
+  // Artist names handed over from the daytime tab: fill in and search right away.
+  prefill: { type: Array, default: () => [] }
+})
+
 defineEmits(['show-daytime'])
 
 const EXAMPLE = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
@@ -76,4 +81,11 @@ const {
   suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
   daytimeWithYourArtists, daytimeQuery
 } = useAdePlanner()
+
+watch(() => props.prefill, (names) => {
+  if (names.length) {
+    input.value = names.join('\n')
+    run()
+  }
+})
 </script>
