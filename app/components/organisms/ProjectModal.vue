@@ -198,7 +198,11 @@ const formattedDescription = computed(() => {
 
   if (parts.length === 0) return ''
 
-  let result = `<p>${escapeHtml(parts[0])}</p>`
+  // Blank lines in the intro are paragraph breaks.
+  let result = parts[0]
+    .split(/\n\s*\n/)
+    .map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`)
+    .join('')
 
   if (parts.length > 1) {
     const listItems = parts.slice(1).map((item) => `<li>${escapeHtml(item)}</li>`).join('')

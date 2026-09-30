@@ -44,6 +44,8 @@ level is visible at every call site:
 
 Text colour rule: body text `text-content`, secondary text `text-content-muted`, interactive or highlighted text `text-accent`.
 
+Frosted glass (`backdrop-blur`) only on small, fixed-size surfaces. A card that grows with results (a tool, a long list) uses `<MoleculesCard :blur="false">`: browsers drop oversized blur layers, so the card flickers away and the Vanta birds show on top.
+
 ## The slot rule (props over slots)
 
 - **Atoms**: props only. No `<slot>`. Content comes in via props (e.g. `Heading` takes a `text` prop).

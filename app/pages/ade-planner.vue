@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 sm:px-6 py-8 relative z-10">
       <p class="text-sm font-bold uppercase tracking-widest text-accent">ADE · 21–25 Oct 2026</p>
       <AtomsHeading text="ADE Planner" :level="1" size="2xl" variant="page" class="uppercase tracking-tight" />
-      <MoleculesCard>
+      <MoleculesCard :blur="false">
         <AdePlannerTool />
       </MoleculesCard>
 

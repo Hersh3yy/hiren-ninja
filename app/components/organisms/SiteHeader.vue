@@ -18,13 +18,13 @@
     </NuxtLink>
 
     <nav class="ml-4" aria-label="Main navigation">
-      <div class="hidden md:flex items-center space-x-8">
+      <div class="hidden lg:flex items-center space-x-8">
         <MoleculesNavLink v-for="link in links" :key="link.to" :to="link.to" :text="link.text" />
       </div>
 
       <button
         ref="menuButtonRef"
-        class="md:hidden text-content rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        class="lg:hidden text-content rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         :aria-expanded="isMobileMenuOpen"
         aria-controls="mobile-menu"
         aria-label="Toggle navigation menu"
@@ -36,7 +36,7 @@
       <div
         v-show="isMobileMenuOpen"
         id="mobile-menu"
-        class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md md:hidden rounded-b-lg z-[51] border border-border-subtle py-2"
+        class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md lg:hidden rounded-b-lg z-[51] border border-border-subtle py-2"
       >
         <MoleculesNavLink
           v-for="link in links"
@@ -63,7 +63,8 @@ const links = Object.freeze([
   { to: '/about', text: 'About' },
   { to: '/projects', text: 'Projects' },
   { to: '/services', text: 'Services' },
-  { to: '/experiments', text: 'Experiments' }
+  { to: '/experiments', text: 'Experiments' },
+  { to: '/ade-planner', text: 'ADE Planner' }
 ])
 
 function toggleMobileMenu() {

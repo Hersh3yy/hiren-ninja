@@ -19,12 +19,20 @@ const props = defineProps({
   padded: {
     type: Boolean,
     default: true
+  },
+  // Frosted glass over the birds. Turn it off for cards that grow very tall (tool
+  // results): browsers drop oversized backdrop-filter layers, so the card flickers
+  // away and the birds show through.
+  blur: {
+    type: Boolean,
+    default: true
   }
 })
 
 const cardClasses = computed(() => {
   return [
-    'bg-surface/80 backdrop-blur-xl rounded-xl border border-border-subtle transition-all',
+    'rounded-xl border border-border-subtle transition-all',
+    props.blur ? 'bg-surface/80 backdrop-blur-xl' : 'bg-surface/95',
     props.padded ? 'p-4 sm:p-6' : '',
     props.interactive ? 'hover:border-accent-muted cursor-pointer' : ''
   ].filter(Boolean).join(' ')
