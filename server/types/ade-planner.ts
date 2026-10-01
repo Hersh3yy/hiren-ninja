@@ -112,6 +112,8 @@ export interface PlaylistArtists {
   trackCount: number
   /** the service stopped us before the end of the playlist */
   partial?: boolean
+  /** tracks in the playlist; more than trackCount when we stopped at our own cap */
+  totalTracks?: number
   artists: { name: string, tracks: number }[]
 }
 

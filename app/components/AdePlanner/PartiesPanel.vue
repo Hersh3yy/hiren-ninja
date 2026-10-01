@@ -38,7 +38,7 @@
     <p v-if="playlist" class="text-sm text-content-muted">
       Read "{{ playlist.title }}": {{ playlist.trackCount }} tracks, {{ playlist.artists.length }} artists.
       <span v-if="playlist.partial" class="block text-danger">
-        Spotify only let us read the first {{ playlist.trackCount }} tracks of this playlist right now.
+        Spotify only let us read {{ playlist.trackCount }}{{ playlist.totalTracks > playlist.trackCount ? ` of ${playlist.totalTracks}` : '' }} tracks right now (the oldest and newest).
         Missing someone? Add their names on new lines below the link and search again.
       </span>
     </p>

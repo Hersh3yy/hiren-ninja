@@ -4,9 +4,9 @@ import { readYouTubeMusic, youTubeMusicListId } from './youtube-music'
 // Public pages, not official APIs: the Spotify Web API refuses playlists the
 // caller doesn't own, Apple's API needs a paid developer account, and YouTube's
 // needs a key. Each page ships its track list as JSON for its own front end.
-// Spotify's embed stops at 100 tracks, then we page on with the embed's own
-// anonymous token (user playlists only; Spotify's editorial ones 404). YouTube
-// Music pages on through its browse endpoint. Both stop at MAX_TRACKS.
+// Spotify's embed stops at 100 tracks; the rest come from the web player's spclient
+// endpoints with the embed's own anonymous token. YouTube Music pages on through
+// its browse endpoint. Both stop at MAX_TRACKS.
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36'
 
 const MAX_TRACKS = 500
@@ -39,22 +39,67 @@ function extractScript(html: string, pattern: RegExp): unknown {
   return JSON.parse(match[1])
 }
 
-interface SpotifyPage { next?: string | null, items?: { track?: { artists?: { name?: string }[] } | null }[] }
+interface SpotifyPlaylistContents { length?: number, contents?: { items?: { uri?: string }[] } }
+interface SpotifyTrackMetadata { artist?: { name?: string }[] }
+
+// The web player's own endpoints. Unlike api.spotify.com (which gives the embed token a
+// day-long 429 after a handful of calls), they accept the embed's anonymous token.
+const SPCLIENT = 'https://spclient.wg.spotify.com'
+// Netlify stops a function at 10s; leave room for the embed page and the response.
+const SPOTIFY_BUDGET_MS = 6_000
+// 50 parallel metadata calls read ~200 tracks a second, so 1,000 fits the budget.
+const METADATA_BATCH = 50
+const SPOTIFY_MAX_TRACKS = 1_000
+
+const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+/** Spotify ids are base62 in URIs and 32-char hex ("gid") in the metadata endpoint. */
+export function spotifyGid(id: string): string {
+  let n = 0n
+  for (const char of id) n = n * 62n + BigInt(BASE62.indexOf(char))
+  return n.toString(16).padStart(32, '0')
+}
 
 /**
- * Tracks 101 and up, as artist lists. Spotify rate-limits the embed token hard (a 429
- * can ask for a day's wait), so any failure stops here and reports the result as partial.
+ * Tracks after the embed's first 100, as artist lists: the playlist's track URIs in one
+ * call, then each track's artists, a batch at a time, newest first (playlists grow at the
+ * end, and recent additions say most about your taste now), until the time budget runs
+ * out. Anything Spotify refuses, or what doesn't fit, makes the result partial.
  */
-async function spotifyTracksAfterEmbed(id: string, token: string, have: number): Promise<{ tracks: string[][], complete: boolean }> {
+async function spotifyTracksAfterEmbed(id: string, token: string, have: number): Promise<{ tracks: string[][], total: number, complete: boolean }> {
+  const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json', 'User-Agent': USER_AGENT }
+  const list = await $fetch<SpotifyPlaylistContents>(`${SPCLIENT}/playlist/v2/playlist/${id}`, {
+    query: { from: have, length: SPOTIFY_MAX_TRACKS - have },
+    headers,
+    timeout: 5_000,
+  }).catch(() => null)
+  if (!list) return { tracks: [], total: have, complete: false }
+
+  const total = list.length ?? have
+  // Local files and podcast episodes have no artists to match.
+  const trackIds = (list.contents?.items ?? [])
+    .map(item => item.uri?.match(/^spotify:track:([A-Za-z0-9]{22})$/)?.[1])
+    .filter((trackId): trackId is string => Boolean(trackId))
+    .reverse()
+
+  const deadline = Date.now() + SPOTIFY_BUDGET_MS
   const tracks: string[][] = []
-  let url: string | null = `https://api.spotify.com/v1/playlists/${id}/tracks?offset=${have}&limit=100&fields=next,items(track(artists(name)))`
-  while (url && have + tracks.length < MAX_TRACKS) {
-    const page: SpotifyPage | null = await $fetch<SpotifyPage>(url, { headers: { Authorization: `Bearer ${token}` }, timeout: 8_000 }).catch(() => null)
-    if (!page) return { tracks, complete: false }
-    tracks.push(...(page.items ?? []).map(item => (item.track?.artists ?? []).map(artist => artist.name ?? '').filter(Boolean)))
-    url = page.next ?? null
+  let complete = true
+  for (let i = 0; i < trackIds.length; i += METADATA_BATCH) {
+    if (Date.now() > deadline) {
+      complete = false
+      break
+    }
+    const batch = await Promise.all(trackIds.slice(i, i + METADATA_BATCH).map(trackId =>
+      $fetch<SpotifyTrackMetadata>(`${SPCLIENT}/metadata/4/track/${spotifyGid(trackId)}`, { query: { market: 'from_token' }, headers, timeout: 3_000 })
+        .then(track => (track.artist ?? []).map(artist => artist.name ?? '').filter(Boolean))
+        .catch(() => null)))
+    for (const artists of batch) {
+      if (artists) tracks.push(artists)
+      else complete = false
+    }
   }
-  return { tracks: tracks.slice(0, MAX_TRACKS - have), complete: !url }
+  return { tracks, total, complete: complete && have + trackIds.length >= total }
 }
 
 async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
@@ -72,13 +117,15 @@ async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
   // The embed shows at most 100; a full page of 100 means there may be more.
   const more = kind === 'playlist' && embedTracks.length === 100 && token
     ? await spotifyTracksAfterEmbed(id, token, embedTracks.length)
-    : { tracks: [], complete: kind !== 'playlist' || embedTracks.length < 100 }
+    : { tracks: [], total: embedTracks.length, complete: kind !== 'playlist' || embedTracks.length < 100 }
   const tracks = [...embedTracks, ...more.tracks]
 
   return {
     source: 'spotify',
     title: data.entity.name ?? data.entity.title ?? 'Spotify playlist',
     trackCount: tracks.length,
+    totalTracks: Math.max(more.total, tracks.length),
+    // Spotify (or the time budget) stopped us; our own MAX_TRACKS cap is shown via totalTracks.
     partial: !more.complete,
     artists: tally(tracks.flat()),
   }

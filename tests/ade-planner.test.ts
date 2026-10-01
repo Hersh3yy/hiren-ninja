@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
 import { browseDaytime } from '../server/utils/ade-planner/browse'
+import { spotifyGid } from '../server/utils/ade-planner/playlist'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
@@ -183,5 +184,12 @@ describe('browseDaytime', () => {
     const result = browseDaytime(daytime, { ...none, kinds: ['interviews'] })
     expect(result.sessions.map(event => event.id)).toEqual(['p1'])
     expect(result.facets.kinds).toHaveLength(3)
+  })
+})
+
+describe('spotifyGid', () => {
+  it('turns a base62 track id into the 32-char hex id the metadata endpoint wants', () => {
+    expect(spotifyGid('0mqBXBoD2Ph1liAfzetIZH')).toBe('0be2e821f45f4444a92e4ecce3a097f9')
+    expect(spotifyGid('0000000000000000000001')).toBe('00000000000000000000000000000001')
   })
 })
