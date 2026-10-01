@@ -12,6 +12,7 @@
         Need something like this?
         <AtomsButton variant="link" to="/contact" text="Get in touch" data-umami-event="ade-contact-click" />.
         <span class="mt-2 block text-xs">Based on ADE's public program data. Not affiliated with Amsterdam Dance Event.</span>
+        <span class="mt-1 block text-xs">Searches are saved anonymously (the playlist link or names you enter, never who you are) to see what people look for. Your plan stays in your browser.</span>
       </p>
     </div>
   </section>

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-5">
-    <form class="flex flex-col gap-3 sm:flex-row sm:items-end" @submit.prevent="load(); track('ade-daytime-search', { hasQuery: Boolean(q.trim()) })">
+    <form class="flex flex-col gap-3 sm:flex-row sm:items-end" @submit.prevent="load({ log: true }); track('ade-daytime-search', { hasQuery: Boolean(q.trim()) })">
       <MoleculesFormField
         v-model="q"
         class="flex-1"

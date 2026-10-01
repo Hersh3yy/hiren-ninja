@@ -1,6 +1,7 @@
 import type { BrowseFilters } from '../../types/ade-planner'
 import { browseDaytime } from '../../utils/ade-planner/browse'
 import { loadAdeData } from '../../utils/ade-planner/data'
+import { recordAdeStats } from '../../utils/ade-planner/stats'
 
 const list = (value: unknown): string[] =>
   String(value ?? '').split(',').map(item => item.trim()).filter(Boolean).slice(0, 20)
@@ -18,5 +19,11 @@ export default defineEventHandler(async (event) => {
     genres: list(query.genres),
   } as BrowseFilters
 
-  return browseDaytime(await loadAdeData(), filters)
+  const data = await loadAdeData()
+  const result = browseDaytime(data, filters)
+  // log=1 only on a submitted search, not on every filter or day change.
+  if (query.log === '1' && filters.q) {
+    await recordAdeStats(data, { search: { kind: 'daytime', source: 'daytime', query: filters.q, resultCount: result.total } })
+  }
+  return result
 })

@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { useAdePlanner } from '~/composables/useAdePlanner.js'
+import { EXAMPLE_INPUT, useAdePlanner } from '~/composables/useAdePlanner.js'
 
 const props = defineProps({
   // Artist names handed over from the daytime tab: fill in and search right away.
@@ -81,7 +81,7 @@ const props = defineProps({
 
 defineEmits(['show-daytime'])
 
-const EXAMPLE = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
+const EXAMPLE = EXAMPLE_INPUT
 
 const {
   input, isLoading, error, playlist, result, days, sound, genreFilter,

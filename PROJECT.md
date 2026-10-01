@@ -122,6 +122,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - SEO: JSON-LD (Person, ProfessionalService, WebSite; WebApplication on /ade-planner), canonical + `og:url` per page, `og:image:alt`/size, `/blog` stub noindexed and out of the sitemap.
 - Load: about portrait 2.4 MB JPEG -> 8-37 KB AVIF/WebP/JPEG `<picture>` with width/height; fonts via one `<link>` instead of CSS `@import`s; first row of project covers eager + `fetchpriority`, the rest lazy.
 - Suggestions grouped by day; birds stay (calm off the home hero).
+- Anonymous search log: every parties search (playlist link + title, or typed names) and every submitted daytime query becomes a draft `ade-search` entry in VAMS with what matched and who's wanted but not on the lineup. No IP or browser details; the page says so. "Try an example" is logged with `example` and adds no artist hits.
 
 ### 2026-09-30 (night) — daytime tab for pass holders, ADE Planner in nav and projects
 - Daytime tab rebuilt around ADE Pro: the "I have an ADE Pro pass" checkbox is gone (the tab is for pass holders, Pro was hidden by default), ADE Pro & Lab sessions come first, festival daytime events under "More by day". Kind chips (Talks & panels, Interviews & Q&As, Meet the… sessions, Demos & gear, …) replace the Learn/Meet/Listen intents.

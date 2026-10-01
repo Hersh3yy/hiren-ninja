@@ -68,7 +68,8 @@ export function useDaytimeBrowse(initialQuery = '') {
     filters[group.key].map(value => ({ group: group.key, value, label: labelFor(group.key, value) }))
   ))
 
-  async function load() {
+  /** @param {{ log?: boolean }} [options] log: a submitted search, for the anonymous search log */
+  async function load({ log = false } = {}) {
     const request = ++latestRequest
     isLoading.value = true
     error.value = ''
@@ -77,6 +78,7 @@ export function useDaytimeBrowse(initialQuery = '') {
         query: {
           q: q.value.trim() || undefined,
           day: day.value || undefined,
+          log: log ? '1' : undefined,
           ...Object.fromEntries(FILTER_GROUPS.map(group => [group.key, filters[group.key].join(',') || undefined]))
         }
       })

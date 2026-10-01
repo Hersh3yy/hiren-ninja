@@ -73,6 +73,9 @@ export function genreProfile(items) {
   return [...counts].map(([genre, count]) => ({ genre, count })).sort((a, b) => b.count - a.count)
 }
 
+/** "Try an example" input; searches with exactly this text don't count as real interest. */
+export const EXAMPLE_INPUT = 'Adam Beyer\nAmelie Lens\nPaul Kalkbrenner\nKerri Chandler\nSomeone Not Playing'
+
 export function useAdePlanner() {
   const input = ref('')
   const isLoading = ref(false)
@@ -123,7 +126,20 @@ export function useAdePlanner() {
         artists = parseArtistList(value)
       }
 
-      result.value = await $fetch('/api/ade-planner/match', { method: 'POST', body: { artists } })
+      // What was searched, for the anonymous search log (VAMS ade-search).
+      const search = playlist.value
+        ? {
+            kind: 'playlist',
+            source: playlist.value.source,
+            playlistUrl: firstLine.value,
+            playlistTitle: playlist.value.title,
+            trackCount: playlist.value.trackCount,
+            partial: Boolean(playlist.value.partial),
+            query: value.split('\n').slice(1).join('\n').trim() || undefined
+          }
+        : { kind: 'names', source: 'names', query: value, example: value === EXAMPLE_INPUT }
+
+      result.value = await $fetch('/api/ade-planner/match', { method: 'POST', body: { artists, search } })
       track('ade-search', {
         input: playlist.value?.source ?? 'names',
         artists: artists.length,

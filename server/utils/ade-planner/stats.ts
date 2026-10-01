@@ -1,11 +1,52 @@
 import type { H3Event } from 'h3'
 import type { AdeData } from '../../types/ade-planner'
 
+export interface AdeSearchLog {
+  kind: 'playlist' | 'names' | 'daytime'
+  source?: string
+  playlistUrl?: string
+  playlistTitle?: string
+  trackCount?: number
+  partial?: boolean
+  /** typed names (extra names under a playlist link) or the daytime query */
+  query?: string
+  artistCount?: number
+  matchedArtists?: string[]
+  /** searched but not playing ADE */
+  unmatched?: string[]
+  resultCount?: number
+  example?: boolean
+}
+
 interface AdeStats {
   /** ade-artist entry ids a search found */
   hits?: string[]
   /** ade-event entry ids starred (+1) or unstarred (-1) */
   favorites?: { id: string, delta: 1 | -1 }[]
+  /** one search for the anonymous log (VAMS ade-search): what, never who */
+  search?: AdeSearchLog
+}
+
+const SOURCES = ['spotify', 'apple-music', 'youtube-music', 'names', 'daytime']
+const text = (value: unknown, max: number): string | undefined =>
+  typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : undefined
+
+/** The client's description of its search, trimmed to what VAMS accepts; null if unusable. */
+export function parseSearchLog(value: unknown): Omit<AdeSearchLog, 'artistCount' | 'matchedArtists' | 'unmatched' | 'resultCount'> | null {
+  if (!value || typeof value !== 'object') return null
+  const search = value as Record<string, unknown>
+  if (search.kind !== 'playlist' && search.kind !== 'names') return null
+  const playlistUrl = text(search.playlistUrl, 500)
+  return {
+    kind: search.kind,
+    source: SOURCES.includes(String(search.source)) ? String(search.source) : undefined,
+    playlistUrl: playlistUrl && /^https:\/\//.test(playlistUrl) ? playlistUrl : undefined,
+    playlistTitle: text(search.playlistTitle, 250),
+    trackCount: Number.isInteger(search.trackCount) ? Number(search.trackCount) : undefined,
+    partial: search.partial === true || undefined,
+    query: text(search.query, 5000),
+    example: search.example === true || undefined,
+  }
 }
 
 /**
@@ -15,7 +56,7 @@ interface AdeStats {
  */
 export async function recordAdeStats(data: AdeData, stats: AdeStats): Promise<void> {
   if (data.source !== 'vams' || !isVamsConfigured()) return
-  if (!stats.hits?.length && !stats.favorites?.length) return
+  if (!stats.hits?.length && !stats.favorites?.length && !stats.search) return
   try {
     await postVams('/ade-planner/stats', { ...stats })
   } catch (error) {
