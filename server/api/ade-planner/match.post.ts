@@ -2,7 +2,8 @@ import { loadAdeData } from '../../utils/ade-planner/data'
 import { matchArtists } from '../../utils/ade-planner/match'
 import { parseSearchLog, recordAdeStats } from '../../utils/ade-planner/stats'
 
-const MAX_ARTISTS = 500
+// A 1,000-track playlist can hold 600+ artists; matching is a map lookup, so check them all.
+const MAX_ARTISTS = 1_500
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ artists?: { name: string, weight?: number }[], search?: unknown }>(event)
@@ -19,7 +20,8 @@ export default defineEventHandler(async (event) => {
   const data = await loadAdeData()
   const result = matchArtists(data, queries)
   const search = parseSearchLog(body?.search)
-  const found = [...new Set(result.matches.map(match => match.artist.id))]
+  // VAMS takes up to 500 ids per call.
+  const found = [...new Set(result.matches.map(match => match.artist.id))].slice(0, 500)
   await recordAdeStats(data, {
     // "Try an example" isn't interest in those artists, so it adds no hits.
     hits: search?.example ? [] : found,
