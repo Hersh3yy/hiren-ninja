@@ -19,9 +19,7 @@
         @click="$emit('toggle', chip.group, chip.value)"
       />
       <span v-if="active.length > MAX_CHIPS" class="text-sm text-content-muted">+{{ active.length - MAX_CHIPS }} more</span>
-      <button v-if="active.length" type="button" class="text-sm text-content-muted underline underline-offset-2 hover:text-content" @click="$emit('clear')">
-        Clear
-      </button>
+      <AtomsButton v-if="active.length" variant="link-muted" class="text-sm" text="Clear" @click="$emit('clear')" />
     </div>
 
     <div v-if="open" id="ade-filters" class="space-y-4 rounded-xl border border-border-subtle bg-surface p-4">
@@ -37,14 +35,13 @@
             :pressed="isOn(group.key, option.value)"
             @click="$emit('toggle', group.key, option.value)"
           />
-          <button
+          <AtomsButton
             v-if="(facets[group.key] || []).length > LIMIT && !expanded[group.key]"
-            type="button"
-            class="text-sm text-content-muted underline underline-offset-2"
+            variant="link-muted"
+            class="text-sm"
+            :text="`All ${group.label.toLowerCase()}`"
             @click="expanded[group.key] = true"
-          >
-            All {{ group.label.toLowerCase() }}
-          </button>
+          />
         </div>
       </fieldset>
     </div>

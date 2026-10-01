@@ -47,4 +47,20 @@ export default withNuxt({
   rules: {
     'vue/no-mutating-props': 'warn'
   }
+}, {
+  // Atomic design, enforced: interactive HTML lives in atoms and molecules only, so
+  // focus rings, disabled states, new-tab hints and colours come from one place.
+  // Features and pages compose AtomsButton (incl. variant="link"), MoleculesIconButton,
+  // MoleculesFormField, MoleculesNavLink, AtomsChip, ... (app/components/README.md).
+  // The LED Sculpture experiment is a self-contained prototype with its own controls.
+  files: ['app/**/*.vue'],
+  ignores: ['app/components/atoms/**', 'app/components/molecules/**', 'app/components/LSS/**'],
+  rules: {
+    'vue/no-restricted-html-elements': ['error',
+      ...['button', 'a', 'input', 'select', 'textarea'].map(element => ({
+        element,
+        message: `Use an atom or molecule instead of a raw <${element}> (see app/components/README.md).`
+      }))
+    ]
+  }
 })

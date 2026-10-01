@@ -42,8 +42,9 @@ const experiments = Object.freeze([
   }
 ])
 
-function toggleExperiment(experimentId) {
-  openExperiment.value = openExperiment.value === experimentId ? null : experimentId
+function toggleExperiment(experimentId, open) {
+  if (open) openExperiment.value = experimentId
+  else if (openExperiment.value === experimentId) openExperiment.value = null
 }
 </script>
 

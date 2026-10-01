@@ -19,14 +19,9 @@
 
     <p v-if="artistsWithoutEvents.length" class="text-sm text-content-muted">
       On the lineup, event not announced yet:
-      <a
-        v-for="(match, i) in artistsWithoutEvents"
-        :key="match.artist.id"
-        :href="match.artist.adeUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-content hover:text-accent"
-      >{{ match.artist.name }}{{ i < artistsWithoutEvents.length - 1 ? ', ' : '' }}</a>
+      <template v-for="(match, i) in artistsWithoutEvents" :key="match.artist.id">
+        <AtomsButton variant="link-muted" :href="match.artist.adeUrl" external :text="match.artist.name" />{{ i < artistsWithoutEvents.length - 1 ? ', ' : '' }}
+      </template>
     </p>
 
     <details v-if="unmatched.length" class="text-sm text-content-muted">

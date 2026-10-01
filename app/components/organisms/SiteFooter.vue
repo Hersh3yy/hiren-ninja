@@ -11,18 +11,8 @@
             label="hello@hiren.ninja"
             :icon-path="ICONS.mail"
           />
-          <NuxtLink
-            to="/about"
-            class="text-content hover:text-accent transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
-          >
-            About
-          </NuxtLink>
-          <NuxtLink
-            to="/contact"
-            class="text-content hover:text-accent transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
-          >
-            Contact
-          </NuxtLink>
+          <MoleculesNavLink to="/about" text="About" />
+          <MoleculesNavLink to="/contact" text="Contact" />
         </div>
       </div>
     </div>

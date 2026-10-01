@@ -22,16 +22,16 @@
         <MoleculesNavLink v-for="link in links" :key="link.to" :to="link.to" :text="link.text" />
       </div>
 
-      <button
+      <MoleculesIconButton
         ref="menuButtonRef"
-        class="lg:hidden text-content rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        class="lg:hidden"
+        :icon-path="isMobileMenuOpen ? ICONS.close : ICONS.menu"
+        icon-size="md"
+        label="Toggle navigation menu"
         :aria-expanded="isMobileMenuOpen"
         aria-controls="mobile-menu"
-        aria-label="Toggle navigation menu"
         @click="toggleMobileMenu"
-      >
-        <AtomsIcon :path="isMobileMenuOpen ? ICONS.close : ICONS.menu" size="md" />
-      </button>
+      />
 
       <div
         v-show="isMobileMenuOpen"
@@ -80,7 +80,8 @@ function onDocumentKeydown(event) {
   if (event.key === 'Escape') {
     event.preventDefault()
     closeMobileMenu()
-    menuButtonRef.value?.focus()
+    // A component ref: focus its root <button>.
+    menuButtonRef.value?.$el?.focus()
   }
 }
 

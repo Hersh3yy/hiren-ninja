@@ -58,9 +58,7 @@
     <p v-if="daytimeWithYourArtists" class="text-sm text-content-muted">
       Your artists also have {{ daytimeWithYourArtists }} daytime {{ daytimeWithYourArtists === 1 ? 'event' : 'events' }}
       (talks, signings, showcases).
-      <button type="button" class="text-accent underline underline-offset-2" @click="$emit('show-daytime', daytimeQuery)">
-        See them in Daytime &amp; networking
-      </button>
+      <AtomsButton variant="link" text="See them in Daytime & networking" @click="$emit('show-daytime', daytimeQuery)" />
     </p>
 
     <AdePlannerSuggestions

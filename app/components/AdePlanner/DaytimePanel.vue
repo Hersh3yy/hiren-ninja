@@ -21,14 +21,13 @@
         :pressed="filters.kinds.includes(kind.value)"
         @click="toggle('kinds', kind.value)"
       />
-      <button
+      <AtomsButton
         v-if="!showAllKinds && kindOptions.length > KINDS_SHOWN"
-        type="button"
-        class="text-sm text-content-muted underline underline-offset-2 hover:text-content"
+        variant="link-muted"
+        class="text-sm"
+        :text="`${kindOptions.length - KINDS_SHOWN} more`"
         @click="showAllKinds = true"
-      >
-        {{ kindOptions.length - KINDS_SHOWN }} more
-      </button>
+      />
     </div>
 
     <MoleculesSegmentedTabs
@@ -52,9 +51,7 @@
 
     <p v-if="result.partyArtists.length" class="text-sm text-content-muted">
       {{ partyArtistsText }}
-      <button type="button" class="text-accent underline underline-offset-2" @click="$emit('show-parties', result.partyArtists.map(artist => artist.name))">
-        See them in Parties &amp; concerts
-      </button>
+      <AtomsButton variant="link" text="See them in Parties & concerts" @click="$emit('show-parties', result.partyArtists.map(artist => artist.name))" />
     </p>
 
     <p v-if="!isLoading && !result.total" class="text-sm text-content-muted">

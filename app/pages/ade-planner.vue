@@ -10,7 +10,7 @@
       <p class="mt-6 max-w-2xl text-sm text-content-muted">
         Built by Hiren, an Amsterdam developer who makes websites and tools for artists, labels and events.
         Need something like this?
-        <NuxtLink to="/contact" class="text-accent underline underline-offset-2" data-umami-event="ade-contact-click">Get in touch</NuxtLink>.
+        <AtomsButton variant="link" to="/contact" text="Get in touch" data-umami-event="ade-contact-click" />.
         <span class="mt-2 block text-xs">Based on ADE's public program data. Not affiliated with Amsterdam Dance Event.</span>
       </p>
     </div>

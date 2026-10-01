@@ -1,5 +1,6 @@
 <template>
   <div class="bg-ink min-h-screen flex flex-col relative font-sans">
+    <!-- eslint-disable-next-line vue/no-restricted-html-elements -- a skip link is plain HTML by design: first focusable element, no component layer -->
     <a
       href="#main-content"
       class="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:z-50 focus-visible:top-2 focus-visible:left-2 focus-visible:bg-accent focus-visible:text-ink focus-visible:px-4 focus-visible:py-2 focus-visible:rounded"

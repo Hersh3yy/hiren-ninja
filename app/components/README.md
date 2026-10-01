@@ -46,6 +46,26 @@ Text colour rule: body text `text-content`, secondary text `text-content-muted`,
 
 Frosted glass (`backdrop-blur`) only on small, fixed-size surfaces. A card that grows with results (a tool, a long list) uses `<MoleculesCard :blur="false">`: browsers drop oversized blur layers, so the card flickers away and the Vanta birds show on top.
 
+## Interactive HTML lives in atoms and molecules (lint-enforced)
+
+Raw `<button>`, `<a>`, `<input>`, `<select>` and `<textarea>` are an ESLint error outside
+`atoms/` and `molecules/` (`vue/no-restricted-html-elements`, LSS experiment exempt).
+Compose instead:
+
+| Need | Use |
+| --- | --- |
+| Action or link that looks like a button | `<AtomsButton>` (`href` external, `to` internal route) |
+| Action or link that reads as text ("Show them", "Clear", "Get in touch") | `<AtomsButton variant="link">` or `variant="link-muted"` |
+| Icon-only action | `<MoleculesIconButton label="...">` |
+| Navigation link | `<MoleculesNavLink>` |
+| Toggle pill | `<AtomsChip>` |
+| Form input | `<MoleculesFormField>` |
+
+Prefer native HTML over JavaScript where it does the job: `<details>`/`<summary>` for
+disclosure (`name="..."` for an exclusive accordion, see `Experiments/Collapsible.vue`).
+Those need no rule exception; a real exception gets an `eslint-disable-next-line` with
+the reason (the skip link in `layouts/default.vue`).
+
 ## The slot rule (props over slots)
 
 - **Atoms**: props only. No `<slot>`. Content comes in via props (e.g. `Heading` takes a `text` prop).

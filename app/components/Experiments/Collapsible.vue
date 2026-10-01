@@ -1,11 +1,14 @@
 <template>
-  <div class="w-full bg-surface rounded-lg overflow-hidden border border-border-subtle hover:border-border-default transition-all duration-300">
-    <button
-      type="button"
-      class="w-full text-left p-6 hover:bg-elevated transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
-      :aria-expanded="isOpen"
-      :aria-controls="panelId"
-      @click="$emit('toggle', experiment.id)"
+  <!-- Native disclosure: <summary> is the button (keyboard, aria-expanded for free) and
+       name="experiments" makes the browser keep one open at a time. -->
+  <details
+    name="experiments"
+    class="w-full bg-surface rounded-lg overflow-hidden border border-border-subtle hover:border-border-default transition-all duration-300"
+    :open="isOpen"
+    @toggle="onToggle"
+  >
+    <summary
+      class="block cursor-pointer list-none p-6 hover:bg-elevated transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent [&::-webkit-details-marker]:hidden"
     >
       <div class="flex items-center justify-between">
         <div class="flex-1">
@@ -20,7 +23,7 @@
           :class="{ 'rotate-180': isOpen }"
         />
       </div>
-    </button>
+    </summary>
 
     <Transition
       enter-active-class="transition-all duration-300 ease-out motion-reduce:transition-none"
@@ -30,7 +33,8 @@
       leave-from-class="opacity-100 max-h-screen"
       leave-to-class="opacity-0 max-h-0"
     >
-      <div v-if="isOpen" :id="panelId" class="overflow-hidden" role="region" :aria-label="experiment.title">
+      <!-- Mounted only while open, so an experiment's heavy code loads on demand. -->
+      <div v-if="isOpen" class="overflow-hidden">
         <div class="px-2 pb-2 border-t border-border-subtle">
           <div v-if="experimentComponent" class="mt-2">
             <component :is="experimentComponent" />
@@ -43,11 +47,11 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </details>
 </template>
 
 <script setup>
-import { computed, useId } from 'vue'
+import { computed } from 'vue'
 import { ICONS } from '~/utils/icons'
 import { LazyLSSExperiment } from '#components'
 
@@ -66,8 +70,12 @@ const props = defineProps({
   }
 })
 
-defineEmits(['toggle'])
+const emit = defineEmits(['toggle'])
 
-const panelId = useId()
+// Fires for clicks and for the browser closing this one when another opens.
+function onToggle(event) {
+  if (event.target.open !== props.isOpen) emit('toggle', props.experiment.id, event.target.open)
+}
+
 const experimentComponent = computed(() => EXPERIMENT_COMPONENTS[props.experiment.id] ?? null)
 </script>

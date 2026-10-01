@@ -3,6 +3,7 @@
     :is="tag"
     :type="tag === 'button' ? type : undefined"
     :href="href || undefined"
+    :to="to || undefined"
     :target="href && external ? '_blank' : undefined"
     :rel="href && external ? 'noopener noreferrer' : undefined"
     :disabled="tag === 'button' ? (disabled || loading) : undefined"
@@ -46,7 +47,9 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'ghost', 'outline'].includes(value)
+    // link / link-muted: an action that reads as text, inline in a sentence or a row of
+    // chips ("Show them", "Clear", "Get in touch"). Size is ignored for those.
+    validator: (value) => ['primary', 'secondary', 'ghost', 'outline', 'link', 'link-muted'].includes(value)
   },
   size: {
     type: String,
@@ -59,6 +62,11 @@ const props = defineProps({
     validator: (value) => ['button', 'submit', 'reset'].includes(value)
   },
   href: {
+    type: String,
+    default: ''
+  },
+  // Internal route; renders a NuxtLink (client-side navigation, prefetch).
+  to: {
     type: String,
     default: ''
   },
@@ -90,9 +98,18 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 
-const tag = computed(() => (props.href ? 'a' : 'button'))
+const NuxtLink = resolveComponent('NuxtLink')
+const tag = computed(() => (props.to ? NuxtLink : props.href ? 'a' : 'button'))
+const isLink = computed(() => props.variant === 'link' || props.variant === 'link-muted')
 
 const buttonClasses = computed(() => {
+  if (isLink.value) {
+    return [
+      'inline rounded-sm underline underline-offset-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed',
+      props.variant === 'link' ? 'text-accent hover:text-accent-hover' : 'text-content-muted hover:text-content'
+    ].join(' ')
+  }
+
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variantClasses = {

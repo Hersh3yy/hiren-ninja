@@ -20,9 +20,7 @@
 
     <p v-if="hiddenCount" class="text-sm text-content-muted">
       {{ hiddenCount }} hidden.
-      <button type="button" class="text-accent underline underline-offset-2" @click="showHidden = !showHidden">
-        {{ showHidden ? 'Hide them again' : 'Show them' }}
-      </button>
+      <AtomsButton variant="link" :text="showHidden ? 'Hide them again' : 'Show them'" @click="showHidden = !showHidden" />
     </p>
   </div>
 </template>
