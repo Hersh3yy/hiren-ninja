@@ -60,13 +60,16 @@
 
 <script setup>
 import { KIND_LABELS } from '~/composables/useDaytimeBrowse.js'
+import { planningDate } from '~/composables/useAdePlanner.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
   event: { type: Object, required: true },
   artists: { type: Array, default: () => [] },
   favorite: { type: Boolean, default: false },
-  hidden: { type: Boolean, default: false }
+  hidden: { type: Boolean, default: false },
+  // Lists not grouped under day headings (suggestions) put the day on the card.
+  showDay: { type: Boolean, default: false }
 })
 
 defineEmits(['toggle-favorite', 'toggle-hidden'])
@@ -78,6 +81,7 @@ const detailsId = useId()
 
 const clock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' })
 const weekday = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', weekday: 'short' })
+const shortDay = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', weekday: 'short', day: 'numeric', month: 'short' })
 
 // A 9-hour club night is long too, but "drop-in" only helps when planning a day.
 const isDropIn = computed(() => props.event.format === 'drop-in' && props.event.isParty === false)
@@ -104,6 +108,8 @@ const durationLabel = computed(() => {
 })
 
 const meta = computed(() => [
+  // An after-midnight party shows the night it belongs to, like the day headings do.
+  props.showDay && props.event.timeOfDay !== 'tba' ? shortDay.format(planningDate(props.event)) : '',
   props.event.venue,
   props.event.area,
   isDropIn.value ? `Drop-in${seriesRange.value ? ` · ${seriesRange.value}` : ''}` : ''

@@ -17,6 +17,7 @@
             :artists="item.artists"
             :favorite="isFavorite(item.event.id)"
             :hidden="isHidden(item.event.id)"
+            show-day
             @toggle-favorite="toggleFavorite(item.event, item.artists)"
             @toggle-hidden="toggleHidden(item.event.id)"
           />
