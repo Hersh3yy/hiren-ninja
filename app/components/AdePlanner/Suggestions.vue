@@ -10,20 +10,7 @@
     <AtomsLoader v-if="loading" type="spinner" size="md" color="accent" text="Finding similar artists" />
 
     <template v-else>
-      <ul class="space-y-2">
-        <template v-for="item in visibleEvents" :key="item.event.id">
-          <AdePlannerEventItem
-            :event="item.event"
-            :artists="item.artists"
-            :favorite="isFavorite(item.event.id)"
-            :hidden="isHidden(item.event.id)"
-            show-day
-            @toggle-favorite="toggleFavorite(item.event, item.artists)"
-            @toggle-hidden="toggleHidden(item.event.id)"
-          />
-          <li class="-mt-1 pb-1 pl-4 text-xs text-content-muted">{{ item.reason }}</li>
-        </template>
-      </ul>
+      <AdePlannerDayGroups :days="days" :heading-level="3" />
       <AtomsButton
         v-if="events.length > limit"
         variant="ghost"
@@ -36,8 +23,8 @@
 </template>
 
 <script setup>
-import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { useAdeHidden } from '~/composables/useAdeHidden.js'
+import { groupEventsByDay } from '~/composables/useAdePlanner.js'
 
 const props = defineProps({
   suggestions: { type: Array, default: () => [] },
@@ -46,8 +33,7 @@ const props = defineProps({
   excludeEventIds: { type: Array, default: () => [] }
 })
 
-const { isFavorite, toggleFavorite } = useAdeFavorites()
-const { isHidden, toggleHidden } = useAdeHidden()
+const { isHidden } = useAdeHidden()
 const limit = ref(6)
 
 function reasonText(reasons) {
@@ -73,8 +59,9 @@ const events = computed(() => {
       byEvent.set(event.id, entry)
     }
   }
-  return [...byEvent.values()].map(entry => ({ ...entry, reason: reasonText(entry.reasons) }))
+  return [...byEvent.values()].map(entry => ({ ...entry, note: reasonText(entry.reasons) }))
 })
 
-const visibleEvents = computed(() => events.value.filter(item => !isHidden(item.event.id)).slice(0, limit.value))
+// The best few suggestions, then laid out by day like your own results.
+const days = computed(() => groupEventsByDay(events.value.filter(item => !isHidden(item.event.id)).slice(0, limit.value)))
 </script>
