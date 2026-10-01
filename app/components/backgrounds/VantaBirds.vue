@@ -1,9 +1,9 @@
 <template>
-  <div ref="el" />
+  <div ref="el" class="transition-opacity duration-700" :class="calm ? 'opacity-60' : 'opacity-100'" />
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 const props = defineProps({
   // Matches the accent token (ADE yellow #ffff07).
@@ -14,25 +14,30 @@ const props = defineProps({
   birdSize: { type: Number, default: 0.7 },
   wingSpan: { type: Number, default: 40 },
   quantity: { type: Number, default: 5 },
-  speedLimit: { type: Number, default: 4 }
+  speedLimit: { type: Number, default: 4 },
+  // Pages you read or work on (not the hero): smaller, fewer, slower birds that don't
+  // chase the cursor. Bird size is baked into the geometry, so a change rebuilds the effect.
+  calm: { type: Boolean, default: false }
 })
+
+const CALM = { birdSize: 0.35, quantity: 4, speedLimit: 2.5, mouseControls: false, touchControls: false }
 
 const el = ref(null)
 let effect = null
+let BIRDS = null
+let THREE = null
 
-onMounted(async () => {
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    return
-  }
-
-  const THREE = await import('three')
-  if (typeof window !== 'undefined') {
-    window.THREE = THREE
-  }
-
+async function load() {
+  THREE = await import('three')
+  window.THREE = THREE
   const mod = await import('vanta/dist/vanta.birds.min')
-  const BIRDS = [mod.default, mod, window.VANTA?.BIRDS].find((c) => typeof c === 'function')
-  if (!BIRDS) return
+  BIRDS = [mod.default, mod, window.VANTA?.BIRDS].find((c) => typeof c === 'function') ?? null
+}
+
+function start() {
+  effect?.destroy()
+  effect = null
+  if (!BIRDS || !el.value) return
 
   effect = BIRDS({
     el: el.value,
@@ -51,9 +56,18 @@ onMounted(async () => {
     birdSize: props.birdSize,
     wingSpan: props.wingSpan,
     quantity: props.quantity,
-    speedLimit: props.speedLimit
+    speedLimit: props.speedLimit,
+    ...(props.calm ? CALM : {})
   })
+}
+
+onMounted(async () => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  await load()
+  start()
 })
+
+watch(() => props.calm, () => start())
 
 onBeforeUnmount(() => {
   effect?.destroy()

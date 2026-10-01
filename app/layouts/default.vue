@@ -6,7 +6,7 @@
     >
       Skip to content
     </a>
-    <BackgroundsVantaBirds class="fixed inset-0 z-0" aria-hidden="true" />
+    <BackgroundsVantaBirds class="fixed inset-0 z-0" aria-hidden="true" :calm="route.path !== '/'" />
     <div class="fixed inset-0 bg-grid-pattern opacity-10 z-[1]" aria-hidden="true"/>
     <OrganismsSiteHeader class="z-20" />
     <main id="main-content" tabindex="-1" class="flex-grow flex justify-center items-start z-10 mt-16 w-full max-w-full outline-none">
@@ -17,6 +17,9 @@
 </template>
 
 <script setup>
+// Full birds on the home hero only; on pages you read they'd pull focus, so they calm down.
+const route = useRoute()
+
 // Global SEO defaults. No animation scripts live here anymore - the Vanta birds
 // effect is fully owned by <BackgroundsVantaBirds /> (see app/components/backgrounds).
 useHead({
