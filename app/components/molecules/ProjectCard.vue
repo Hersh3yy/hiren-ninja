@@ -17,6 +17,11 @@
         v-if="project.coverImage?.url"
         :src="project.coverImage.url"
         :alt="project.title"
+        width="1600"
+        height="900"
+        :loading="eager ? 'eager' : 'lazy'"
+        :fetchpriority="eager ? 'high' : undefined"
+        decoding="async"
         class="project-card-cover w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105 group-focus-visible:scale-105"
         :data-project-cover="project.id"
       >
@@ -61,6 +66,11 @@ defineProps({
     type: Object,
     required: true,
     validator: (project) => Boolean(project?.id && project?.title)
+  },
+  // Cards in the first row load at once (they're the page's main image); the rest lazily.
+  eager: {
+    type: Boolean,
+    default: false
   }
 })
 </script>

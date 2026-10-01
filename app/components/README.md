@@ -61,8 +61,19 @@ Compose instead:
 | Toggle pill | `<AtomsChip>` |
 | Form input | `<MoleculesFormField>` |
 
-Prefer native HTML over JavaScript where it does the job: `<details>`/`<summary>` for
-disclosure (`name="..."` for an exclusive accordion, see `Experiments/Collapsible.vue`).
+Prefer native HTML over JavaScript where it does the job:
+
+- `<dialog>` + `showModal()` for modals (`MoleculesModalShell`): top layer, inert page,
+  focus trap, Escape and focus return come from the browser. Stacked dialogs (the image
+  lightbox over a project) close top-first on their own.
+- `popover` + `popovertarget` for menus (`SiteHeader`): toggle, Escape, click-outside,
+  `aria-expanded` and focus return built in.
+- `<details>`/`<summary>` for disclosure (`name="..."` for an exclusive accordion, see
+  `Experiments/Collapsible.vue`).
+- The View Transitions API for shared-element motion (`useSharedElementTransition`):
+  falls back to no animation where unsupported or with reduced motion.
+- `<picture>` with AVIF/WebP sources, `srcset`/`sizes`, `width`/`height`, `loading="lazy"`
+  for images below the fold (`AboutBio.vue`).
 Those need no rule exception; a real exception gets an `eslint-disable-next-line` with
 the reason (the skip link in `layouts/default.vue`).
 

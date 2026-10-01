@@ -24,7 +24,29 @@ useSeoMeta({
   description: 'Paste a Spotify, Apple Music or YouTube Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
   ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
   ogImage: 'https://hiren.ninja/og/og-ade.png',
-  ogUrl: 'https://hiren.ninja/ade-planner',
+  ogImageAlt: 'ADE Planner: paste a playlist, see which of your artists play ADE 2026',
+  twitterImageAlt: 'ADE Planner: paste a playlist, see which of your artists play ADE 2026',
   twitterCard: 'summary_large_image'
+})
+
+// A free web app, for search engines (schema.org JSON-LD).
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    key: 'ld-ade-planner',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'ADE Planner',
+      url: 'https://hiren.ninja/ade-planner',
+      description: 'Paste a Spotify, Apple Music or YouTube Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
+      applicationCategory: 'EntertainmentApplication',
+      operatingSystem: 'Any',
+      browserRequirements: 'Requires JavaScript',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      author: { '@id': 'https://hiren.ninja/#hiren' },
+      about: { '@type': 'Event', name: 'Amsterdam Dance Event 2026', startDate: '2026-10-21', endDate: '2026-10-25', location: { '@type': 'Place', name: 'Amsterdam', address: 'Amsterdam, NL' } }
+    })
+  }]
 })
 </script>

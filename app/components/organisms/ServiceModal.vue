@@ -3,7 +3,7 @@
     :is-open="isOpen"
     :title="serviceTitle"
     close-label="Close service request form"
-    panel-class="w-full max-w-2xl p-6 shadow-xl"
+    panel-class="max-w-2xl p-6"
     @close="close"
   >
     <form

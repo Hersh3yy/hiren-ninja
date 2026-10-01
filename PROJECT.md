@@ -116,6 +116,13 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 
 ## Diary
 
+### 2026-10-01 — native HTML, stricter atomic design, SEO and load
+- Interactive HTML only in atoms/molecules, lint-enforced (`vue/no-restricted-html-elements`). AtomsButton `variant="link"`/`"link-muted"` and `to`; footer on MoleculesNavLink.
+- Native platform over our own JS: modals on `<dialog>` (deleted the 165-line `useModalA11y.js`), phone menu on `popover`, experiments accordion on `<details name>`, card-to-dialog image morph on the View Transitions API (no cloned image).
+- SEO: JSON-LD (Person, ProfessionalService, WebSite; WebApplication on /ade-planner), canonical + `og:url` per page, `og:image:alt`/size, `/blog` stub noindexed and out of the sitemap.
+- Load: about portrait 2.4 MB JPEG -> 8-37 KB AVIF/WebP/JPEG `<picture>` with width/height; fonts via one `<link>` instead of CSS `@import`s; first row of project covers eager + `fetchpriority`, the rest lazy.
+- Suggestions grouped by day; birds stay (calm off the home hero).
+
 ### 2026-09-30 (night) — daytime tab for pass holders, ADE Planner in nav and projects
 - Daytime tab rebuilt around ADE Pro: the "I have an ADE Pro pass" checkbox is gone (the tab is for pass holders, Pro was hidden by default), ADE Pro & Lab sessions come first, festival daytime events under "More by day". Kind chips (Talks & panels, Interviews & Q&As, Meet the… sessions, Demos & gear, …) replace the Learn/Meet/Listen intents.
 - Root cause of "missing" Pro sessions: ADE published the Pro timetable on 30 Sep, after that morning's sync, so 121 of 125 sessions sat under "time TBA". Resynced. No schedule: rerun `php artisan ade:sync --reuse-pages` in VAMS by hand when needed.

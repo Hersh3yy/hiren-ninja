@@ -17,9 +17,10 @@
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6"
       >
         <MoleculesProjectCard
-          v-for="project in sortedProjects"
+          v-for="(project, i) in sortedProjects"
           :key="project.id"
           :project="project"
+          :eager="i < 4"
           :data-umami-event="`Project clicked ${project.title}`"
           @click="openModal"
         />
@@ -50,51 +51,35 @@ const sortedProjects = computed(() => data.value || [])
 const selectedIndex = ref(-1)
 const originCardId = ref(null)
 
-const { runOpen, runClose } = useSharedElementTransition()
+const { morph } = useSharedElementTransition()
 
 const selectedProject = computed(() => {
   if (selectedIndex.value < 0) return null
   return sortedProjects.value[selectedIndex.value] || null
 })
 
-async function openModal(project, event) {
+const coverOf = id => document.querySelector(`[data-project-cover="${id}"]`)
+const hero = () => document.querySelector('[data-project-hero]')
+
+// The card's cover grows into the dialog's hero image, and shrinks back on close.
+async function openModal(project) {
   const index = sortedProjects.value.findIndex((p) => p.id === project.id)
   if (index < 0) return
 
-  originCardId.value = project.id
-  selectedIndex.value = index
-
-  const coverEl = event?.currentTarget?.querySelector?.('[data-project-cover]')
-    || document.querySelector(`[data-project-cover="${project.id}"]`)
-
-  await nextTick()
-
-  if (coverEl && project.coverImage?.url) {
-    await runOpen({
-      sourceEl: coverEl,
-      targetSelector: '[data-project-hero]',
-      imageUrl: project.coverImage.url
-    })
-  }
+  await morph(project.coverImage?.url ? coverOf(project.id) : null, async () => {
+    originCardId.value = project.id
+    selectedIndex.value = index
+    await nextTick()
+  }, hero)
 }
 
 async function closeModal() {
-  const project = selectedProject.value
-  const coverEl = originCardId.value
-    ? document.querySelector(`[data-project-cover="${originCardId.value}"]`)
-    : null
-  const heroEl = document.querySelector('[data-project-hero]')
-
-  if (coverEl && heroEl && project?.coverImage?.url) {
-    await runClose({
-      sourceSelector: heroEl,
-      targetEl: coverEl,
-      imageUrl: project.coverImage.url
-    })
-  }
-
-  selectedIndex.value = -1
-  originCardId.value = null
+  const cardId = originCardId.value
+  await morph(hero(), async () => {
+    selectedIndex.value = -1
+    originCardId.value = null
+    await nextTick()
+  }, () => (cardId ? coverOf(cardId) : null))
 }
 
 function navigateToIndex(index) {

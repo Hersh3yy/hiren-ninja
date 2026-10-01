@@ -4,8 +4,8 @@
     :title="project?.title || 'Project'"
     :title-id="titleId"
     close-label="Close project details"
-    panel-class="w-full max-w-5xl max-h-[90vh] lg:h-[min(90vh,44rem)] overflow-y-auto relative"
-    @close="requestClose"
+    panel-class="max-w-5xl max-h-[90vh] lg:h-[min(90vh,44rem)] overflow-y-auto relative"
+    @close="emit('close')"
   >
     <template #header="{ titleId: id, close }">
       <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
@@ -83,32 +83,32 @@
     </div>
   </MoleculesModalShell>
 
-  <Teleport to="body">
-    <Transition name="lightbox">
-      <div
-        v-if="expandedImageUrl"
-        ref="lightboxRef"
-        class="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] cursor-zoom-out p-4"
-        role="dialog"
-        aria-modal="true"
-        :aria-label="`Expanded image for ${project?.title || 'project'}`"
-        tabindex="-1"
-        @click.self="expandedImageUrl = null"
-      >
-        <img
-          :src="expandedImageUrl"
-          class="max-w-[90vw] max-h-[90vh] object-contain"
-          :alt="`Expanded view of ${project?.title || 'project'}`"
-        >
-        <AtomsModalCloseButton
-          class="absolute top-4 right-4 text-white hover:text-accent"
-          label="Close expanded image"
-          size="lg"
-          @click="expandedImageUrl = null"
-        />
-      </div>
-    </Transition>
-  </Teleport>
+  <!-- A second native dialog: it stacks on top of the project dialog, so Escape and
+       the backdrop close the image first. -->
+  <MoleculesModalShell
+    :is-open="!!expandedImageUrl"
+    bare
+    :title-id="lightboxTitleId"
+    close-label="Close expanded image"
+    panel-class="max-w-[95vw] max-h-[95vh] cursor-zoom-out"
+    @close="expandedImageUrl = null"
+  >
+    <template #header="{ titleId: id, close }">
+      <span :id="id" class="sr-only">Expanded image for {{ project?.title || 'project' }}</span>
+      <AtomsModalCloseButton
+        class="absolute top-2 right-2 bg-ink/60 text-white hover:text-accent"
+        label="Close expanded image"
+        size="lg"
+        @click="close"
+      />
+    </template>
+    <img
+      :src="expandedImageUrl"
+      class="block max-w-[95vw] max-h-[95vh] object-contain"
+      :alt="`Expanded view of ${project?.title || 'project'}`"
+      @click="expandedImageUrl = null"
+    >
+  </MoleculesModalShell>
 </template>
 
 <script setup>
@@ -134,7 +134,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'navigate'])
 
 const titleId = useId()
-const lightboxRef = ref(null)
+const lightboxTitleId = useId()
 const expandedImageUrl = ref(null)
 
 const isLightboxOpen = computed(() => !!expandedImageUrl.value)
@@ -154,22 +154,6 @@ function onArrowKey(event) {
 
 onMounted(() => window.addEventListener('keydown', onArrowKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onArrowKey))
-
-function requestClose() {
-  if (expandedImageUrl.value) {
-    expandedImageUrl.value = null
-    return
-  }
-  emit('close')
-}
-
-useModalA11y({
-  isOpen: isLightboxOpen,
-  onClose: () => {
-    expandedImageUrl.value = null
-  },
-  containerRef: lightboxRef
-})
 
 watch(
   () => props.project?.id,

@@ -3,12 +3,23 @@
     <AtomsHeading id="about-bio-heading" text="Biography" :level="2" size="xl" variant="page" />
     <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
       <div class="w-full md:w-1/3 flex justify-center mb-6 md:mb-0">
-        <img
-          src="/mugshot.jpg"
-          alt="Portrait of Hiren"
-          class="w-48 sm:w-64 h-auto object-cover rounded-lg shadow-lg border-2 border-accent"
-          loading="lazy"
-        >
+        <!-- Shown 192-256px wide: 320/640px versions, AVIF then WebP then JPEG. Width and
+             height reserve the 2:3 box so the text doesn't jump when it loads. -->
+        <picture>
+          <source type="image/avif" srcset="/mugshot-320.avif 320w, /mugshot-640.avif 640w" sizes="(min-width: 640px) 256px, 192px">
+          <source type="image/webp" srcset="/mugshot-320.webp 320w, /mugshot-640.webp 640w" sizes="(min-width: 640px) 256px, 192px">
+          <img
+            src="/mugshot-640.jpg"
+            srcset="/mugshot-320.jpg 320w, /mugshot-640.jpg 640w"
+            sizes="(min-width: 640px) 256px, 192px"
+            width="640"
+            height="960"
+            alt="Portrait of Hiren"
+            class="w-48 sm:w-64 h-auto object-cover rounded-lg shadow-lg border-2 border-accent"
+            loading="lazy"
+            decoding="async"
+          >
+        </picture>
       </div>
       <div class="w-full md:w-2/3 text-content text-sm sm:text-base">
         <p class="mb-3 sm:mb-4">

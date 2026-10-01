@@ -5,6 +5,8 @@
     <NuxtLink to="/" class="group flex items-center gap-3" aria-label="Hiren Devs, go to home">
       <img
         src="/hirshi2.svg"
+        width="25"
+        height="36"
         alt=""
         aria-hidden="true"
         class="h-9 w-auto transition-transform duration-700 ease-in-out motion-safe:group-hover:rotate-[360deg]"
@@ -22,21 +24,22 @@
         <MoleculesNavLink v-for="link in links" :key="link.to" :to="link.to" :text="link.text" />
       </div>
 
+      <!-- Native popover: popovertarget toggles it, the browser sets aria-expanded,
+           closes it on Escape or a click outside, and hands focus back to the button. -->
       <MoleculesIconButton
-        ref="menuButtonRef"
         class="lg:hidden"
         :icon-path="isMobileMenuOpen ? ICONS.close : ICONS.menu"
         icon-size="md"
         label="Toggle navigation menu"
-        :aria-expanded="isMobileMenuOpen"
-        aria-controls="mobile-menu"
-        @click="toggleMobileMenu"
+        popovertarget="mobile-menu"
       />
 
       <div
-        v-show="isMobileMenuOpen"
         id="mobile-menu"
-        class="absolute top-full right-0 w-48 bg-surface/95 backdrop-blur-md lg:hidden rounded-b-lg z-[51] border border-border-subtle py-2"
+        ref="menuRef"
+        popover
+        class="fixed inset-auto top-[4.25rem] right-0 m-0 w-48 bg-surface/95 text-content backdrop-blur-md lg:hidden rounded-bl-lg border border-border-subtle py-2"
+        @toggle="isMobileMenuOpen = $event.newState === 'open'"
       >
         <MoleculesNavLink
           v-for="link in links"
@@ -44,7 +47,6 @@
           :to="link.to"
           :text="link.text"
           class="block px-4 py-2 hover:bg-elevated/50"
-          @click="closeMobileMenu"
         />
       </div>
     </nav>
@@ -52,12 +54,13 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ICONS } from '~/utils/icons'
 
+// Mirrors the popover's state, only to swap the menu / close icon.
 const isMobileMenuOpen = ref(false)
-const menuButtonRef = ref(null)
+const menuRef = ref(null)
 
 const links = Object.freeze([
   { to: '/about', text: 'About' },
@@ -67,41 +70,9 @@ const links = Object.freeze([
   { to: '/ade-planner', text: 'ADE Planner' }
 ])
 
-function toggleMobileMenu() {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
-}
-
-function closeMobileMenu() {
-  isMobileMenuOpen.value = false
-}
-
-function onDocumentKeydown(event) {
-  if (!isMobileMenuOpen.value) return
-  if (event.key === 'Escape') {
-    event.preventDefault()
-    closeMobileMenu()
-    // A component ref: focus its root <button>.
-    menuButtonRef.value?.$el?.focus()
-  }
-}
-
-watch(isMobileMenuOpen, (open) => {
-  if (open) {
-    document.addEventListener('keydown', onDocumentKeydown)
-  } else {
-    document.removeEventListener('keydown', onDocumentKeydown)
-  }
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', onDocumentKeydown)
-})
-
+// Client-side navigation doesn't reload the page, so close the menu ourselves.
 const route = useRoute()
-watch(
-  () => route.path,
-  () => {
-    isMobileMenuOpen.value = false
-  }
-)
+watch(() => route.path, () => {
+  if (menuRef.value?.matches(':popover-open')) menuRef.value.hidePopover()
+})
 </script>

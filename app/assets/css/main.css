@@ -22,11 +22,7 @@
     @apply bg-surface/80 backdrop-blur-xl rounded-xl p-6 border border-border-subtle hover:border-accent-muted transition-all;
   }
 
-  /* Modal */
-  .modal-container {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50;
-  }
-
+  /* Modal: native <dialog> (MoleculesModalShell) */
   .modal-content {
     @apply bg-surface rounded-xl border border-border-subtle overflow-hidden;
   }
@@ -57,55 +53,65 @@
   }
 }
 
-/* Modal enter / leave */
-.project-modal-enter-active,
-.project-modal-leave-active {
-  transition: opacity 0.28s ease;
+/* Native <dialog> modals (MoleculesModalShell). Reset the UA box, keep a 1rem gutter.
+   In the components layer, so a panel-class utility (p-6, max-w-5xl) still wins. */
+@layer components {
+  .modal-dialog {
+    margin: auto;
+    padding: 0;
+    width: calc(100% - 2rem);
+    max-height: calc(100dvh - 2rem);
+    color: inherit;
+  }
+
+  .modal-dialog--bare {
+    width: auto;
+    background: transparent;
+    border: 0;
+    overflow: visible;
+  }
 }
 
-.project-modal-enter-active .modal-content,
-.project-modal-leave-active .modal-content {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+.modal-dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
 }
 
-.project-modal-enter-from,
-.project-modal-leave-to {
-  opacity: 0;
+.modal-dialog[open] {
+  animation: modal-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.project-modal-enter-from .modal-content,
-.project-modal-leave-to .modal-content {
-  opacity: 0;
-  transform: scale(0.96) translateY(0.75rem);
+.modal-dialog[open]::backdrop {
+  animation: modal-fade 0.28s ease;
 }
 
-.lightbox-enter-active,
-.lightbox-leave-active {
-  transition: opacity 0.2s ease;
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(0.75rem);
+  }
 }
 
-.lightbox-enter-from,
-.lightbox-leave-to {
-  opacity: 0;
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
 }
 
-.shared-element-clone {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+/* A modal dialog makes the page inert but not unscrollable; stop the page behind it. */
+html:has(.modal-dialog[open]) {
+  overflow: hidden;
+}
+
+/* Card cover <-> dialog hero (useSharedElementTransition) */
+::view-transition-group(project-hero) {
+  animation-duration: 0.36s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-modal-enter-active,
-  .project-modal-leave-active,
-  .project-modal-enter-active .modal-content,
-  .project-modal-leave-active .modal-content,
-  .lightbox-enter-active,
-  .lightbox-leave-active {
-    transition-duration: 0.01ms !important;
-  }
-
-  .project-modal-enter-from .modal-content,
-  .project-modal-leave-to .modal-content {
-    transform: none;
+  .modal-dialog[open],
+  .modal-dialog[open]::backdrop {
+    animation: none;
   }
 
   .card img,

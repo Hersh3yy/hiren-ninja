@@ -1,142 +1,46 @@
-import { ref } from 'vue'
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-const DEFAULT_DURATION_MS = 360
-
-function prefersReducedMotion() {
-  if (typeof window === 'undefined' || !window.matchMedia) return false
-  return window.matchMedia(REDUCED_MOTION_QUERY).matches
-}
-
-function rectToStyle(rect) {
-  return {
-    position: 'fixed',
-    top: `${rect.top}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-    margin: '0',
-    zIndex: '70',
-    objectFit: 'cover',
-    borderRadius: '0.75rem',
-    pointerEvents: 'none'
-  }
-}
-
 /**
- * FLIP-style shared element transition between a card image and modal hero.
+ * Card image -> dialog hero (and back) with the View Transitions API: the browser
+ * snapshots the page before and after `update`, and morphs the one element that carries
+ * the same view-transition-name in both. No cloned <img>, and it works with <dialog>
+ * in the top layer. Without support or with reduced motion it just runs the update.
  */
+const NAME = 'project-hero'
+
+function canAnimate() {
+  return typeof document !== 'undefined'
+    && typeof document.startViewTransition === 'function'
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 export function useSharedElementTransition() {
-  const isAnimating = ref(false)
+  /**
+   * @param {Element|null} fromEl   element shown now (card cover or dialog hero)
+   * @param {() => Promise<void>} update  state change, resolves once the DOM is updated
+   * @param {() => Element|null} getToEl  the matching element after the update
+   */
+  async function morph(fromEl, update, getToEl) {
+    if (!fromEl || !canAnimate()) {
+      await update()
+      return
+    }
 
-  function animateClone(clone, fromRect, toRect, durationMs) {
-    return new Promise((resolve) => {
-      Object.assign(clone.style, rectToStyle(fromRect))
-      document.body.appendChild(clone)
-
-      // Force layout before animating to the destination rect
-      clone.getBoundingClientRect()
-
-      clone.style.transition = `top ${durationMs}ms cubic-bezier(0.22, 1, 0.36, 1), left ${durationMs}ms cubic-bezier(0.22, 1, 0.36, 1), width ${durationMs}ms cubic-bezier(0.22, 1, 0.36, 1), height ${durationMs}ms cubic-bezier(0.22, 1, 0.36, 1), border-radius ${durationMs}ms ease`
-
-      requestAnimationFrame(() => {
-        Object.assign(clone.style, {
-          top: `${toRect.top}px`,
-          left: `${toRect.left}px`,
-          width: `${toRect.width}px`,
-          height: `${toRect.height}px`
-        })
-      })
-
-      const finish = () => {
-        clone.removeEventListener('transitionend', finish)
-        resolve()
-      }
-
-      clone.addEventListener('transitionend', finish)
-      window.setTimeout(finish, durationMs + 80)
+    fromEl.style.viewTransitionName = NAME
+    let toEl = null
+    const transition = document.startViewTransition(async () => {
+      fromEl.style.viewTransitionName = ''
+      await update()
+      toEl = getToEl()
+      if (toEl) toEl.style.viewTransitionName = NAME
     })
-  }
-
-  async function runOpen({ sourceEl, targetSelector, imageUrl, durationMs = DEFAULT_DURATION_MS }) {
-    if (!sourceEl || !imageUrl || prefersReducedMotion()) {
-      return
-    }
-
-    isAnimating.value = true
-    const fromRect = sourceEl.getBoundingClientRect()
-
-    const clone = document.createElement('img')
-    clone.src = imageUrl
-    clone.alt = ''
-    clone.setAttribute('aria-hidden', 'true')
-    clone.className = 'shared-element-clone'
-
-    // Brief wait so the modal can mount and expose the target
-    await new Promise((r) => requestAnimationFrame(r))
-    await new Promise((r) => requestAnimationFrame(r))
-
-    const targetEl = typeof targetSelector === 'string'
-      ? document.querySelector(targetSelector)
-      : targetSelector
-
-    if (!targetEl) {
-      isAnimating.value = false
-      return
-    }
-
-    const toRect = targetEl.getBoundingClientRect()
-    targetEl.style.opacity = '0'
 
     try {
-      await animateClone(clone, fromRect, toRect, durationMs)
+      await transition.finished
+    } catch {
+      // Skipped (e.g. tab hidden): the update itself has still run.
     } finally {
-      clone.remove()
-      targetEl.style.opacity = ''
-      isAnimating.value = false
+      if (toEl) toEl.style.viewTransitionName = ''
     }
   }
 
-  async function runClose({ sourceSelector, targetEl, imageUrl, durationMs = DEFAULT_DURATION_MS }) {
-    if (!targetEl || !imageUrl || prefersReducedMotion()) {
-      return
-    }
-
-    isAnimating.value = true
-
-    const sourceEl = typeof sourceSelector === 'string'
-      ? document.querySelector(sourceSelector)
-      : sourceSelector
-
-    const fromEl = sourceEl || targetEl
-    const fromRect = fromEl.getBoundingClientRect()
-    const toRect = targetEl.getBoundingClientRect()
-
-    const clone = document.createElement('img')
-    clone.src = imageUrl
-    clone.alt = ''
-    clone.setAttribute('aria-hidden', 'true')
-    clone.className = 'shared-element-clone'
-
-    if (sourceEl) {
-      sourceEl.style.opacity = '0'
-    }
-
-    try {
-      await animateClone(clone, fromRect, toRect, durationMs)
-    } finally {
-      clone.remove()
-      if (sourceEl) {
-        sourceEl.style.opacity = ''
-      }
-      isAnimating.value = false
-    }
-  }
-
-  return {
-    isAnimating,
-    runOpen,
-    runClose,
-    prefersReducedMotion
-  }
+  return { morph }
 }

@@ -21,10 +21,62 @@
 // Full birds on the home hero only; on pages you read they'd pull focus, so they calm down.
 const route = useRoute()
 
-// Global SEO defaults. No animation scripts live here anymore - the Vanta birds
-// effect is fully owned by <BackgroundsVantaBirds /> (see app/components/backgrounds).
+const SITE = 'https://hiren.ninja'
+// One URL per page for search engines and share cards (no trailing slash, no query).
+const canonicalUrl = computed(() => SITE + (route.path === '/' ? '/' : route.path.replace(/\/$/, '')))
+
+// Who is behind the site, for search engines (schema.org JSON-LD). Facts only.
+const STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE}/#hiren`,
+      name: 'Hiren',
+      jobTitle: 'Developer',
+      url: SITE,
+      email: 'mailto:hello@hiren.ninja',
+      image: `${SITE}/mugshot-640.jpg`,
+      address: { '@type': 'PostalAddress', addressLocality: 'Amsterdam', addressCountry: 'NL' },
+      knowsAbout: ['Web development', 'Nuxt', 'Laravel', 'AI', 'Automation', 'Electronic music']
+    },
+    {
+      '@type': 'ProfessionalService',
+      '@id': `${SITE}/#service`,
+      name: 'Hiren Devs',
+      url: SITE,
+      email: 'hello@hiren.ninja',
+      founder: { '@id': `${SITE}/#hiren` },
+      areaServed: 'Worldwide',
+      address: { '@type': 'PostalAddress', addressLocality: 'Amsterdam', addressCountry: 'NL' },
+      description: 'Websites, software, AI and automation for artists, designers, agencies and growing businesses.'
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE}/#website`,
+      name: 'Hiren.ninja',
+      url: SITE,
+      publisher: { '@id': `${SITE}/#service` },
+      inLanguage: 'en'
+    }
+  ]
+}
+
+// Global SEO defaults; pages override title, description and share image with useSeoMeta.
 useHead({
+  link: [
+    { rel: 'canonical', href: canonicalUrl, key: 'canonical' },
+    { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
+  ],
+  script: [
+    { type: 'application/ld+json', key: 'ld-site', innerHTML: JSON.stringify(STRUCTURED_DATA) }
+  ],
   meta: [
+    { property: 'og:url', content: canonicalUrl, key: 'og:url' },
+    { property: 'og:image:width', content: '1200', key: 'og:image:width' },
+    { property: 'og:image:height', content: '630', key: 'og:image:height' },
+    { property: 'og:image:alt', content: 'Hiren Devs: technology for creative businesses', key: 'og:image:alt' },
+    { name: 'twitter:image:alt', content: 'Hiren Devs: technology for creative businesses', key: 'twitter:image:alt' },
     { name: 'author', content: 'Hiren' },
     { property: 'og:site_name', content: 'Hiren.ninja' },
     { property: 'og:type', content: 'website' },
@@ -34,14 +86,7 @@ useHead({
     { name: 'theme-color', content: '#0d0d0d' },
     { name: 'apple-mobile-web-app-capable', content: 'yes' },
     { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }
-  ],
-  link: [
-    { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
   ]
 })
 </script>
 
-<style>
-@import url("https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700&display=swap");
-</style>

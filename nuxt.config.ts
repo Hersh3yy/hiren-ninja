@@ -18,7 +18,13 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/hirshi2.svg' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        // One <link> in the head, not CSS @imports: the browser finds the font CSS in the
+        // HTML right away instead of after downloading and parsing another stylesheet.
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700&family=Sixtyfour+Convergence:SCAN,XELA,YELA@-16,60,-94&display=swap'
+        }
       ],
       script: [
         {
@@ -81,7 +87,9 @@ export default defineNuxtConfig({
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },
-    '/experiments/**': { robots: false }
+    '/experiments/**': { robots: false },
+    // "Coming soon" stub: keep it out of search and the sitemap until it has posts.
+    '/blog': { robots: false }
   },
   future: {
     compatibilityVersion: 4,
