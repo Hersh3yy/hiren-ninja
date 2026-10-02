@@ -7,15 +7,20 @@ const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|
 const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' })
 const dayLabel = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, weekday: 'long', day: 'numeric', month: 'long' })
 
+// Copied lineups tag names: "Bassjackers (NL)", "Kerri Chandler (live)", "X [DJ set]".
+// Only after a name, so an act called "[IVY]" stays whole.
+const LINEUP_TAG = /\s+(?:\((?:[A-Z]{2,3}|live|dj ?set|hybrid|a\/v)\)|\[(?:live|dj ?set|hybrid|a\/v)\])\s*$/i
+
 /** "a, b\nc" -> [{ name: 'a', weight: 1 }, ...], deduplicated case-insensitively. */
 export function parseArtistList(text) {
   const seen = new Set()
   return text
     .split(/[\n,;]+/)
-    .map(name => name.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').trim())
+    .map(name => name.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').replace(LINEUP_TAG, '').trim())
     .filter((name) => {
       const key = name.toLowerCase()
-      if (!name || seen.has(key)) return false
+      // Separator lines ("-", "•••") are not names.
+      if (!/[\p{L}\p{N}]/u.test(name) || seen.has(key)) return false
       seen.add(key)
       return true
     })

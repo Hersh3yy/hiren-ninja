@@ -69,6 +69,10 @@ describe('matchArtists', () => {
 })
 
 describe('parseArtistList', () => {
+  it('drops country codes and set tags from copied lineups, and separator lines', () => {
+    expect(parseArtistList('Ely Oaks (AT)\n\n-\nBassjackers (NL)\nKerri Chandler (live)\nT78 [DJ set]\n[IVY]').map(a => a.name))
+      .toEqual(['Ely Oaks', 'Bassjackers', 'Kerri Chandler', 'T78', '[IVY]'])
+  })
   it('splits lines and commas, strips list markers but not names starting with digits', () => {
     expect(parseArtistList('22 Weeks\n1. Adam Beyer\n- amelie lens, Amelie Lens\n2) 2CENT').map(a => a.name))
       .toEqual(['22 Weeks', 'Adam Beyer', 'amelie lens', '2CENT'])
