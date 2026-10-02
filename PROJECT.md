@@ -123,6 +123,7 @@ Worst first. Grounded in two fan-out audits (frontend; integrations/security). S
 - Load: about portrait 2.4 MB JPEG -> 8-37 KB AVIF/WebP/JPEG `<picture>` with width/height; fonts via one `<link>` instead of CSS `@import`s; first row of project covers eager + `fetchpriority`, the rest lazy.
 - Suggestions grouped by day; birds stay (calm off the home hero).
 - Spotify playlists past 100 tracks again: api.spotify.com gives the embed token a ~20h 429 (QUOTA_EXCEEDED), so tracks 101+ now come from the web player's spclient endpoints (track list in one call, artists per track 50 in parallel, newest first, 6s budget, up to 1,000 tracks). A 966-track playlist reads fully in ~6s; [IVY] (tracks 704-961) is found.
+- Per-artist intent: ade-artist `searches` (typed by name) next to `hits` (any find, playlist or typed); backfilled from the search log (17 artists). Pasted lineups with "(NL)"/"(live)" tags now match (1 of 60 -> 35).
 - Anonymous search log: every parties search (playlist link + title, or typed names) and every submitted daytime query becomes a draft `ade-search` entry in VAMS with what matched and who's wanted but not on the lineup. No IP or browser details; the page says so. "Try an example" is logged with `example` and adds no artist hits.
 
 ### 2026-09-30 (night) — daytime tab for pass holders, ADE Planner in nav and projects

@@ -19,8 +19,10 @@ export interface AdeSearchLog {
 }
 
 interface AdeStats {
-  /** ade-artist entry ids a search found */
+  /** ade-artist entry ids a search found (playlist or typed) */
   hits?: string[]
+  /** ade-artist entry ids someone typed by name: the stronger signal */
+  searched?: string[]
   /** ade-event entry ids starred (+1) or unstarred (-1) */
   favorites?: { id: string, delta: 1 | -1 }[]
   /** one search for the anonymous log (VAMS ade-search): what, never who */
@@ -56,7 +58,7 @@ export function parseSearchLog(value: unknown): Omit<AdeSearchLog, 'artistCount'
  */
 export async function recordAdeStats(data: AdeData, stats: AdeStats): Promise<void> {
   if (data.source !== 'vams' || !isVamsConfigured()) return
-  if (!stats.hits?.length && !stats.favorites?.length && !stats.search) return
+  if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.search) return
   try {
     await postVams('/ade-planner/stats', { ...stats })
   } catch (error) {

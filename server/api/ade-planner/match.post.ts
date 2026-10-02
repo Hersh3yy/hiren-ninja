@@ -25,6 +25,8 @@ export default defineEventHandler(async (event) => {
   await recordAdeStats(data, {
     // "Try an example" isn't interest in those artists, so it adds no hits.
     hits: search?.example ? [] : found,
+    // Typed names are a stronger signal than a find in a 600-track playlist.
+    searched: search?.kind === 'names' && !search.example ? found : [],
     search: search && {
       ...search,
       artistCount: queries.length,
