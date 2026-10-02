@@ -203,11 +203,15 @@ describe('matching on a one-artist event title', () => {
     const misnamed: AdeData = {
       ...data,
       artists: [...data.artists, { id: '9', name: 'Nimino Banner', country: 'gb', spotifyId: null, adeUrl: 'https://ade/9', eventIds: ['e9'] }],
-      events: [...data.events, { id: 'e9', title: 'Nimino', subtitle: null, startsAt: '2026-10-22T19:30:00+02:00', endsAt: null, venue: 'Melkweg', categories: null, soldOut: false, adeUrl: 'https://ade/e9', lineup: ['9'] }],
+      events: [
+        ...data.events,
+        { id: 'e9', title: 'Nimino', subtitle: null, startsAt: '2026-10-22T19:30:00+02:00', endsAt: null, venue: 'Melkweg', categories: null, soldOut: false, adeUrl: 'https://ade/e9', lineup: ['9'] },
+        { id: 'e10', title: 'MEDUZA', subtitle: null, startsAt: '2026-10-23T23:00:00+02:00', endsAt: null, venue: 'Club', categories: null, soldOut: false, adeUrl: 'https://ade/e10', lineup: ['1'] },
+      ],
     }
-    const { matches, unmatched } = matchArtists(misnamed, [{ name: 'nimino', weight: 1 }, { name: 'Drumcode', weight: 1 }])
+    const { matches, unmatched } = matchArtists(misnamed, [{ name: 'nimino', weight: 1 }, { name: 'Drumcode', weight: 1 }, { name: 'Meduza', weight: 1 }])
     expect(matches.map(match => match.artist.name)).toEqual(['Nimino Banner'])
-    // Drumcode has two artists on its lineup, so its title is no artist's name.
-    expect(unmatched).toEqual(['Drumcode'])
+    // Drumcode has two artists; "MEDUZA" is a party with Adam Beyer on it, not the act.
+    expect(unmatched).toEqual(['Drumcode', 'Meduza'])
   })
 })

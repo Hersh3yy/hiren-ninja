@@ -38,14 +38,18 @@ export function buildIndex(data: AdeData): AdeIndex {
   }
 
   // ADE sometimes names an artist oddly ("Nimino Banner") while the show is titled after
-  // them ("Nimino"). A one-artist event's title is then the better name.
+  // them ("Nimino"). Then the one-artist event's title is the better name.
   const artistsById = new Map(data.artists.map(artist => [artist.id, artist]))
   const bySoloEventTitle = new Map<string, AdeArtist>()
   for (const event of data.events) {
     const lineup = [...new Set(event.lineup ?? [])]
     const artist = lineup.length === 1 ? artistsById.get(lineup[0]!) : undefined
     const key = normalizeArtistName(event.title)
-    if (artist && key && !bySoloEventTitle.has(key)) bySoloEventTitle.set(key, artist)
+    // Only when the title is how the artist's own name starts: an event called "MEDUZA"
+    // with Paul van Dyk on it is a party name, not Meduza.
+    if (artist && key && `${normalizeArtistName(artist.name)} `.startsWith(`${key} `) && !bySoloEventTitle.has(key)) {
+      bySoloEventTitle.set(key, artist)
+    }
   }
 
   const index = {
