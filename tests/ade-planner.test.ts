@@ -197,3 +197,17 @@ describe('spotifyGid', () => {
     expect(spotifyGid('0000000000000000000001')).toBe('00000000000000000000000000000001')
   })
 })
+
+describe('matching on a one-artist event title', () => {
+  it('finds an artist ADE misnamed, through the show named after them', () => {
+    const misnamed: AdeData = {
+      ...data,
+      artists: [...data.artists, { id: '9', name: 'Nimino Banner', country: 'gb', spotifyId: null, adeUrl: 'https://ade/9', eventIds: ['e9'] }],
+      events: [...data.events, { id: 'e9', title: 'Nimino', subtitle: null, startsAt: '2026-10-22T19:30:00+02:00', endsAt: null, venue: 'Melkweg', categories: null, soldOut: false, adeUrl: 'https://ade/e9', lineup: ['9'] }],
+    }
+    const { matches, unmatched } = matchArtists(misnamed, [{ name: 'nimino', weight: 1 }, { name: 'Drumcode', weight: 1 }])
+    expect(matches.map(match => match.artist.name)).toEqual(['Nimino Banner'])
+    // Drumcode has two artists on its lineup, so its title is no artist's name.
+    expect(unmatched).toEqual(['Drumcode'])
+  })
+})

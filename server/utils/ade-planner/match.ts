@@ -8,6 +8,8 @@ export interface IndexEntry {
 
 export interface AdeIndex {
   byName: Map<string, IndexEntry[]>
+  /** event title -> its only lineup artist, for when ADE misnames the artist */
+  bySoloEventTitle: Map<string, AdeArtist>
   eventsById: Map<string, AdeEvent>
   artistNamesById: Map<string, string>
 }
@@ -35,8 +37,20 @@ export function buildIndex(data: AdeData): AdeIndex {
     }
   }
 
+  // ADE sometimes names an artist oddly ("Nimino Banner") while the show is titled after
+  // them ("Nimino"). A one-artist event's title is then the better name.
+  const artistsById = new Map(data.artists.map(artist => [artist.id, artist]))
+  const bySoloEventTitle = new Map<string, AdeArtist>()
+  for (const event of data.events) {
+    const lineup = [...new Set(event.lineup ?? [])]
+    const artist = lineup.length === 1 ? artistsById.get(lineup[0]!) : undefined
+    const key = normalizeArtistName(event.title)
+    if (artist && key && !bySoloEventTitle.has(key)) bySoloEventTitle.set(key, artist)
+  }
+
   const index = {
     byName,
+    bySoloEventTitle,
     eventsById: new Map(data.events.map(event => [event.id, event])),
     artistNamesById: new Map(data.artists.map(artist => [artist.id, artist.name])),
   }
@@ -72,7 +86,10 @@ export function matchArtists(data: AdeData, queries: { name: string, weight: num
   const matchByName = new Map<string, ArtistMatch>()
 
   for (const { name, weight } of queries) {
-    const hits = index.byName.get(normalizeArtistName(name)) ?? index.byName.get(`~${compactArtistName(name)}`) ?? []
+    const soloEventArtist = index.bySoloEventTitle.get(normalizeArtistName(name))
+    const hits = index.byName.get(normalizeArtistName(name))
+      ?? index.byName.get(`~${compactArtistName(name)}`)
+      ?? (soloEventArtist ? [{ artist: soloEventArtist, matchType: 'exact' as const }] : [])
     const exact = hits.filter(hit => hit.matchType === 'exact')
     const chosen = exact.length > 0 ? exact : hits
 
