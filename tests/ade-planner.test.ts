@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
+import { closestName, editDistance, normalizeArtistName, splitCompositeAct } from '../server/utils/ade-planner/normalize'
 import { matchArtists } from '../server/utils/ade-planner/match'
 import { browseDaytime } from '../server/utils/ade-planner/browse'
 import { spotifyGid } from '../server/utils/ade-planner/playlist'
@@ -213,5 +213,43 @@ describe('matching on a one-artist event title', () => {
     expect(matches.map(match => match.artist.name)).toEqual(['Nimino Banner'])
     // Drumcode has two artists; "MEDUZA" is a party with Adam Beyer on it, not the act.
     expect(unmatched).toEqual(['Drumcode', 'Meduza'])
+  })
+})
+
+describe('did you mean', () => {
+  it('finds the lineup name behind a typo, not behind a different artist', () => {
+    const lineup = ['Enrico Sangiuliano', 'Dave Clarke', 'Amelie Lens', 'Adam Beyer', 'Fisher Price']
+    expect(closestName('enrico sanguiliano', lineup)).toBe('Enrico Sangiuliano')
+    expect(closestName('Dave Clark', lineup)).toBe('Dave Clarke')
+    expect(closestName('Amelie Lense', lineup)).toBe('Amelie Lens')
+    expect(closestName('Fisher', lineup)).toBeNull()
+    expect(closestName('ABC', lineup)).toBeNull()
+    expect(editDistance('sangiuliano', 'sanguiliano', 2)).toBe(1)
+  })
+})
+
+describe('daytime search', () => {
+  const session = (id: string, title: string, extra: Partial<AdeData['events'][number]>) => ({
+    id, title, subtitle: null, startsAt: '2026-10-21T13:00:00+02:00', endsAt: '2026-10-21T14:00:00+02:00', venue: 'Felix Meritis',
+    categories: null, soldOut: false, adeUrl: `https://ade/${id}`, lineup: [], isParty: false, format: 'session' as const, ...extra,
+  })
+  const daytime: AdeData = {
+    ...data,
+    events: [
+      ...data.events.map(event => ({ ...event, genres: ['Hard Dance'] })),
+      session('p1', 'Who Owns the Future?', { tags: ['Labels, Publishing & Sync'] }),
+      session('p2', 'Deep House Listening', { genres: ['Deep House'] }),
+    ] as AdeData['events'],
+  }
+  const none = { q: '', day: '', kinds: [], times: [], access: [], areas: [], genres: [] }
+
+  it('searches ADE tags and genres, not only titles', () => {
+    expect(browseDaytime(daytime, { ...none, q: 'sync' }).sessions.map(event => event.id)).toEqual(['p1'])
+    expect(browseDaytime(daytime, { ...none, q: 'deep house' }).sessions.map(event => event.id)).toEqual(['p2'])
+  })
+
+  it('points a party genre to the parties and suggests a fix for a typo', () => {
+    expect(browseDaytime(daytime, { ...none, q: 'hard dance' }).partyGenres).toEqual([{ genre: 'Hard Dance', parties: 2 }])
+    expect(browseDaytime(daytime, { ...none, q: 'publishng' }).didYouMean).toEqual(['Publishing'])
   })
 })

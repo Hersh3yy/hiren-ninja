@@ -1,6 +1,7 @@
 import { loadAdeData } from '../../utils/ade-planner/data'
 import { matchArtists } from '../../utils/ade-planner/match'
 import { parseSearchLog, recordAdeStats } from '../../utils/ade-planner/stats'
+import { closestName } from '../../utils/ade-planner/normalize'
 
 // A 1,000-track playlist can hold 600+ artists; matching is a map lookup, so check them all.
 const MAX_ARTISTS = 1_500
@@ -34,5 +35,13 @@ export default defineEventHandler(async (event) => {
       unmatched: result.unmatched.slice(0, 200),
     },
   })
-  return { source: data.source, ...result }
+  // Typed names only (a playlist's misses are mostly artists who simply don't play ADE):
+  // a likely typo gets the closest lineup name, offered as "did you mean".
+  const didYouMean = search?.kind === 'names'
+    ? result.unmatched.slice(0, 50).flatMap((query) => {
+        const name = closestName(query, data.artists.map(artist => artist.name))
+        return name ? [{ query, name }] : []
+      })
+    : []
+  return { source: data.source, ...result, didYouMean }
 })

@@ -54,8 +54,20 @@
       <AtomsButton variant="link" text="See them in Parties & concerts" @click="$emit('show-parties', result.partyArtists.map(artist => artist.name))" />
     </p>
 
-    <p v-if="!isLoading && !result.total" class="text-sm text-content-muted">
-      Nothing matches on this day. Try another day or fewer filters.
+    <p v-if="result.partyGenres.length" class="text-sm text-content-muted">
+      {{ partyGenresText }}
+      <AtomsButton variant="link" text="Find yours in Parties & concerts" @click="$emit('show-parties', [])" />
+    </p>
+
+    <p v-if="result.didYouMean.length" class="text-sm text-content-muted">
+      Did you mean
+      <template v-for="(word, i) in result.didYouMean" :key="word">
+        <AtomsButton variant="link" :text="word" @click="searchFor(word)" />{{ i < result.didYouMean.length - 1 ? ' or ' : '' }}
+      </template>?
+    </p>
+
+    <p v-if="!isLoading && !result.total && !result.partyGenres.length && !result.didYouMean.length" class="text-sm text-content-muted">
+      {{ q.trim() ? `Nothing for "${q.trim()}" during the day. Try a topic like AI, labels or sync, or a speaker's name.` : 'Nothing matches on this day. Try another day or fewer filters.' }}
     </p>
 
     <section v-for="group in sessionGroups" :key="group.id" :aria-labelledby="`ade-sessions-${group.id}`" class="space-y-2">
@@ -101,6 +113,16 @@ const {
   q, day, filters, result, isLoading, error, dayTabs, activeFilters,
   load, init, toggle, clearFilters
 } = useDaytimeBrowse(props.initialQuery)
+
+const partyGenresText = computed(() => result.value.partyGenres
+  .map(({ genre, parties }) => `${genre} is a night thing at ADE: ${parties} parties, no daytime sessions.`)
+  .join(' '))
+
+function searchFor(word) {
+  q.value = word
+  load({ log: true })
+  track('ade-daytime-search', { hasQuery: true, didYouMean: true })
+}
 
 const partyArtistsText = computed(() => result.value.partyArtists
   .map(artist => `${artist.name} plays ${artist.parties} ${artist.parties === 1 ? 'party or concert' : 'parties or concerts'}`)

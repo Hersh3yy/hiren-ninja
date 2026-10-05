@@ -56,6 +56,8 @@
       :unmatched="result.unmatched"
       :artists-without-events="artistsWithoutEvents"
       :source="result.source"
+      :did-you-mean="result.didYouMean"
+      @use-suggestion="useSuggestion"
     />
 
     <p v-if="daytimeWithYourArtists" class="text-sm text-content-muted">
@@ -76,6 +78,7 @@
 
 <script setup>
 import { EXAMPLE_INPUT, useAdePlanner } from '~/composables/useAdePlanner.js'
+import { track } from '~/utils/track'
 
 const props = defineProps({
   // Artist names handed over from the daytime tab: fill in and search right away.
@@ -93,6 +96,17 @@ const {
 } = useAdePlanner()
 
 const matchedEventIds = computed(() => (result.value?.matches ?? []).flatMap(match => match.events.map(event => event.id)))
+
+// "Did you mean Enrico Sangiuliano?": swap the typo for the lineup name and search again.
+function useSuggestion({ query, name }) {
+  const lines = input.value.split('\n')
+  const at = lines.findIndex(line => line.trim().toLowerCase() === query.trim().toLowerCase())
+  if (at >= 0) lines[at] = name
+  else lines.push(name)
+  input.value = lines.join('\n')
+  track('ade-did-you-mean', { kind: 'parties' })
+  run()
+}
 
 watch(() => props.prefill, (names) => {
   if (names.length) {

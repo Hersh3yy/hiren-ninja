@@ -24,6 +24,14 @@
       </template>
     </p>
 
+    <p v-if="didYouMean.length" class="text-sm text-content-muted">
+      Did you mean
+      <template v-for="(fix, i) in didYouMean" :key="fix.query">
+        <AtomsButton variant="link" :text="fix.name" @click="$emit('use-suggestion', fix)" />{{ i < didYouMean.length - 1 ? ', ' : '' }}
+      </template>
+      instead of {{ didYouMean.map(fix => `"${fix.query}"`).join(', ') }}?
+    </p>
+
     <details v-if="unmatched.length" class="text-sm text-content-muted">
       <summary class="cursor-pointer hover:text-content">
         Not playing ADE ({{ unmatched.length }})
@@ -41,11 +49,13 @@ const props = defineProps({
   matchCount: { type: Number, required: true },
   queryCount: { type: Number, required: true },
   unmatched: { type: Array, default: () => [] },
+  /** [{ query, name }]: a typed name that is probably a typo of a lineup name */
+  didYouMean: { type: Array, default: () => [] },
   artistsWithoutEvents: { type: Array, default: () => [] },
   source: { type: String, default: 'vams' }
 })
 
-defineEmits(['update:genreFilter'])
+defineEmits(['update:genreFilter', 'use-suggestion'])
 
 const eventCount = computed(() => props.days.reduce((sum, day) => sum + day.items.length, 0))
 </script>

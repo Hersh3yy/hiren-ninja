@@ -50,7 +50,7 @@ export function useDaytimeBrowse(initialQuery = '') {
   const q = ref(initialQuery)
   const day = ref('')
   const filters = reactive({ kinds: [], times: [], access: [], areas: [], genres: [] })
-  const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [] })
+  const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [], partyGenres: [], didYouMean: [] })
   // True until the first answer arrives, so the empty state never flashes on load.
   const isLoading = ref(true)
   let latestRequest = 0
@@ -87,6 +87,9 @@ export function useDaytimeBrowse(initialQuery = '') {
       result.value = response
       // First load: open on the first day that has something.
       if (!day.value && response.days.length) {
+        day.value = response.days[0].value
+      } else if (log && !response.total && response.days.length) {
+        // A search with nothing on this day but something on another: go there.
         day.value = response.days[0].value
       }
     } catch {

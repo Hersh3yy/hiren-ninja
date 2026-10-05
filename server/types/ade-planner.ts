@@ -73,6 +73,10 @@ export interface Facet { value: string, count: number }
 export interface BrowseResult {
   /** artists named in the search who play parties, which this tab leaves out */
   partyArtists: { name: string, parties: number }[]
+  /** genres searched here that only parties have, e.g. hardstyle */
+  partyGenres: { genre: string, parties: number }[]
+  /** probable typos, corrected to a daytime speaker, artist or label */
+  didYouMean: string[]
   total: number
   sessions: MatchedEvent[]
   dropIns: MatchedEvent[]

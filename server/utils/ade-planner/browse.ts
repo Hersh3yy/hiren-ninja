@@ -1,6 +1,6 @@
 import type { AdeData, AdeEvent, BrowseFilters, BrowseResult, Facet, MatchedEvent } from '../../types/ade-planner'
 import { buildIndex } from './match'
-import { compactArtistName, normalizeArtistName } from './normalize'
+import { closestName, compactArtistName, normalizeArtistName } from './normalize'
 
 type FacetKey = keyof BrowseResult['facets']
 
@@ -53,7 +53,9 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
     if (event.isParty !== false) return false
     if (terms.length === 0) return true
     const lineup = (event.lineup ?? []).map(id => `${index.artistNamesById.get(id) ?? ''} ${subtitles.get(id) ?? ''}`).join(' ')
-    const text = normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup}`)
+    // ADE's own labels too: "sync", "labels", "AI" and "house" are mostly tags and genres.
+    const labels = [...(event.genres ?? []), ...(event.eventTypes ?? []), ...(event.tags ?? []), ...(event.kinds ?? [])].join(' ')
+    const text = normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup} ${labels}`)
     return matchesQuery(` ${text} `, text.replace(/ /g, ''), terms)
   })
 
@@ -82,8 +84,36 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
       .filter(artist => artist.parties > 0)
   })
 
+  // A genre typed here that only lives at night ("hardstyle"): point to the parties.
+  const partyGenres = searched.length > 0 ? [] : terms.flatMap((term) => {
+    const parties = data.events.filter(event => event.isParty !== false && (event.genres ?? []).some(genre => normalizeArtistName(genre) === term))
+    return parties.length ? [{ genre: parties[0]!.genres!.find(genre => normalizeArtistName(genre) === term)!, parties: parties.length }] : []
+  })
+
+  // Nothing at all: maybe a typo of a daytime speaker, artist or label.
+  const daytimeWords = () => {
+    const words = new Set<string>()
+    for (const event of data.events) {
+      if (event.isParty !== false) continue
+      for (const id of event.lineup ?? []) words.add(index.artistNamesById.get(id) ?? '')
+      // Labels word by word ("Labels, Publishing & Sync" -> "Publishing"), so a corrected
+      // term can be searched on its own.
+      for (const label of [...(event.genres ?? []), ...(event.tags ?? [])]) {
+        words.add(label)
+        for (const word of label.split(/[^\p{L}\p{N}]+/u)) if (word.length >= 4) words.add(word)
+      }
+    }
+    words.delete('')
+    return words
+  }
+  const didYouMean = searched.length === 0 && partyGenres.length === 0 && partyArtists.length === 0 && terms.length
+    ? terms.map(term => closestName(term, daytimeWords())).filter((name): name is string => Boolean(name))
+    : []
+
   return {
     partyArtists,
+    partyGenres,
+    didYouMean,
     total: onDay.length,
     sessions: onDay.filter(event => event.format === 'session').map(withLineup),
     dropIns: onDay.filter(event => event.format === 'drop-in').map(withLineup),
