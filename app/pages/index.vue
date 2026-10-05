@@ -7,9 +7,9 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Hiren - Technology for Creative Businesses',
-  ogTitle: 'Hiren - Technology for Creative Businesses',
-  description: 'Websites, AI, automation and reliable systems for artists, designers, agencies and growing businesses.',
+  title: 'Websites, AI & Automation for Creative Businesses | Hiren',
+  ogTitle: 'Websites, AI & Automation for Creative Businesses | Hiren',
+  description: 'Amsterdam developer building websites, AI tools, automation and reliable systems for artists, designers, labels, agencies and growing creative businesses.',
   ogDescription: 'A developer who specialises in translating creative ideas into technology. Based in Amsterdam.',
   ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'

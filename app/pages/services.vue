@@ -15,9 +15,9 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Services - Hiren',
-  ogTitle: 'Services - Hiren',
-  description: 'Websites, practical AI, workflow automation, and reliable systems for creative businesses and growing teams.',
+  title: 'Services: Websites, AI and Automation | Hiren, Amsterdam',
+  ogTitle: 'Services: Websites, AI and Automation | Hiren, Amsterdam',
+  description: 'Websites, practical AI, workflow automation and reliable back-end systems for artists, designers, founders and creative businesses. Based in Amsterdam.',
   ogDescription: 'Technology services for artists, designers, founders and creative businesses — websites, AI, automation and more.',
   ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'

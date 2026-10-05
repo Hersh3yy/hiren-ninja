@@ -1,0 +1,20 @@
+# Hiren Devs (hiren.ninja)
+
+> Hiren is an Amsterdam-based developer who builds websites, web apps, AI tools and workflow automation for artists, designers, musicians, labels, agencies and growing creative businesses.
+
+Originally from Sint Maarten, now in Amsterdam. Works with clients worldwide. Stack: Nuxt and Vue, Laravel, TypeScript and PHP, plus Rust for desktop apps. Contact: hello@hiren.ninja or the form at https://hiren.ninja/contact.
+
+## Pages
+
+- [Home](https://hiren.ninja/): what Hiren does, in short
+- [About](https://hiren.ninja/about): background, values and how he works
+- [Services](https://hiren.ninja/services): websites and digital experiences, practical AI, workflow automation, reliable back-end systems
+- [Projects](https://hiren.ninja/projects): selected client and own work
+- [Contact](https://hiren.ninja/contact): start a project
+
+## Featured work
+
+- [ADE Planner](https://hiren.ninja/ade-planner): free, unofficial planner for Amsterdam Dance Event 2026 (21-25 October). Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist, or type artist names, and see which of those artists play ADE, night by night, with venues, times and ticket links. Includes a daytime tab for ADE Pro talks, interviews and sessions. No login.
+- Qinip: desktop MP3 pack player for DJs (Rust, macOS and Windows), with waveforms, EQ, and BPM and key detection.
+- VAMS: Hiren's own content platform (Laravel), which powers this site's projects and the ADE Planner data.
+- Client work includes Doctor Mesi (clinic scheduling app), AME (medical events platform), Itamar Gilboa (artist portfolio), Project Stimulus (art in hospitals NGO) and Pesto Lab (cafe website).

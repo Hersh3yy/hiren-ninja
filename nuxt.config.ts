@@ -84,6 +84,14 @@ export default defineNuxtConfig({
     url: 'https://hiren.ninja'
   },
   routeRules: {
+    // Served from Netlify's CDN cache, rebuilt at most hourly: no cold server start for
+    // a first visitor (the SEO audit measured 1.5s). Not /ade-planner: its ?tab= query
+    // picks what the server renders, and a cached copy would ignore it.
+    '/': { isr: 3600 },
+    '/about': { isr: 3600 },
+    '/services': { isr: 3600 },
+    '/projects': { isr: 3600 },
+    '/contact': { isr: 3600 },
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },

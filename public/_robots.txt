@@ -8,11 +8,7 @@ Disallow: /*?page=
 Disallow: /*?sort=
 Disallow: /*?filter=
 
-# Block AI bots
-User-agent: GPTBot
-User-agent: ChatGPT-User
-User-agent: Claude-Web
-User-agent: anthropic-ai
-Disallow: /
+# AI assistants and AI search (ChatGPT, Claude, Perplexity) may read the site, so they
+# can find and cite it. See /llms.txt for a plain summary.
 
 Sitemap: https://hiren.ninja/sitemap.xml

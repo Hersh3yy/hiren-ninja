@@ -12,8 +12,8 @@
 
 <script setup>
 useSeoMeta({
-  title: 'About - Hiren',
-  ogTitle: 'About - Hiren',
+  title: 'About Hiren: Amsterdam Developer for Creative Businesses',
+  ogTitle: 'About Hiren: Amsterdam Developer for Creative Businesses',
   description: 'Hiren is a developer based in Amsterdam who specialises in translating creative ideas into technology — for artists, designers, musicians and growing businesses.',
   ogDescription: 'From Sint Maarten to Amsterdam: a developer who speaks both creative and technical, building digital products for people with vision.',
   ogImage: 'https://hiren.ninja/og/og-site.png',

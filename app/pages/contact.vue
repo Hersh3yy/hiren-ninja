@@ -11,9 +11,9 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Contact - Hiren',
-  ogTitle: 'Contact - Hiren',
-  description: 'Get in touch with Hiren — websites, AI tools, automation and digital products for creative businesses.',
+  title: 'Contact Hiren: Start a Website, AI or Automation Project',
+  ogTitle: 'Contact Hiren: Start a Website, AI or Automation Project',
+  description: 'Get in touch with Hiren about a website, an AI tool, workflow automation or a digital product for your creative business. Based in Amsterdam, working worldwide.',
   ogDescription: 'Available for projects and collaborations. Let\'s connect!',
   twitterCard: 'summary_large_image'
 })

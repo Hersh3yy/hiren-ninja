@@ -7,7 +7,7 @@
         src="/hirshi2.svg"
         width="25"
         height="36"
-        alt=""
+        alt="Hiren Devs logo"
         aria-hidden="true"
         class="h-9 w-auto transition-transform duration-700 ease-in-out motion-safe:group-hover:rotate-[360deg]"
       >

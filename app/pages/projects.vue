@@ -12,9 +12,9 @@
 
 <script setup>
 useSeoMeta({
-  title: 'Projects - Hiren',
-  ogTitle: 'Projects - Hiren',
-  description: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
+  title: 'Projects: Websites, Apps and Tools by Hiren, Amsterdam',
+  ogTitle: 'Projects: Websites, Apps and Tools by Hiren, Amsterdam',
+  description: 'Work by Hiren: websites, web apps and tools for artists, labels, clinics and creative businesses, including ADE Planner and the Qinip DJ app.',
   ogDescription: 'A selection of work — websites, tools, and digital products for creative professionals and growing businesses.',
   ogImage: 'https://hiren.ninja/og/og-site.png',
   twitterCard: 'summary_large_image'

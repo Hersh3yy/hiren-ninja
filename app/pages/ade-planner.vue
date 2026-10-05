@@ -20,8 +20,8 @@
 
 <script setup>
 useSeoMeta({
-  title: 'ADE Planner - Hiren',
-  ogTitle: 'ADE Planner - Hiren',
+  title: 'ADE Planner 2026: Find Your Artists at Amsterdam Dance Event',
+  ogTitle: 'ADE Planner 2026: Find Your Artists at Amsterdam Dance Event',
   description: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
   ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
   ogImage: 'https://hiren.ninja/og/og-ade.png',
