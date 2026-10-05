@@ -59,8 +59,10 @@ export function parseSearchLog(value: unknown): Omit<AdeSearchLog, 'artistCount'
  * Counts only, never who. Awaited with a short timeout: Netlify may stop a function
  * once it has answered. A failure never breaks the planner.
  */
-export async function recordAdeStats(data: AdeData, stats: AdeStats): Promise<void> {
-  if (data.source !== 'vams' || !isVamsConfigured()) return
+export async function recordAdeStats(_data: AdeData, stats: AdeStats): Promise<void> {
+  // The bundled snapshot is exported from VAMS with the same entry ids, so counting
+  // still works while the site runs on it (e.g. during a VAMS deploy).
+  if (!isVamsConfigured()) return
   if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.opens?.length && !stats.ticketClicks?.length && !stats.search) return
   try {
     await postVams('/ade-planner/stats', { ...stats })
