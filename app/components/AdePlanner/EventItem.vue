@@ -11,7 +11,7 @@
       :favorite="favorite"
       :expanded="expanded"
       :details-id="detailsId"
-      @toggle-details="expanded = !expanded; expanded && track('ade-event-details', { party: event.isParty !== false })"
+      @toggle-details="toggleDetails"
       @toggle-favorite="$emit('toggle-favorite')"
     />
 
@@ -40,6 +40,8 @@
           :text="event.ticketLabel || 'Tickets'"
           data-umami-event="ade-ticket"
           data-umami-event-kind="shop"
+          :data-umami-event-title="event.title"
+          @click="countTicketClick"
         />
         <AtomsButton
           v-if="event.program !== 'pro'"
@@ -50,8 +52,20 @@
           text="Resale on TicketSwap"
           data-umami-event="ade-ticket"
           data-umami-event-kind="ticketswap"
+          :data-umami-event-title="event.title"
+          @click="countTicketClick"
         />
-        <AtomsButton :href="event.adeUrl" external size="sm" variant="ghost" text="ADE page" data-umami-event="ade-ticket" data-umami-event-kind="ade-page" />
+        <AtomsButton
+          :href="event.adeUrl"
+          external
+          size="sm"
+          variant="ghost"
+          text="ADE page"
+          data-umami-event="ade-ticket"
+          data-umami-event-kind="ade-page"
+          :data-umami-event-title="event.title"
+          @click="countTicketClick"
+        />
         <AtomsButton size="sm" variant="ghost" :text="hidden ? 'Show again' : 'Not for me'" @click="$emit('toggle-hidden')" />
       </div>
     </div>
@@ -75,6 +89,22 @@ const PEOPLE_ON_CARD = 6
 
 const expanded = ref(false)
 const detailsId = useId()
+
+// Anonymous per-event counters in VAMS (opens, ticketClicks); fire and forget.
+function countEventAction(action) {
+  globalThis.$fetch?.('/api/ade-planner/event-action', { method: 'POST', body: { eventId: props.event.id, action } }).catch(() => {})
+}
+
+function toggleDetails() {
+  expanded.value = !expanded.value
+  if (!expanded.value) return
+  track('ade-event-details', { party: props.event.isParty !== false, title: props.event.title })
+  countEventAction('open')
+}
+
+function countTicketClick() {
+  countEventAction('ticket')
+}
 
 const clock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' })
 const weekday = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', weekday: 'short' })

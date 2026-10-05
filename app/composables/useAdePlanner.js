@@ -119,6 +119,15 @@ export function useAdePlanner() {
     suggestions.value = []
     genreFilter.value = ''
 
+    // A Tidal or SoundCloud link would otherwise be searched as one artist name.
+    if (!isPlaylistLink.value && /^https?:\/\//i.test(firstLine.value)) {
+      const host = firstLine.value.replace(/^https?:\/\/(?:www\.)?([^/]+).*/i, '$1')
+      error.value = `Links from ${host} aren't supported yet. Use a Spotify, Apple Music or YouTube Music playlist, or type artist names.`
+      track('ade-search-failed', { input: 'unsupported-link', host })
+      isLoading.value = false
+      return
+    }
+
     try {
       let artists
       if (isPlaylistLink.value) {

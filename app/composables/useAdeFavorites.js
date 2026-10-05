@@ -54,7 +54,7 @@ export function useAdeFavorites() {
 
   function toggleFavorite(event, artists = []) {
     const action = isFavorite(event.id) ? 'remove' : 'add'
-    track('ade-favorite', { action, party: event.isParty !== false, pro: event.program === 'pro' })
+    track('ade-favorite', { action, party: event.isParty !== false, pro: event.program === 'pro', title: event.title })
     countFavorite(event.id, action)
     favorites.value = isFavorite(event.id)
       ? favorites.value.filter(favorite => favorite.id !== event.id)

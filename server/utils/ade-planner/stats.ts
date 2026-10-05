@@ -23,6 +23,9 @@ interface AdeStats {
   hits?: string[]
   /** ade-artist entry ids someone typed by name: the stronger signal */
   searched?: string[]
+  /** ade-event entry ids whose details were opened / whose ticket, resale or ADE link was clicked */
+  opens?: string[]
+  ticketClicks?: string[]
   /** ade-event entry ids starred (+1) or unstarred (-1) */
   favorites?: { id: string, delta: 1 | -1 }[]
   /** one search for the anonymous log (VAMS ade-search): what, never who */
@@ -58,12 +61,23 @@ export function parseSearchLog(value: unknown): Omit<AdeSearchLog, 'artistCount'
  */
 export async function recordAdeStats(data: AdeData, stats: AdeStats): Promise<void> {
   if (data.source !== 'vams' || !isVamsConfigured()) return
-  if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.search) return
+  if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.opens?.length && !stats.ticketClicks?.length && !stats.search) return
   try {
     await postVams('/ade-planner/stats', { ...stats })
   } catch (error) {
     console.warn('[ade-planner] stats not recorded:', (error as Error).message)
   }
+}
+
+// Per instance: one visitor opening (or clicking through on) the same event again counts once.
+const seenActions = new Set<string>()
+
+export function firstEventAction(event: H3Event, eventId: string, action: 'open' | 'ticket'): boolean {
+  const key = `${getRequestIP(event, { xForwardedFor: true }) ?? 'unknown'}:${eventId}:${action}`
+  if (seenActions.has(key)) return false
+  if (seenActions.size > 20_000) seenActions.clear()
+  seenActions.add(key)
+  return true
 }
 
 // Per instance: the same browser starring the same event twice counts once.
