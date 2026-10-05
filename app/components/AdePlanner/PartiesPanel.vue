@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <p class="text-content-muted max-w-2xl">
-      Paste a public Spotify, Apple Music or YouTube Music playlist link, or a list of artist names.
+      Paste a public Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist link, or a list of artist names.
       See who plays Amsterdam Dance Event 2026 (21-25 October), when and where.
     </p>
 
@@ -40,6 +40,9 @@
       <span v-if="playlist.partial" class="block text-danger">
         Spotify only let us read {{ playlist.trackCount }}{{ playlist.totalTracks > playlist.trackCount ? ` of ${playlist.totalTracks}` : '' }} tracks right now (the oldest and newest).
         Missing someone? Add their names on new lines below the link and search again.
+      </span>
+      <span v-else-if="playlist.totalTracks > playlist.trackCount" class="block">
+        That's the first {{ playlist.trackCount }} of {{ playlist.totalTracks }} tracks. Missing someone? Add their names on new lines below the link.
       </span>
     </p>
 

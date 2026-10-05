@@ -22,7 +22,7 @@
 useSeoMeta({
   title: 'ADE Planner - Hiren',
   ogTitle: 'ADE Planner - Hiren',
-  description: 'Paste a Spotify, Apple Music or YouTube Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
+  description: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
   ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
   ogImage: 'https://hiren.ninja/og/og-ade.png',
   ogImageAlt: 'ADE Planner: paste a playlist, see which of your artists play ADE 2026',
@@ -40,7 +40,7 @@ useHead({
       '@type': 'WebApplication',
       name: 'ADE Planner',
       url: 'https://hiren.ninja/ade-planner',
-      description: 'Paste a Spotify, Apple Music or YouTube Music playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
+      description: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
       applicationCategory: 'EntertainmentApplication',
       operatingSystem: 'Any',
       browserRequirements: 'Requires JavaScript',

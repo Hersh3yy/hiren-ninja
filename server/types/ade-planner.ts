@@ -107,7 +107,7 @@ export interface MatchResult {
 }
 
 export interface PlaylistArtists {
-  source: 'spotify' | 'apple-music' | 'youtube-music'
+  source: 'spotify' | 'apple-music' | 'youtube-music' | 'tidal' | 'deezer'
   title: string
   trackCount: number
   /** the service stopped us before the end of the playlist */

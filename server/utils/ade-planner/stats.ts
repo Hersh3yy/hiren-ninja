@@ -32,7 +32,7 @@ interface AdeStats {
   search?: AdeSearchLog
 }
 
-const SOURCES = ['spotify', 'apple-music', 'youtube-music', 'names', 'daytime']
+const SOURCES = ['spotify', 'apple-music', 'youtube-music', 'tidal', 'deezer', 'names', 'daytime']
 const text = (value: unknown, max: number): string | undefined =>
   typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : undefined
 

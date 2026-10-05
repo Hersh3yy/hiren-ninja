@@ -1,5 +1,6 @@
 import type { PlaylistArtists } from '../../types/ade-planner'
 import { readYouTubeMusic, youTubeMusicListId } from './youtube-music'
+import { DEEZER_SHORT_URL, DEEZER_URL, TIDAL_URL, readDeezer, readTidal, resolveDeezerShortLink } from './tidal-deezer'
 
 // Public pages, not official APIs: the Spotify Web API refuses playlists the
 // caller doesn't own, Apple's API needs a paid developer account, and YouTube's
@@ -171,9 +172,16 @@ export async function readPlaylistArtists(url: string): Promise<PlaylistArtists>
     return { source: 'youtube-music', title, trackCount: tracks.length, artists: tally(tracks.flatMap(track => track.artists)) }
   }
 
+  const tidal = url.match(TIDAL_URL)
+  if (tidal) return readTidal(tidal[1]!.toLowerCase())
+
+  const deezerUrl = DEEZER_SHORT_URL.test(url) ? await resolveDeezerShortLink(url) : url
+  const deezer = deezerUrl.match(DEEZER_URL)
+  if (deezer) return readDeezer(deezer[1]!)
+
   if (/[?&]list=LM(&|$)/.test(url)) {
     throw createError({ statusCode: 400, statusMessage: 'Liked music is private. Copy the songs into a public or unlisted playlist and paste that link.' })
   }
 
-  throw createError({ statusCode: 400, statusMessage: 'Paste a public Spotify, Apple Music or YouTube Music playlist link.' })
+  throw createError({ statusCode: 400, statusMessage: 'Paste a public Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist link.' })
 }

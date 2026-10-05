@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { track } from '../utils/track'
 
 const TIME_ZONE = 'Europe/Amsterdam'
-const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|www\.|m\.)?youtube\.com)\//
+const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|www\.|m\.)?youtube\.com|(listen\.|www\.)?tidal\.com|(www\.)?deezer\.com|link\.deezer\.com|deezer\.page\.link)\//
 
 const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' })
 const dayLabel = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, weekday: 'long', day: 'numeric', month: 'long' })
@@ -122,7 +122,7 @@ export function useAdePlanner() {
     // A Tidal or SoundCloud link would otherwise be searched as one artist name.
     if (!isPlaylistLink.value && /^https?:\/\//i.test(firstLine.value)) {
       const host = firstLine.value.replace(/^https?:\/\/(?:www\.)?([^/]+).*/i, '$1')
-      error.value = `Links from ${host} aren't supported yet. Use a Spotify, Apple Music or YouTube Music playlist, or type artist names.`
+      error.value = `Links from ${host} aren't supported yet. Use a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist, or type artist names.`
       track('ade-search-failed', { input: 'unsupported-link', host })
       isLoading.value = false
       return
