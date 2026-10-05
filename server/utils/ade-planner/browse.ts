@@ -1,10 +1,12 @@
 import type { AdeData, AdeEvent, BrowseFilters, BrowseResult, Facet, MatchedEvent } from '../../types/ade-planner'
 import { buildIndex } from './match'
 import { closestName, compactArtistName, normalizeArtistName } from './normalize'
+import { TOPIC_LABELS } from './topics'
 
 type FacetKey = keyof BrowseResult['facets']
 
 const valuesOf: Record<FacetKey, (event: AdeEvent) => string[]> = {
+  topics: event => event.topics ?? [],
   kinds: event => event.kinds ?? [],
   times: event => (event.timeOfDay ? [event.timeOfDay] : []),
   access: event => (event.access ? [event.access] : []),
@@ -54,7 +56,8 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
     if (terms.length === 0) return true
     const lineup = (event.lineup ?? []).map(id => `${index.artistNamesById.get(id) ?? ''} ${subtitles.get(id) ?? ''}`).join(' ')
     // ADE's own labels too: "sync", "labels", "AI" and "house" are mostly tags and genres.
-    const labels = [...(event.genres ?? []), ...(event.eventTypes ?? []), ...(event.tags ?? []), ...(event.kinds ?? [])].join(' ')
+    const topics = (event.topics ?? []).map(topic => TOPIC_LABELS[topic as keyof typeof TOPIC_LABELS] ?? '')
+    const labels = [...(event.genres ?? []), ...(event.eventTypes ?? []), ...(event.tags ?? []), ...(event.kinds ?? []), ...topics].join(' ')
     const text = normalizeArtistName(`${event.title} ${event.subtitle ?? ''} ${event.venue ?? ''} ${lineup} ${labels}`)
     return matchesQuery(` ${text} `, text.replace(/ /g, ''), terms)
   })
@@ -120,6 +123,7 @@ export function browseDaytime(data: AdeData, filters: BrowseFilters): BrowseResu
     tba: onDay.filter(event => event.format === 'tba').map(withLineup),
     days: count(filtered.map(event => [eventDay(event)])).sort((a, b) => a.value.localeCompare(b.value)),
     facets: {
+      topics: facetOf('topics'),
       kinds: facetOf('kinds'),
       times: facetOf('times'),
       access: facetOf('access'),

@@ -33,6 +33,8 @@ export interface AdeEvent {
   tags?: string[]
   /** derived by VAMS AdeEventClassifier on every sync */
   kinds?: EventKind[]
+  /** daytime topic slugs (shared/ade-topics.js), classified per event in VAMS */
+  topics?: string[]
   /** people who starred it in ADE Planner (VAMS counter) */
   favorites?: number
   intent?: Intent
@@ -62,6 +64,7 @@ export interface BrowseFilters {
   /** YYYY-MM-DD in Amsterdam; empty = every day */
   day: string
   kinds: EventKind[]
+  topics: string[]
   times: TimeOfDay[]
   access: Access[]
   areas: string[]
@@ -82,7 +85,7 @@ export interface BrowseResult {
   dropIns: MatchedEvent[]
   tba: MatchedEvent[]
   days: Facet[]
-  facets: Record<'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
+  facets: Record<'topics' | 'kinds' | 'times' | 'access' | 'areas' | 'genres', Facet[]>
 }
 
 export interface MatchedEvent extends AdeEvent {

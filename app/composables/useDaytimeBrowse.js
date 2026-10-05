@@ -1,5 +1,8 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { track } from '../utils/track'
+import { TOPIC_LABELS } from '../../server/utils/ade-planner/topics'
+
+export { TOPIC_LABELS }
 
 export const KIND_LABELS = {
   talks: 'Talks & panels',
@@ -31,7 +34,8 @@ export const ACCESS_LABELS = { free: 'Free', ticket: 'Ticket', pro: 'ADE Pro pas
 
 // Kinds and days sit on the page itself; the drawer holds the rest.
 export const FILTER_GROUPS = [
-  { key: 'kinds', label: 'Kind', labels: KIND_LABELS, onPage: true },
+  { key: 'topics', label: 'Topic', labels: TOPIC_LABELS, onPage: true },
+  { key: 'kinds', label: 'Format', labels: KIND_LABELS },
   { key: 'times', label: 'Time of day', labels: TIME_LABELS },
   { key: 'access', label: 'Price', labels: ACCESS_LABELS },
   { key: 'areas', label: 'Area', labels: null },
@@ -49,7 +53,7 @@ export function labelFor(groupKey, value) {
 export function useDaytimeBrowse(initialQuery = '') {
   const q = ref(initialQuery)
   const day = ref('')
-  const filters = reactive({ kinds: [], times: [], access: [], areas: [], genres: [] })
+  const filters = reactive({ topics: [], kinds: [], times: [], access: [], areas: [], genres: [] })
   const result = ref({ total: 0, sessions: [], dropIns: [], tba: [], days: [], facets: {}, partyArtists: [], partyGenres: [], didYouMean: [] })
   // True until the first answer arrives, so the empty state never flashes on load.
   const isLoading = ref(true)
@@ -63,7 +67,7 @@ export function useDaytimeBrowse(initialQuery = '') {
     count
   })))
 
-  // Drawer filters only: kinds already show as pressed chips on the page.
+  // Drawer filters only: topics already show as pressed chips on the page.
   const activeFilters = computed(() => DRAWER_GROUPS.flatMap(group =>
     filters[group.key].map(value => ({ group: group.key, value, label: labelFor(group.key, value) }))
   ))

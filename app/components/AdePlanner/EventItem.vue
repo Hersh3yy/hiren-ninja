@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { KIND_LABELS } from '~/composables/useDaytimeBrowse.js'
+import { TOPIC_LABELS } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
@@ -157,7 +157,7 @@ const lineup = computed(() => [
 const people = computed(() => lineup.value.map(name => ({ name, highlight: props.artists.includes(name) })))
 
 const tags = computed(() => [
-  ...(props.event.isParty === false ? (props.event.kinds ?? []).map(kind => KIND_LABELS[kind]).filter(Boolean) : []),
+  ...(props.event.isParty === false ? (props.event.topics ?? []).map(topic => TOPIC_LABELS[topic]).filter(Boolean) : []),
   ...(props.event.genres ?? [])
 ])
 

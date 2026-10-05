@@ -176,7 +176,7 @@ describe('browseDaytime', () => {
       session('f1', 'Gear Test Lab', ['gear'], 'free'),
     ] as AdeData['events'],
   }
-  const none = { q: '', day: '', kinds: [], times: [], access: [], areas: [], genres: [] }
+  const none = { q: '', day: '', topics: [], kinds: [], times: [], access: [], areas: [], genres: [] }
 
   it('always includes ADE Pro, and leaves parties out', () => {
     const result = browseDaytime(daytime, none)
@@ -241,7 +241,15 @@ describe('daytime search', () => {
       session('p2', 'Deep House Listening', { genres: ['Deep House'] }),
     ] as AdeData['events'],
   }
-  const none = { q: '', day: '', kinds: [], times: [], access: [], areas: [], genres: [] }
+  const none = { q: '', day: '', topics: [], kinds: [], times: [], access: [], areas: [], genres: [] }
+
+  it('filters and counts by topic, and finds a topic by its label', () => {
+    const withTopics: AdeData = { ...daytime, events: daytime.events.map(event => event.id === 'p1' ? { ...event, topics: ['labels-sync', 'legal-rights'] } : event) }
+    const result = browseDaytime(withTopics, { ...none, topics: ['legal-rights'] })
+    expect(result.sessions.map(event => event.id)).toEqual(['p1'])
+    expect(result.facets.topics).toEqual([{ value: 'labels-sync', count: 1 }, { value: 'legal-rights', count: 1 }])
+    expect(browseDaytime(withTopics, { ...none, q: 'legal' }).sessions.map(event => event.id)).toEqual(['p1'])
+  })
 
   it('searches ADE tags and genres, not only titles', () => {
     expect(browseDaytime(daytime, { ...none, q: 'sync' }).sessions.map(event => event.id)).toEqual(['p1'])

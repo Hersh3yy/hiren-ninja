@@ -4,29 +4,29 @@
       <MoleculesFormField
         v-model="q"
         class="flex-1"
-        label="ADE Pro talks, interviews, Meet the… sessions and demos. Search by topic or name"
+        label="Talks, interviews, Meet the… sessions, demos and more. Pick a topic or search"
         name="ade-daytime-query"
         placeholder="labels, AI, sync, Luciano"
       />
       <AtomsButton type="submit" text="Search" :loading="isLoading" />
     </form>
 
-    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="What kind of session?">
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Topics">
       <AtomsChip
-        v-for="kind in visibleKinds"
-        :key="kind.value"
+        v-for="topic in visibleTopics"
+        :key="topic.value"
         size="sm"
-        :text="KIND_LABELS[kind.value] ?? kind.value"
-        :count="kind.count"
-        :pressed="filters.kinds.includes(kind.value)"
-        @click="toggle('kinds', kind.value)"
+        :text="TOPIC_LABELS[topic.value] ?? topic.value"
+        :count="topic.count"
+        :pressed="filters.topics.includes(topic.value)"
+        @click="toggle('topics', topic.value)"
       />
       <AtomsButton
-        v-if="!showAllKinds && kindOptions.length > KINDS_SHOWN"
+        v-if="!showAllTopics && topicOptions.length > TOPICS_SHOWN"
         variant="link-muted"
         class="text-sm"
-        :text="`${kindOptions.length - KINDS_SHOWN} more`"
-        @click="showAllKinds = true"
+        :text="`${topicOptions.length - TOPICS_SHOWN} more`"
+        @click="showAllTopics = true"
       />
     </div>
 
@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { KIND_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
+import { TOPIC_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
@@ -136,20 +136,15 @@ const sessionGroups = computed(() => [
 
 const limits = reactive({ pro: 15, more: 10 })
 
-// Pro formats first (the reason to come by day), then the rest by how much is on.
-const PRO_FIRST = ['talks', 'interviews', 'meet-the', 'masterclasses', 'gear']
-const kindOptions = computed(() => {
-  const options = result.value.facets.kinds ?? []
-  const rank = kind => (PRO_FIRST.includes(kind) ? PRO_FIRST.indexOf(kind) : PRO_FIRST.length)
-  return [...options].sort((a, b) => rank(a.value) - rank(b.value) || b.count - a.count)
-})
+// Topics by how much is on that day (format, like talks or Meet the..., is in Filters).
+const topicOptions = computed(() => result.value.facets.topics ?? [])
 
-// A phone shows two rows of chips, not seven; a selected kind always stays visible.
-const KINDS_SHOWN = 6
-const showAllKinds = ref(false)
-const visibleKinds = computed(() => showAllKinds.value
-  ? kindOptions.value
-  : kindOptions.value.filter((kind, i) => i < KINDS_SHOWN || filters.kinds.includes(kind.value)))
+// A phone shows two rows of chips, not seven; a selected topic always stays visible.
+const TOPICS_SHOWN = 7
+const showAllTopics = ref(false)
+const visibleTopics = computed(() => showAllTopics.value
+  ? topicOptions.value
+  : topicOptions.value.filter((topic, i) => i < TOPICS_SHOWN || filters.topics.includes(topic.value)))
 
 watch(day, () => { Object.assign(limits, { pro: 15, more: 10 }) })
 
