@@ -7,10 +7,8 @@ import { DEEZER_SHORT_URL, DEEZER_URL, TIDAL_URL, readDeezer, readTidal, resolve
 // needs a key. Each page ships its track list as JSON for its own front end.
 // Spotify's embed stops at 100 tracks; the rest come from the web player's spclient
 // endpoints with the embed's own anonymous token. YouTube Music pages on through
-// its browse endpoint. Both stop at MAX_TRACKS.
+// its browse endpoint. Each reader has its own track cap.
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36'
-
-const MAX_TRACKS = 500
 
 const SPOTIFY_URL = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(playlist|album)\/([A-Za-z0-9]{10,40})/
 const APPLE_URL = /^https:\/\/music\.apple\.com\/([a-z]{2})\/(playlist|album)\/[^/?#]+\/((?:pl\.)?[A-Za-z0-9.-]+)/
@@ -126,7 +124,7 @@ async function readSpotify(kind: string, id: string): Promise<PlaylistArtists> {
     title: data.entity.name ?? data.entity.title ?? 'Spotify playlist',
     trackCount: tracks.length,
     totalTracks: Math.max(more.total, tracks.length),
-    // Spotify (or the time budget) stopped us; our own MAX_TRACKS cap is shown via totalTracks.
+    // Spotify (or the time budget) stopped us; our own track cap is shown via totalTracks.
     partial: !more.complete,
     artists: tally(tracks.flat()),
   }

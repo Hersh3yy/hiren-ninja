@@ -66,7 +66,6 @@ const links = Object.freeze([
   { to: '/about', text: 'About' },
   { to: '/projects', text: 'Projects' },
   { to: '/services', text: 'Services' },
-  { to: '/experiments', text: 'Experiments' },
   { to: '/ade-planner', text: 'ADE Planner' }
 ])
 

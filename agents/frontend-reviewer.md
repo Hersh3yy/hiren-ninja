@@ -24,7 +24,7 @@ codebase; you give targeted, actionable feedback.
      allowed ONLY for layout-shell wrappers (e.g. `Card`).
    - `organisms/` — page-section units; slots allowed when acting as a layout shell.
    - `backgrounds/` — self-contained, client-only animated backgrounds.
-   - `LSS/`, `Experiments/` — separate experiment feature domain (not the design system).
+   - `AdePlanner/` — feature domain built from atoms/molecules (not the design system).
 
 2. **Auto-import naming** — Nuxt prefix convention is kept: `atoms/Button.vue` →
    `<AtomsButton>`, `organisms/SiteHeader.vue` → `<OrganismsSiteHeader>`, etc.

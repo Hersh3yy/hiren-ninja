@@ -12,12 +12,10 @@ app/components/
   molecules/     Small compositions of atoms. Props-driven. Slot allowed only for layout shells.
   organisms/     Page-section-sized units. May use slots when acting as a layout shell.
   backgrounds/   Self-contained animated background effects (isolated, client-only).
-  LSS/           Feature module: the LED Sculpture experiment (3D, domain-specific).
-  Experiments/   Feature module: experiment list UI.
+  AdePlanner/    Feature module: the ADE Planner at /ade-planner.
 ```
 
-`LSS/` and `Experiments/` are intentionally a separate feature domain (the interactive
-experiments), not part of the marketing-site design system.
+`AdePlanner/` is a feature domain built from the atoms and molecules, not part of them.
 
 ## Auto-import naming (Nuxt prefix convention)
 
@@ -49,7 +47,7 @@ Frosted glass (`backdrop-blur`) only on small, fixed-size surfaces. A card that 
 ## Interactive HTML lives in atoms and molecules (lint-enforced)
 
 Raw `<button>`, `<a>`, `<input>`, `<select>` and `<textarea>` are an ESLint error outside
-`atoms/` and `molecules/` (`vue/no-restricted-html-elements`, LSS experiment exempt).
+`atoms/` and `molecules/` (`vue/no-restricted-html-elements`).
 Compose instead:
 
 | Need | Use |
@@ -68,8 +66,8 @@ Prefer native HTML over JavaScript where it does the job:
   lightbox over a project) close top-first on their own.
 - `popover` + `popovertarget` for menus (`SiteHeader`): toggle, Escape, click-outside,
   `aria-expanded` and focus return built in.
-- `<details>`/`<summary>` for disclosure (`name="..."` for an exclusive accordion, see
-  `Experiments/Collapsible.vue`).
+- `<details>`/`<summary>` for disclosure (`AdePlanner/DaytimePanel.vue`; add `name="..."`
+  for an exclusive accordion).
 - The View Transitions API for shared-element motion (`useSharedElementTransition`):
   falls back to no animation where unsupported or with reduced motion.
 - `<picture>` with AVIF/WebP sources, `srcset`/`sizes`, `width`/`height`, `loading="lazy"`
@@ -117,7 +115,6 @@ palette utilities like `bg-gray-700` or `bg-blue-600`.
 | ---------------------------- | ----------------------------------------- |
 | `app/data/services.js`       | Single source for services / skills copy  |
 | `app/utils/icons.js`         | Shared SVG paths for `AtomsIcon`          |
-| `app/utils/escapeHtml.js`    | Escape CMS text before `v-html`           |
 
 Prefer these over duplicating strings or path constants in components.
 

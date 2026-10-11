@@ -65,7 +65,12 @@
 
         <div>
           <AtomsHeading text="About" :level="3" size="sm" :accent="false" class="uppercase tracking-wide mb-2" />
-          <div class="text-content-muted text-sm sm:text-base space-y-3 project-description" v-html="formattedDescription" />
+          <div class="text-content-muted text-sm sm:text-base space-y-3 project-description">
+            <p v-for="(paragraph, index) in description.paragraphs" :key="`p${index}`">{{ paragraph }}</p>
+            <ul v-if="description.bullets.length" class="list-disc pl-5 space-y-1">
+              <li v-for="(bullet, index) in description.bullets" :key="`li${index}`">{{ bullet }}</li>
+            </ul>
+          </div>
         </div>
 
         <div v-if="project.url" class="pt-1">
@@ -114,7 +119,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { ICONS } from '~/utils/icons'
-import { escapeHtml } from '~/utils/escapeHtml'
 
 const props = defineProps({
   project: {
@@ -168,32 +172,23 @@ function expandImage(url) {
   }
 }
 
-const formattedDescription = computed(() => {
-  if (!props.project?.fullDescription) {
-    return props.project?.shortDescription
-      ? `<p>${escapeHtml(props.project.shortDescription)}</p>`
-      : ''
+// Intro paragraphs (blank lines split them), then "***"-separated bullet points.
+const description = computed(() => {
+  const full = props.project?.fullDescription
+  if (!full) {
+    const short = props.project?.shortDescription
+    return { paragraphs: short ? [short] : [], bullets: [] }
   }
 
-  const parts = props.project.fullDescription
+  const [intro = '', ...bullets] = full
     .split('***')
     .map((item) => item.trim())
     .filter(Boolean)
 
-  if (parts.length === 0) return ''
-
-  // Blank lines in the intro are paragraph breaks.
-  let result = parts[0]
-    .split(/\n\s*\n/)
-    .map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`)
-    .join('')
-
-  if (parts.length > 1) {
-    const listItems = parts.slice(1).map((item) => `<li>${escapeHtml(item)}</li>`).join('')
-    result += `<ul class="list-disc pl-5 space-y-1">${listItems}</ul>`
+  return {
+    paragraphs: intro.split(/\n\s*\n/).map((paragraph) => paragraph.trim()).filter(Boolean),
+    bullets
   }
-
-  return result
 })
 
 function formatProjectType(type) {

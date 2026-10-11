@@ -95,7 +95,9 @@ export default defineNuxtConfig({
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },
-    '/experiments/**': { robots: false },
+    // The experiments page (LED-sculpture generator) is gone; send old links home.
+    '/experiments': { redirect: { to: '/', statusCode: 301 } },
+    '/experiments/**': { redirect: { to: '/', statusCode: 301 } },
     // "Coming soon" stub: keep it out of search and the sitemap until it has posts.
     '/blog': { robots: false }
   },
