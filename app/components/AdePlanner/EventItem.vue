@@ -66,6 +66,13 @@
           :data-umami-event-title="event.title"
           @click="countTicketClick"
         />
+        <AtomsButton
+          size="sm"
+          :variant="favorite ? 'outline' : 'secondary'"
+          :text="favorite ? '★ In my plan' : 'Save to my plan'"
+          :aria-pressed="favorite"
+          @click="$emit('toggle-favorite')"
+        />
         <AtomsButton size="sm" variant="ghost" :text="hidden ? 'Show again' : 'Not for me'" @click="$emit('toggle-hidden')" />
       </div>
     </div>
@@ -80,14 +87,16 @@ const props = defineProps({
   event: { type: Object, required: true },
   artists: { type: Array, default: () => [] },
   favorite: { type: Boolean, default: false },
-  hidden: { type: Boolean, default: false }
+  hidden: { type: Boolean, default: false },
+  // In a dialog (timetable block opened): show the details straight away.
+  initiallyExpanded: { type: Boolean, default: false }
 })
 
 defineEmits(['toggle-favorite', 'toggle-hidden'])
 
 const PEOPLE_ON_CARD = 6
 
-const expanded = ref(false)
+const expanded = ref(props.initiallyExpanded)
 const detailsId = useId()
 
 // Anonymous per-event counters in VAMS (opens, ticketClicks); fire and forget.

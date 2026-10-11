@@ -23,6 +23,15 @@ export default {
           hover: "#e6e600",
           muted: "rgb(255 255 7 / 0.4)",
         },
+        // Timetable topic groups (ADE Planner): a stripe and a faint fill on the dark surface
+        topic: {
+          business: "#6c9cf0", // business, labels, live, marketing, legal
+          artists: "#f2a541", // artists, scenes, culture, listening
+          tech: "#b48af5", // tech, AI, startups, production
+          impact: "#4cc9a8", // impact, art, wellbeing
+          meet: "#a1a1aa", // networking
+          party: "#ffff07", // parties and concerts in your timetable
+        },
         // Text tokens
         content: {
           DEFAULT: "#f4f4f5", // zinc-100 - primary text

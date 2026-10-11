@@ -70,7 +70,14 @@
       {{ q.trim() ? `Nothing for "${q.trim()}" during the day. Try a topic like AI, labels or sync, or a speaker's name.` : 'Nothing matches on this day. Try another day or fewer filters.' }}
     </p>
 
-    <section v-for="group in sessionGroups" :key="group.id" :aria-labelledby="`ade-sessions-${group.id}`" class="space-y-2">
+    <div v-if="result.sessions.length" class="flex flex-wrap items-center justify-between gap-3">
+      <MoleculesSegmentedTabs v-model="view" :items="VIEWS" label="Show sessions as" id-prefix="ade-daytime-view" :controls-panels="false" />
+      <span v-if="view === 'timetable'" class="text-xs text-content-muted">Each column is a venue; sessions at the same time get their own room.</span>
+    </div>
+
+    <AdePlannerTimetable v-if="view === 'timetable' && result.sessions.length" :columns="venueColumns" />
+
+    <section v-for="group in (view === 'list' ? sessionGroups : [])" :key="group.id" :aria-labelledby="`ade-sessions-${group.id}`" class="space-y-2">
       <AtomsHeading :id="`ade-sessions-${group.id}`" :text="`${group.title} (${group.events.length})`" :level="2" size="md" class="uppercase tracking-wide" />
       <p v-if="group.hint" class="text-sm text-content-muted">{{ group.hint }}</p>
       <AdePlannerDayGroups :days="asDay(group.events.slice(0, limits[group.id]))" :show-day-headings="false" />
@@ -101,6 +108,7 @@
 
 <script setup>
 import { TOPIC_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
+import { layoutLanes, minutesOnDay } from '~/utils/timetable.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
@@ -135,6 +143,34 @@ const sessionGroups = computed(() => [
 ].filter(group => group.events.length))
 
 const limits = reactive({ pro: 15, more: 10 })
+
+const VIEWS = [
+  { id: 'timetable', label: 'Timetable' },
+  { id: 'list', label: 'List' }
+]
+const view = ref('timetable')
+
+// The day as a school timetable: one column per venue, ADE Pro venues first, then the
+// busiest. Sessions only; drop-ins (all day, exhibitions) stay in the list below.
+const venueColumns = computed(() => {
+  const byVenue = new Map()
+  for (const event of result.value.sessions) {
+    const key = event.venue || 'Elsewhere'
+    byVenue.set(key, [...(byVenue.get(key) ?? []), event])
+  }
+  return [...byVenue.entries()]
+    .sort(([, a], [, b]) => Number(b.some(e => e.program === 'pro')) - Number(a.some(e => e.program === 'pro')) || b.length - a.length)
+    .map(([venue, events]) => {
+      const { items, lanes } = layoutLanes(events.map(event => ({ event, ...minutesOnDay(event, 45) })))
+      return {
+        id: venue,
+        label: venue,
+        sublabel: [events[0].area, events.some(e => e.program === 'pro') ? 'ADE Pro' : ''].filter(Boolean).join(' · '),
+        lanes,
+        items: items.map(item => ({ ...item, meta: item.event.subtitle || '' }))
+      }
+    })
+})
 
 // Topics by how much is on that day (format, like talks or Meet the..., is in Filters).
 const topicOptions = computed(() => result.value.facets.topics ?? [])

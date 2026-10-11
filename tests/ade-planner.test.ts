@@ -4,6 +4,7 @@ import { matchArtists } from '../server/utils/ade-planner/match'
 import { browseDaytime } from '../server/utils/ade-planner/browse'
 import { spotifyGid } from '../server/utils/ade-planner/playlist'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
+import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../app/utils/timetable.js'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
@@ -259,5 +260,37 @@ describe('daytime search', () => {
   it('points a party genre to the parties and suggests a fix for a typo', () => {
     expect(browseDaytime(daytime, { ...none, q: 'hard dance' }).partyGenres).toEqual([{ genre: 'Hard Dance', parties: 2 }])
     expect(browseDaytime(daytime, { ...none, q: 'publishng' }).didYouMean).toEqual(['Publishing'])
+  })
+})
+
+describe('timetable', () => {
+  it('puts an after-midnight party on the night before, past 24:00', () => {
+    const party = { startsAt: '2026-10-24T01:00:00+02:00', endsAt: '2026-10-24T07:00:00+02:00', isParty: true }
+    expect(planningDay(party)).toBe('2026-10-23')
+    expect(minutesOnDay(party)).toEqual({ from: 1500, to: 1860 })
+    const talk = { startsAt: '2026-10-22T11:15:00+02:00', endsAt: '2026-10-22T12:00:00+02:00', isParty: false }
+    expect(planningDay(talk)).toBe('2026-10-22')
+    expect(minutesOnDay(talk)).toEqual({ from: 675, to: 720 })
+  })
+
+  it('handles the switch to winter time on Sunday 25 October', () => {
+    const late = { startsAt: '2026-10-25T01:00:00+02:00', endsAt: '2026-10-25T06:00:00+01:00', isParty: true }
+    expect(planningDay(late)).toBe('2026-10-24')
+    expect(minutesOnDay(late)).toEqual({ from: 1500, to: 1860 })
+  })
+
+  it('gives overlapping sessions their own room and finds clashes', () => {
+    const items = [{ id: 'a', from: 600, to: 660 }, { id: 'b', from: 630, to: 690 }, { id: 'c', from: 660, to: 700 }]
+    const { items: placed, lanes } = layoutLanes(items)
+    expect(lanes).toBe(2)
+    expect(placed.map(item => [item.id, item.lane])).toEqual([['a', 0], ['b', 1], ['c', 0]])
+    expect(findClashes(items).map(([x, y]) => x.id + y.id)).toEqual(['ab', 'bc'])
+  })
+
+  it('writes a calendar file with escaped text and CRLF lines', () => {
+    const ics = toIcs([{ id: 'e1', title: 'Drumcode, Awakenings', startsAt: '2026-10-22T23:00:00+02:00', endsAt: null, venue: 'Gashouder', address: 'Klönneplein 1, Amsterdam', adeUrl: 'https://ade/e1' }], new Date('2026-10-01T00:00:00Z'))
+    expect(ics).toContain('SUMMARY:Drumcode\\, Awakenings\r\n')
+    expect(ics).toContain('DTSTART:20261022T210000Z\r\nDTEND:20261022T220000Z')
+    expect(ics.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true)
   })
 })
