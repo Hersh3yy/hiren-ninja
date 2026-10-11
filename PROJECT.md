@@ -8,15 +8,14 @@
 
 # hiren.ninja — map
 
-**What it is** · Hiren's personal portfolio at [hiren.ninja](https://hiren.ninja): a landing page, a filterable **projects** gallery, a **services** page (with a request form), an **about** page, a blog stub, and interactive **experiments** (a Three.js LED-sculpture generator).
-**Stack** · Nuxt 4 · Vue 3 · Tailwind 3 · `@nuxtjs/apollo` (Hygraph GraphQL) · `motion-v` (animation) · Three.js + Vanta · Umami analytics · Netlify function for the contact form · deployed on Netlify from GitHub (`Hersh3yy/hiren-ninja`).
-**Content** · `projects` from **Hygraph** (moving to **VAMS** — see ticket) · `services` + `skills` are **hardcoded** · the service-request form → a **ClickUp** task via a Netlify function.
-**Status** · 🟢 `main` builds again (rework commits since 2026-09-09). Packages updated to latest safe versions on branch **`experiment/ade-planner`** (Nuxt 4.5.2), build + dev verified. Branch `fix/build-sitemap` is still unmerged and now diverged from `main`. Secrets and the SEO/perf/a11y backlog below were assessed on 2026-09-09 and not re-checked.
-**Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · working branch **`experiment/ade-planner`**; `main` is sacred.
-**Current project** · **ADE Planner** at `/ade-planner`: match your music against the Amsterdam Dance Event 2026 lineup. Plan: [`docs/ade-planner-plan.md`](docs/ade-planner-plan.md).
-**Package manager** · **npm** (only `package-lock.json` exists; the `packageManager: yarn` field is misleading — there's no `yarn.lock`).
-**ClickUp** · not linked yet (needs a list id + the token in the env).
-**Last assessed** · 2026-09-27
+**What it is** · Hiren's site at [hiren.ninja](https://hiren.ninja): home, about, services (request form), projects gallery, contact, experiments (Three.js LED-sculpture generator) and the **ADE Planner** at `/ade-planner`, a free fan tool that matches your playlist against the Amsterdam Dance Event 2026 program.
+**Stack** · Nuxt 4 · Vue 3 · Tailwind 3 · Nitro on Netlify · Three.js + Vanta (birds) · Leaflet (plan map, lazy) · Umami (cookieless) · Vitest.
+**Content** · Projects and the whole ADE program come from **VAMS** (`koala/VAMS`, app.use-vams.me) through server routes with a private key; bundled snapshots in `server/assets/` are the fallback. Leads (contact + service forms) become **ClickUp** tasks. Services and skills are hardcoded.
+**Status** · 🟢 `main` builds, deploys and is live; 30 Vitest tests, ESLint clean (0 errors). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
+**Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · one branch: **`main`** (small, tested commits straight to main this sprint, with Hiren's go).
+**Package manager** · **npm** (`package-lock.json`).
+**ClickUp** · roadmap not linked; leads list "Contact Form Submissions" (id 901507749589) via `CLICKUP_API_KEY`/`CLICKUP_LIST_ID` on Netlify.
+**Last assessed** · 2026-10-11
 
 ---
 
@@ -24,97 +23,123 @@
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run build      # nuxt build (server)   — green on branch fix/build-sitemap
-npm run generate   # static
+npm run dev          # http://localhost:3000 (VAMS_API_URL + VAMS_API_KEY in .env for live data)
+npm test             # vitest run (30 tests: matching, playlists, timetable, travel, nearby, topics)
+npm run lint         # eslint (raw <button>/<a>/<input> outside atoms/molecules is an error)
+npm run build
 ```
-Gotchas: **`main` HEAD does not build** — `motion-v` 1.10.3 renamed `Presence`→`AnimatePresence` (fixed on the branch). Content needs the Hygraph endpoint (baked into the client today). The mixed lockfile means use **npm**, not yarn.
+Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAMS change, restart dev or delete `.nuxt/cache/nitro/functions/ade-planner-data`. A Tailwind config change can kill `nuxi dev`; restart it. ADE data refresh lives in VAMS (`php artisan ade:sync --reuse-pages`, see VAMS's map).
 
 ## Status
 
-A genuinely characterful portfolio — real interactive Three.js work, tasteful `motion-v` animation, a thoughtful `Base/CONVENTIONS.md`. But it's mid-refactor and rough at the edges: the build was broken at HEAD, there are two committed secrets, sitewide-broken OG images, a 2.4 MB hero image with no image pipeline, WebGL leaks, and a large a11y gap. None of it is deep architectural breakage — it's a backlog. There's also **staged WIP** on `main` (a `nuxt-mcp` + About-section refactor) preserved as its own commit on the branch.
+The site is in good shape after a two-week sprint: secrets moved to env (the leaked ClickUp token was rotated), Hygraph is gone, OG images, JSON-LD, canonicals and llms.txt are in, interactive HTML is lint-locked into atoms/molecules, modals/menu/accordion use native `<dialog>`/`popover`/`<details>`. The ADE Planner is the active product: playlists from five services, typo-tolerant matching, a daytime tab with topics, school-timetable views, a week plan with travel times, a map, "near me" and a story image. What's left is mostly old experiment debt (LSS WebGL disposal), two unused deps, and turning the ADE data into a few posts before 21 Oct.
 
 ## Issues
 
-Worst first. Grounded in two fan-out audits (frontend; integrations/security). Secrets cited by location only.
-
 | Sev | Issue | Where |
 |---|---|---|
-| ~~critical~~ **fixed** | ~~Build broken~~ — `motion-v` `Presence`→`AnimatePresence` rename (branch `fix/build-sitemap`) | `Project/Modal.vue` · `pages/projects.vue` |
-| critical | **Hygraph Bearer JWT hardcoded and shipped to the browser.** It's in the Apollo *client* config, so it's in the client bundle; its `aud` includes `management-next.graphcms.com` (looks management-scoped, not read-only). **Rotate it.** (Hiren will rotate + env-ize the keys himself.) | `nuxt.config.ts:52` |
-| high | **ClickUp token hardcoded** in the Netlify function (server-side, but committed → in history), and the endpoint is CORS `*` with no auth/rate-limit → open spam vector. Rotate + env. | `netlify/functions/service-request.ts:4,65` |
-| ~~serious~~ **fixed** | ~~Sitemap disabled~~ — replaced the commented-out `nuxt-simple-sitemap` with `@nuxtjs/sitemap` v8; `/sitemap.xml` verified serving all 6 public routes (branch) | `nuxt.config.ts` |
-| serious | **OG images 404 sitewide** — every page sets `ogImage: '/path/to/…jpg'` placeholders that don't exist; `apple-touch-icon.png` missing too. Social/link previews broken. | `index/about/services/contact/projects.vue` · `layouts/default.vue:34` |
-| serious | **2.4 MB `mugshot.jpg`** rendered at ≤256px, `@nuxt/image` not installed, all images raw `<img>`. And **two full Three.js runtimes ship** (CDN r134 for Vanta + npm 0.180) with Vanta double-initialised. | `Bio.vue:7` · `layouts/default.vue:38,41-85` |
-| serious | **Three.js WebGL leaks** — geometries/materials rebuilt each param change but never `.dispose()`d; `onUnmounted` disposes only the renderer, no `forceContextLoss()` → a leaked GL context per `/experiments` visit. | `LSS/Viewer.vue:175,206,354` |
-| warning | **Accessibility gap** — no `prefers-reduced-motion` anywhere (heavy motion); modals lack `role=dialog`/focus-trap/Escape (Service modal); `TypeFilter` radios are `display:none` (keyboard-unreachable); collapsible is a clickable `<div>`; icon buttons without labels; form labels unassociated. `@nuxt/a11y` is a dev auditor only. | many (see audit) |
-| warning | **Dead code + unused deps** — `MenuComponent`, `BlogPost`, `Background/Fireworks`, `FractalClock`, `Service/Steps/ProjectInfo`, `utils/experiments/curvemath.js`; deps `motion`, `howler`, `axios` unused. | — |
-| warning | **service-request double-submits** — the modal POSTs *and* emits to a stub `handleSubmit` that alerts success even on failure; no input validation in the function. | `Service/Modal.vue:148,169` · `useServices.js:59` |
-| note | **Atomic design is aspirational** — only `BaseCard` is used; `Base/Button/Section/Slider/Loader` are unused and off-theme (blue vs the yellow identity); `CategoryCard` violates the slot rule in `Base/CONVENTIONS.md`; `Base/Card` `variant` has no validator. | `components/Base/*` |
-| note | CSS duplication (`page-title`/`section-title`/`bg-grid-pattern` defined 2–3×), `!important` cursor hacks, robots vs page-meta contradiction on `/experiments`, README is a generic starter, stray `#` markdown lines atop 2 SFCs. | — |
+| warning | **LSS WebGL leaks**: geometries/materials rebuilt per parameter change are never `.dispose()`d; unmount only disposes the renderer. | `app/components/LSS/Viewer.vue` (only `renderer.dispose()` at :377) |
+| warning | **Undocumented third-party endpoints** carry the planner: Spotify web-player `spclient` (tracks past 100), Tidal's public web token, YouTube Music/Apple page data. Any can change without notice; the planner degrades to "partial" and says so. | `server/utils/ade-planner/playlist.ts`, `tidal-deezer.ts`, `youtube-music.ts` |
+| warning | ADE data only refreshes when someone runs `ade:sync` in VAMS (no schedule, on purpose); new daytime events then need `ade:topics`. | VAMS `routes/console.php` (empty), VAMS map |
+| note | Unused deps `axios`, `howler`. | `package.json` |
+| note | Majors waiting: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4; `three` pinned at 0.134 by `vanta`. Minor: nuxt 4.6.1, sitemap 8.6.1, robots 6.2.4. | `npm outdated` |
+| note | Mystic Garden and Dockyard Festival are one event that ADE lists twice; the planner shows both. | ADE data |
 
 ## Guide
 
-- **Routing:** `layouts/default.vue` (Vanta birds bg + header/footer) → pages `index`, `projects`, `services`, `about`, `blog` (stub), `contact` (stub), `experiments/*`.
-- **Data:** `@nuxtjs/apollo` → **one** Hygraph query, `useProjects.js` `GetProjects` (title, descriptions, year, url, projectType, slug, coverImage, screenshots). **`services` and `skills` are hardcoded arrays**, not CMS. Projects open in a **modal** (no `/projects/[slug]` route).
-- **Contact form:** `Service/Modal.vue` → `POST /.netlify/functions/service-request` → creates a **ClickUp** task (maps serviceType→tags, timeline→priority).
-- **Experiments:** `pages/experiments/led-sculpture-generator` → `LSS/Viewer.vue` (Three.js/WebGL) driven by `useLEDSculpture.js` (seeded, debounced) + `useExporter.js` (PNG/JSON). See `EXPERIMENTS.md`.
-- **Components:** feature-foldered (`About/`, `Project/`, `Service/`, `Landing/`, `LSS/`, `Experiments/`) over a `Base/` set governed by `Base/CONVENTIONS.md` (props-over-slots, wrapper composition) — good intent, partially applied.
+- **Pages:** `app/pages/*` under `layouts/default.vue` (Vanta birds: full on the home hero, calm elsewhere; header with `popover` phone menu; footer). Canonical, `og:url`, JSON-LD (Person, ProfessionalService, WebSite) in the layout; WebApplication on `/ade-planner`. Home, about, services, projects and contact are ISR-cached on Netlify (hourly).
+- **Design system:** `app/components/{atoms,molecules,organisms}` plus feature folders (`AdePlanner/`, `LSS/`, `Experiments/`). Rules in `app/components/README.md`: props over slots, interactive HTML only in atoms/molecules (lint), native HTML first.
+- **Projects:** `server/api/projects.get.ts` → `server/utils/projects.ts` → VAMS `projects` entries, snapshot fallback.
+- **Leads:** `server/api/{contact,service-request}.post.ts` → `server/utils/leads.ts` → ClickUp task (markdown description, tags, priority), rate-limited per IP.
+- **ADE Planner:** `app/components/AdePlanner/*` (Tool → Parties/Daytime panels, MyPlan, NearMe, Timetable) and `server/api/ade-planner/*`:
+
+```mermaid
+flowchart LR
+  ADE["ADE website program API"] -->|"ade:sync, ade:topics, ade:venues"| VAMS["VAMS: ade-event, ade-artist, ade-venue, ade-search"]
+  VAMS -->|"by-type API, private key"| Data["loadAdeData, cached 1h, joined with venues"]
+  Snapshot["server/assets snapshot.json"] -.->|"VAMS down"| Data
+  User["Visitor: playlist link or names"] --> Playlist["playlist.get: Spotify, Apple, YouTube Music, Tidal, Deezer"]
+  Playlist --> Match["match.post: normalize, did you mean"]
+  Data --> Match
+  Data --> Browse["browse.get: daytime, topics, areas"]
+  Data --> Nearby["nearby.get"]
+  Match --> UI["Parties tab, suggestions, My plan"]
+  Browse --> UI
+  Nearby --> UI
+  UI -->|"stats: hits, searches, favorites, opens, ticketClicks, search log"| VAMS
+```
+
+- **My plan:** favorites in `localStorage` (`useAdeFavorites`), shown as a week timetable, list or map; clashes, getting-around times (`server/utils/ade-planner/travel.ts`), `.ics` export and a story image (`app/utils/storyImage.js`). Timetable maths in `app/utils/timetable.js`.
+- **Analytics:** Umami events (`app/utils/track.js`), plus anonymous counters and the search log in VAMS (what, never who).
 
 ## Hard parts
 
-### A CMS token in `httpLinkOptions` ships to the browser
-🔭 `@nuxtjs/apollo` serialises each client's config — endpoint **and headers** — into the app so the client can run in the browser. Putting `Authorization: Bearer <jwt>` on the `default` client (`nuxt.config.ts:52`) therefore hands that token to every visitor (devtools → Network). There's no `runtimeConfig`, no server-only split, no proxy.
-⚖️ Only a **read-only, published-content-scoped** key belongs on a public client — and even then a Nitro `server/api` proxy that reads a **private** `runtimeConfig` key is safer (the browser never sees it). This is also the natural shape for the VAMS migration.
-🗣️ *"Apollo client headers are public; a CMS write/management token there is a full compromise — move it behind a server route with a private runtime key."*
+### Reading Spotify playlists past 100 tracks
+🔭 The public embed page ships the first 100 tracks and an anonymous token. `api.spotify.com` answers that token with a ~20 h 429 (QUOTA_EXCEEDED), but the web player's `spclient` endpoints accept it: one call for the whole track list (URIs), then `metadata/4/track/{gid}` per track for the artists, 50 in parallel, newest first, inside a 6 s budget. The gid is the base62 track id rewritten as 32-char hex (`spotifyGid`, BigInt).
+⚖️ The official API refuses playlists the caller doesn't own (owner/collaborator only, no app-only keys), so there's no "proper" way for a shared playlist.
+🗣️ *"We read what Spotify's own web player reads, with the embed's anonymous token, and degrade to the first 100 tracks with a visible note when that breaks."*
 
-### GraphQL (Hygraph) → REST (VAMS) shape mismatch
-🔭 Hygraph returns each field first-class (`year`, `coverImage.url`); VAMS returns a **flat entry** with only `id/title/status/order/timestamps` promoted and **everything else inside a JSON `content` blob** — so it's `entry.content.year`, `entry.content.coverImage`, etc., and `image_collection` values aren't GraphQL asset objects. Verified live: the `projects` type + Hiren's 2 entries exist. Full mapping in [`docs/vams-migration-ticket.md`](docs/vams-migration-ticket.md).
-🗣️ *"VAMS packs domain fields into a `content` JSON column, so the migration is a field-remap in one composable, not a rewrite."*
+### Which day does a 01:00 party belong to?
+🔭 `planningDay()` shifts a party that starts before 06:00 to the previous date, and `minutesOnDay()` measures from that day's midnight, so Friday 01:00 is Thursday 1500 (25:00). Day differences are computed between two date keys, so the switch to winter time on Sun 25 Oct (a 25-hour day) still rounds to one day. Overlapping items get lanes by interval partitioning (`layoutLanes`), the same thing a school timetable does with rooms.
+🗣️ *"Nights belong to the evening they start in, so the timetable runs past 24:00 instead of splitting a party over two days."*
 
-### `motion-v` renamed the exit wrapper
-🔭 `motion-v` 1.10.3 exports **`AnimatePresence`**, not `Presence`; the old import silently broke `build` (Rollup: "Presence is not exported"). A moving API surface on a young lib — pin versions and read the changelog on minor bumps.
+### Counting without knowing who
+🔭 Stats (artist hits/searches, event favorites/opens/ticketClicks, one `ade-search` entry per search) go to VAMS through one keyed write endpoint; the browser never talks to VAMS. Repeat clicks are deduped per IP+event per serverless instance in memory, and no IP is stored. Stats are sent even while the site runs on the snapshot, because it carries the same VAMS ids.
+🗣️ *"Counts and queries, never identities; dedupe in memory, store nothing personal."*
+
+### Topics by judgment, kept across syncs
+🔭 ADE's own labels are too generic, so each daytime event got 1-3 of 16 topics by reading it (Claude, via `ade:topics` in VAMS). `ade:sync` preserves `topics`, so only new events need classifying (`ade:topics --missing`).
+🗣️ *"A human-quality taxonomy, applied once and kept, instead of keyword rules that misfire."*
 
 ## Roadmap — near future
 
-- [x] Fix the build: `motion-v` `Presence`→`AnimatePresence` <!-- id:n1 -->
-- [x] Working sitemap via `@nuxtjs/sitemap` (Nuxt 4), drop dead `nuxt-simple-sitemap` <!-- id:n2 -->
-- [ ] **Rotate + env-ize both secrets** (Hiren): Hygraph JWT → private `runtimeConfig`/server proxy + a read-only content key; ClickUp token → Netlify env; lock the function's CORS + add basic abuse protection <!-- id:n3 -->
-- [ ] Fix the sitewide broken **OG images** + `apple-touch-icon.png`; a real 1200×630 default in the layout, absolute URLs; standardise on `useSeoMeta`; add canonical + JSON-LD <!-- id:n4 -->
-- [ ] **Perf:** install `@nuxt/image`, `<NuxtImg>` everywhere, compress `mugshot.jpg` (2.4 MB → ~40 KB); drop the CDN Three.js + double Vanta init (one npm `three`) <!-- id:n5 -->
-- [ ] **a11y pass:** `prefers-reduced-motion` gate; modal `role=dialog`/focus-trap/Escape; `TypeFilter` `sr-only` not `hidden`; collapsible as a real button; icon-button labels; associate form labels <!-- id:n6 -->
-- [ ] Remove dead code + unused deps (`motion`, `howler`, `axios`; `MenuComponent`, `BlogPost`, `Fireworks`, `FractalClock`, `ProjectInfo`, `curvemath.js`) <!-- id:n7 -->
+### Launch and growth (before ADE, 21-25 Oct)
+- [ ] Post the "most wanted acts not at ADE" story (Chris Lake, Bicep, Fred again.., Fisher) on Instagram + LinkedIn <!-- id:g1 -->
+- [ ] Second sharing wave around 14 Oct with the timetable and story image <!-- id:g2 -->
+- [ ] Email Bravoure (draft ready in the 1 Oct chat) <!-- id:g3 -->
+- [ ] Add Instagram/LinkedIn links to footer + JSON-LD `sameAs` once the accounts exist <!-- id:g4 -->
+- [ ] DMARC TXT record at Porkbun (`_dmarc`, `v=DMARC1; p=none; rua=mailto:hello@hiren.ninja`) (Hiren) <!-- id:g5 -->
+- [ ] ~300 more words on the home page (thin content, GEO) from Hiren's notes <!-- id:g6 -->
 
-### ADE Planner (plan: [`docs/ade-planner-plan.md`](docs/ade-planner-plan.md))
-- [x] Refine the plan: personal project, VAMS for data, no AI in the app, public playlist links as main input <!-- id:a0 -->
-- [x] Page `/ade-planner`, `app/components/AdePlanner/`, `server/api/ade-planner/`, Vitest <!-- id:a1 -->
-- [x] ADE data layer: VAMS `ade:sync` + `ade:export` (koala/VAMS), `ade-artist`/`ade-event` entry types, snapshot fallback <!-- id:a2 -->
-- [x] MVP: paste a list of artist names, matcher, day-by-day results <!-- id:a3 -->
-- [x] Public playlist link input: Spotify embed page, Apple Music page <!-- id:a4 -->
-- [ ] Set `VAMS_API_URL=https://app.use-vams.me/api` + `VAMS_API_KEY` on Netlify, remove `HYGRAPH_TOKEN`; until then prod uses Hygraph (projects) and the snapshot (ADE) <!-- id:a7 -->
-- [ ] Add ADE Planner to the projects list (Hygraph/VAMS content) and deploy <!-- id:a8 -->
-- [x] My plan toggle, Parties / Daytime & networking tabs, filters drawer <!-- id:a9 -->
-- [x] VAMS: ADE Pro sessions + speakers (program, role, subtitle), resync; kind / timeOfDay / isParty / access stay derived in classify.ts <!-- id:a10 -->
-- [ ] Interest search for the daytime tab <!-- id:a11 -->
-- [ ] Calendar export (.ics) and share-my-plan link <!-- id:a12 -->
-- [ ] Venue geocoding (Nominatim) and a small map <!-- id:a13 -->
-- [ ] Day timeline with clashes and gaps <!-- id:a14 -->
-- [ ] Discovery: Last.fm similar artists, co-billed artists, genres, clash warnings, `.ics` export <!-- id:a5 -->
-- [ ] Optional logins: Spotify (5-user dev limit), Apple Music ($99/yr developer account) <!-- id:a6 -->
+### ADE Planner
+- [x] Calendar export (.ics) <!-- id:a12 -->
+- [x] Venue geocoding and a map (PDOK + Amsterdam geosearch, Leaflet) <!-- id:a13 -->
+- [x] Day timetable with clashes and gaps <!-- id:a14 -->
+- [x] Interest search for the daytime tab (tags, genres, topics, did-you-mean) <!-- id:a11 -->
+- [ ] Share-my-plan link (encode saved ids in the URL, no login) <!-- id:a15 -->
+- [ ] Merge events ADE lists twice (same lineup, venue and time) <!-- id:a16 -->
+- [ ] Re-sync before and during ADE week (`ade:sync`, `ade:topics --missing`, `ade:venues`, export snapshot) <!-- id:a17 -->
+
+### Site
+- [ ] Remove unused `axios` + `howler`; take nuxt 4.6, sitemap 8.6, robots 6.2.4 <!-- id:n8 -->
+- [ ] LSS WebGL disposal (dispose geometry/material on rebuild; `forceContextLoss()` on unmount) <!-- id:f2 -->
 
 ## Roadmap — far future
 
-- [x] **Hygraph → VAMS migration** (done 2026-09-27: `server/api/projects.get.ts` reads VAMS, Hygraph CDN only as fallback and for images): swap the one `useProjects` composable + config to VAMS REST (`/entries/by-type/projects`, `X-API-Key`); retires the Hygraph JWT. Ticket: [`docs/vams-migration-ticket.md`](docs/vams-migration-ticket.md) <!-- id:f1 -->
-- [ ] Fix `LSS/Viewer.vue` WebGL disposal (dispose geometry/material on rebuild; full teardown + `forceContextLoss()` on unmount) <!-- id:f2 -->
-- [ ] Fix service-request double-submit (let the modal own submission, delete the stub) + add input validation to the function <!-- id:f3 -->
-- [ ] Atomic-design cleanup: either delete the unused `Base` set or re-theme it (yellow) and route sliders/buttons through it; add the missing `variant` validator; fix the `CategoryCard` slot violation <!-- id:f4 -->
-- [ ] Real content for `blog` + `contact` stubs (or noindex them); CSS de-dup; README rewrite (it's a generic starter) <!-- id:f5 -->
-- [ ] Major upgrades, each behind build check (robots 6 done): Tailwind 4, `nuxt-site-config` 4, `graphql` 17, ESLint 10; `three` stuck at 0.134 because of `vanta`. Also resolve the mixed package manager (commit to npm, drop the misleading `packageManager: yarn`) <!-- id:f6 -->
+- [ ] Major upgrades behind the build/test check: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4 <!-- id:f6 -->
+- [ ] Real blog content (or keep `/blog` noindexed) <!-- id:f5 -->
+- [ ] Optional logins: Spotify (dev-mode user cap), Apple Music ($99/yr) <!-- id:a6 -->
+- [ ] After ADE: turn the planner into a reusable "festival planner" (any program feed) <!-- id:a18 -->
 - [ ] Link a ClickUp list + sync this roadmap <!-- id:f7 -->
+- [x] Hygraph → VAMS migration (projects) <!-- id:f1 -->
+- [x] Rotate + env-ize secrets (ClickUp, VAMS key; Hygraph removed) <!-- id:n3 -->
+- [x] OG images, apple-touch-icon, canonical, JSON-LD <!-- id:n4 -->
+- [x] Perf: portrait 2.4 MB → 8-37 KB `<picture>`, fonts via `<link>`, ISR <!-- id:n5 -->
+- [x] a11y pass (axe 0 violations, native dialog/popover/details, reduced motion) <!-- id:n6 -->
+- [x] Service-request double submit (forms now post to Nitro routes) <!-- id:f3 -->
+- [x] Atomic-design cleanup, lint-enforced <!-- id:f4 -->
 
 ---
 
 ## Diary
+
+### 2026-10-11 — timetables, venues, map, near me, story image; data resync
+- School-timetable views: daytime tab List/Timetable (a column per venue, ADE Pro first, overlapping sessions get "rooms"); My plan as a week timetable (Wed-Sun, after-midnight parties on the night before) with clash warnings. Blocks open the full event in a native dialog. "Save to my plan" button in every opened event.
+- `.ics` calendar export of My plan; "Share as story image" (1080x1920 canvas, share sheet on touch devices, download on desktop).
+- Venues: VAMS `ade:venues` geocodes each venue once (PDOK, restricted to Amsterdam when the address says so; district from Amsterdam's geosearch; north-of-the-IJ flag). The planner joins them in: area filter now covers most events (Fri Centre 16 → 102), "Getting around" between saved events (walk/bike/ferry estimate, red when the gap is too short, public-transport hint past 6 km), a Leaflet map of the plan (OSM tiles, darkened), and "Near me" (`/api/ade-planner/nearby`, preview of Fri 23 Oct 22:00 before ADE).
+- CARTO's dark tiles now need a key, so the map uses OSM tiles with a CSS filter.
+- Search report artifact refreshed: 191 searches, 78 playlists, 14,413 tracks, 469 events reached, 103 opens, 52 ticket clicks, 44 stars.
+- ADE resync (before/after diff): events 1,405 -> 1,602 (+206 new, 121 of them daytime, 72 ADE Pro; 9 dropped by ADE, incl. Amsterdam Rave and Luciano ALIVE), artists 4,154 -> 4,504, sold out 36 -> 45 (DGTL Thu/Fri, Warhaus, Christian Löffler). 13 start-time and 21 end-time changes, 99 lineups changed. 106 new daytime events classified into topics; no new venues to geocode. Snapshot re-exported.
 
 ### 2026-10-01 — native HTML, stricter atomic design, SEO and load
 - Interactive HTML only in atoms/molecules, lint-enforced (`vue/no-restricted-html-elements`). AtomsButton `variant="link"`/`"link-muted"` and `to`; footer on MoleculesNavLink.
