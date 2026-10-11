@@ -5,7 +5,7 @@
     tabindex="0"
     :padded="false"
     interactive
-    class="overflow-hidden focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink group"
+    class="overflow-hidden pointer-coarse:border-accent-muted focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink group"
     :aria-label="`Open project: ${project.title}`"
     :data-project-card-id="project.id"
     @click="emit('click', project, $event)"
