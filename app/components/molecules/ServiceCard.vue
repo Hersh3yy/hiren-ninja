@@ -4,7 +4,7 @@
       <AtomsHeading :text="title" :level="2" size="lg" />
       <p class="text-content-muted mt-2">{{ description }}</p>
     </div>
-    <div class="flex-grow">
+    <div class="grow">
       <ul class="list-disc list-inside space-y-2 text-content-muted">
         <li v-for="feature in features" :key="feature">{{ feature }}</li>
       </ul>

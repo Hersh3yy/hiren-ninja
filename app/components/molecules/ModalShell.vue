@@ -4,7 +4,7 @@
        to whatever opened it. No focus-trap code of our own. -->
   <dialog
     ref="dialogRef"
-    class="modal-dialog outline-none"
+    class="modal-dialog outline-hidden"
     :class="[bare ? 'modal-dialog--bare' : 'modal-content', panelClass]"
     :aria-labelledby="resolvedTitleId"
     :aria-describedby="describedBy || undefined"

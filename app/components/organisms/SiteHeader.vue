@@ -9,7 +9,7 @@
         height="36"
         alt="Hiren Devs logo"
         aria-hidden="true"
-        class="h-9 w-auto transition-transform duration-700 ease-in-out motion-safe:group-hover:rotate-[360deg]"
+        class="h-9 w-auto transition-transform duration-700 ease-in-out motion-safe:group-hover:rotate-360"
       >
       <span
         class="text-2xl sm:text-3xl md:text-4xl text-accent whitespace-nowrap font-sixtyfour font-normal antialiased"
@@ -38,7 +38,7 @@
         id="mobile-menu"
         ref="menuRef"
         popover
-        class="fixed inset-auto top-[4.25rem] right-0 m-0 w-48 bg-surface/95 text-content backdrop-blur-md lg:hidden rounded-bl-lg border border-border-subtle py-2"
+        class="fixed inset-auto top-17 right-0 m-0 w-48 bg-surface/95 text-content backdrop-blur-md lg:hidden rounded-bl-lg border border-border-subtle px-1 py-2"
         @toggle="isMobileMenuOpen = $event.newState === 'open'"
       >
         <MoleculesNavLink

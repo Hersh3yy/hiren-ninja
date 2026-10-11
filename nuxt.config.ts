@@ -1,4 +1,6 @@
 // nuxt.config.ts
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -53,21 +55,15 @@ export default defineNuxtConfig({
   css: [
     "~/assets/css/main.css"
   ],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
   // Nuxt 4 optimizations
   vite: {
+    plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
         'three',
         'vanta/dist/vanta.birds.min',
         '@vue/devtools-core',
         '@vue/devtools-kit',
-        'graphql-tag',
       ]
     }
   },

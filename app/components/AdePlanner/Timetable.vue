@@ -56,7 +56,7 @@
 
     <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-content-muted" aria-label="Colours">
       <span v-for="tone in tones" :key="tone" class="inline-flex items-center gap-1.5">
-        <span class="inline-block h-2.5 w-2.5 rounded-sm" :class="SWATCH[tone]" />{{ TONE_LABELS[tone] }}
+        <span class="inline-block h-2.5 w-2.5 rounded-xs" :class="SWATCH[tone]" />{{ TONE_LABELS[tone] }}
       </span>
     </div>
 

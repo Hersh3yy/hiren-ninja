@@ -105,12 +105,12 @@ const isLink = computed(() => props.variant === 'link' || props.variant === 'lin
 const buttonClasses = computed(() => {
   if (isLink.value) {
     return [
-      'inline rounded-sm underline underline-offset-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed',
+      'inline rounded-xs underline underline-offset-2 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50 disabled:cursor-not-allowed',
       props.variant === 'link' ? 'text-accent hover:text-accent-hover' : 'text-content-muted hover:text-content'
     ].join(' ')
   }
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-ink disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variantClasses = {
     primary: 'bg-accent text-ink hover:bg-accent-hover focus-visible:ring-accent',

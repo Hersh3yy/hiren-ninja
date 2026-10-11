@@ -1,7 +1,7 @@
 <template>
   <a
     :href="href"
-    class="text-content hover:text-accent transition-colors duration-300 flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm"
+    class="text-content hover:text-accent transition-colors duration-300 flex items-center group focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent rounded-xs"
   >
     <AtomsIcon
       v-if="iconPath"

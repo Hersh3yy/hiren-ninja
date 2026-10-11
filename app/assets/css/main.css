@@ -1,54 +1,113 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer components {
+@theme {
+  --color-ink: #0d0d0d;
+  --color-surface: #1c1c1c;
+  --color-elevated: #27272a;
+  --color-border-subtle: #27272a;
+  --color-border-default: #3f3f46;
+
+  --color-accent: #ffff07;
+  --color-accent-hover: #e6e600;
+  --color-accent-muted: rgb(255 255 7 / 0.4);
+
+  --color-topic-business: #6c9cf0;
+  --color-topic-artists: #f2a541;
+  --color-topic-tech: #b48af5;
+  --color-topic-impact: #4cc9a8;
+  --color-topic-meet: #a1a1aa;
+  --color-topic-party: #ffff07;
+
+  --color-content: #f4f4f5;
+  --color-content-muted: #a1a1aa;
+
+  --color-success: #86efac;
+  --color-success-muted: rgb(20 83 45 / 0.5);
+
+  --color-danger: #fca5a5;
+  --color-danger-muted: rgb(127 29 29 / 0.5);
+
+  --font-sans: 'Helvetica Neue', Helvetica, 'Inter Tight', Arial, sans-serif;
+  --font-sixtyfour: Sixtyfour Convergence, sans-serif;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* v4 dropped these v3 defaults: pointer cursor on buttons, grey placeholders. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #9ca3af;
+  }
+}
+
+@utility container {
   /* Container */
-  .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
 
+@utility page-title {
   /* Typography — prefer AtomsHeading; these remain for rare utility use */
-  .page-title {
-    @apply text-3xl sm:text-4xl font-bold text-accent mb-8;
-  }
+  @apply text-3xl sm:text-4xl font-bold text-accent mb-8;
+}
 
-  .section-title {
-    @apply text-2xl font-bold text-accent mb-4;
-  }
+@utility section-title {
+  @apply text-2xl font-bold text-accent mb-4;
+}
 
+@utility card {
   /* Cards — prefer MoleculesCard; utility kept for lightweight wrappers */
-  .card {
-    @apply bg-surface/80 backdrop-blur-xl rounded-xl p-6 border border-border-subtle hover:border-accent-muted transition-all;
-  }
+  @apply bg-surface/80 backdrop-blur-xl rounded-xl p-6 border border-border-subtle hover:border-accent-muted transition-all;
+}
 
+@utility modal-content {
   /* Modal: native <dialog> (MoleculesModalShell) */
-  .modal-content {
-    @apply bg-surface rounded-xl border border-border-subtle overflow-hidden;
-  }
+  @apply bg-surface rounded-xl border border-border-subtle overflow-hidden;
+}
 
+@utility btn {
   /* Buttons — prefer AtomsButton */
-  .btn {
-    @apply px-4 py-2 rounded-lg transition-colors duration-200;
-  }
+  @apply px-4 py-2 rounded-lg transition-colors duration-200;
+}
 
-  .btn-primary {
-    @apply btn bg-accent text-ink hover:bg-accent-hover font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
-  }
+@utility btn-primary {
+  @apply btn bg-accent text-ink hover:bg-accent-hover font-bold focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+}
 
-  .btn-close {
-    @apply text-content-muted hover:text-content transition-colors;
-  }
+@utility btn-close {
+  @apply text-content-muted hover:text-content transition-colors;
+}
 
+@utility bg-grid-pattern {
   /* Grid Background Pattern */
-  .bg-grid-pattern {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-  }
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
 
-  .project-description ul {
+@utility project-description {
+  & ul {
     @apply list-disc pl-5 space-y-1 mt-3;
   }
 }

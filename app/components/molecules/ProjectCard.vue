@@ -5,7 +5,7 @@
     tabindex="0"
     :padded="false"
     interactive
-    class="overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink group"
+    class="overflow-hidden focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-ink group"
     :aria-label="`Open project: ${project.title}`"
     :data-project-card-id="project.id"
     @click="emit('click', project, $event)"
@@ -44,14 +44,14 @@
           :level="2"
           size="sm"
           :accent="false"
-          class="uppercase tracking-wide break-words leading-snug"
+          class="uppercase tracking-wide wrap-break-word leading-snug"
         />
         <span class="text-xs text-content-muted whitespace-nowrap pt-1">
           {{ project.year }}
         </span>
       </div>
 
-      <p class="text-xs sm:text-sm text-content-muted line-clamp-2 break-words">
+      <p class="text-xs sm:text-sm text-content-muted line-clamp-2 wrap-break-word">
         {{ project.shortDescription }}
       </p>
     </div>

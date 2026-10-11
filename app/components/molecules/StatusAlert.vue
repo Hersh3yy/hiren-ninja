@@ -34,6 +34,6 @@ const alertClasses = computed(() => {
     error: 'bg-danger-muted text-danger'
   }
 
-  return ['p-3 rounded text-sm', variants[props.type]].join(' ')
+  return ['p-3 rounded-sm text-sm', variants[props.type]].join(' ')
 })
 </script>

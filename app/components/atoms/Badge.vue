@@ -22,7 +22,7 @@ const TONES = {
 }
 
 const classes = computed(() => [
-  'inline-flex items-center rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide whitespace-nowrap',
+  'inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-bold uppercase tracking-wide whitespace-nowrap',
   TONES[props.tone]
 ].join(' '))
 </script>

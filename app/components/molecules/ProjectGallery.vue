@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-3">
     <button
       type="button"
-      class="aspect-video relative overflow-hidden rounded-lg bg-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      class="aspect-video relative overflow-hidden rounded-lg bg-elevated focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
       :aria-label="`Expand image for ${title}`"
       @click="emit('expand', activeImageUrl)"
     >
@@ -31,7 +31,7 @@
           v-for="(image, index) in images"
           :key="image.id || image.url || index"
           type="button"
-          class="shrink-0 w-16 h-12 rounded overflow-hidden border-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          class="shrink-0 w-16 h-12 rounded-sm overflow-hidden border-2 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
           :class="index === activeIndex ? 'border-accent' : 'border-transparent opacity-70 hover:opacity-100'"
           :aria-label="`Show image ${index + 1} of ${images.length}`"
           :aria-pressed="index === activeIndex"

@@ -8,7 +8,7 @@
       role="tab"
       :aria-selected="modelValue === item.id"
       :aria-controls="controlsPanels ? `${idPrefix}-panel-${item.id}` : undefined"
-      class="min-w-0 flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:flex-none sm:px-4 sm:text-sm"
+      class="min-w-0 flex-1 whitespace-nowrap rounded-full px-2 py-1.5 text-xs font-bold uppercase tracking-wide transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent sm:flex-none sm:px-4 sm:text-sm"
       :class="modelValue === item.id ? 'bg-accent text-ink' : 'text-content-muted hover:text-content'"
       @click="$emit('update:modelValue', item.id)"
     >

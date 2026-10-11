@@ -110,5 +110,5 @@ const emit = defineEmits(['update:modelValue'])
 const generatedId = useId()
 const inputId = computed(() => props.id || generatedId)
 
-const fieldClasses = 'w-full bg-elevated text-content rounded p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none'
+const fieldClasses = 'w-full bg-elevated text-content rounded-sm p-3 border border-border-default focus:border-accent focus:ring-1 focus:ring-accent focus:outline-hidden'
 </script>

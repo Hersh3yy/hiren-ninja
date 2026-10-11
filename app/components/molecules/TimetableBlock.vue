@@ -1,8 +1,8 @@
 <template>
   <button
     type="button"
-    class="absolute overflow-hidden rounded-md border-l-4 px-2 py-1 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-    :class="[TONES[tone], clash ? 'ring-2 ring-danger' : '', saved ? 'outline outline-1 outline-accent' : '']"
+    class="absolute overflow-hidden rounded-md border-l-4 px-2 py-1 text-left transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
+    :class="[TONES[tone], clash ? 'ring-2 ring-danger' : '', saved ? 'outline-solid outline-1 outline-accent' : '']"
     :style="{ top: `${top}px`, height: `${height}px`, left: `${left}px`, width: `${width}px` }"
     :aria-label="`${time}, ${title}${meta ? `, ${meta}` : ''}${clash ? ', clashes with another event' : ''}`"
     @click="$emit('click')"

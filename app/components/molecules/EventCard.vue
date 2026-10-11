@@ -10,7 +10,7 @@
 
     <button
       type="button"
-      class="min-w-0 flex-1 rounded text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      class="min-w-0 flex-1 rounded-sm text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
       :aria-expanded="expanded"
       :aria-controls="detailsId || undefined"
       @click="$emit('toggle-details')"

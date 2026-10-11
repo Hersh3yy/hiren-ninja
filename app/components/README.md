@@ -86,7 +86,7 @@ If you reach for a slot in an atom, it belongs one level up.
 
 ## Design tokens
 
-Colours are semantic tokens defined in `tailwind.config.js`. Use tokens, never raw
+Colours are semantic tokens defined in the `@theme` block of `app/assets/css/main.css`. Use tokens, never raw
 palette utilities like `bg-gray-700` or `bg-blue-600`.
 
 | Token                | Value (zinc/yellow) | Usage                          |

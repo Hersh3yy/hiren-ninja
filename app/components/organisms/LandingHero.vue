@@ -3,7 +3,7 @@
     <p class="text-xs sm:text-sm uppercase tracking-[0.3em] text-content-muted mb-6">
       Software · AI &amp; Automation · For creative businesses
     </p>
-    <h1 class="text-3xl md:text-4xl lg:text-5xl text-content leading-tight font-semibold pt-8">
+    <h1 class="text-3xl md:text-4xl lg:text-5xl text-content leading-tight md:leading-10 lg:leading-none font-semibold pt-8">
       Technology for
       <span class="accent-phrase">creative businesses</span>.
     </h1>
@@ -16,11 +16,11 @@
 <style scoped>
 .accent-phrase {
   font-weight: 700;
-  color: theme('colors.accent.DEFAULT');
+  color: var(--color-accent);
   background-image: linear-gradient(
     to right,
-    theme('colors.accent.DEFAULT'),
-    theme('colors.accent.hover')
+    var(--color-accent),
+    var(--color-accent-hover)
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -29,7 +29,7 @@
 
 @supports not (background-clip: text) {
   .accent-phrase {
-    color: theme('colors.accent.DEFAULT');
+    color: var(--color-accent);
     background-image: none;
   }
 }

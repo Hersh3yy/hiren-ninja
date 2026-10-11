@@ -3,14 +3,14 @@
     <!-- eslint-disable-next-line vue/no-restricted-html-elements -- a skip link is plain HTML by design: first focusable element, no component layer -->
     <a
       href="#main-content"
-      class="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:z-50 focus-visible:top-2 focus-visible:left-2 focus-visible:bg-accent focus-visible:text-ink focus-visible:px-4 focus-visible:py-2 focus-visible:rounded"
+      class="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:z-50 focus-visible:top-2 focus-visible:left-2 focus-visible:bg-accent focus-visible:text-ink focus-visible:px-4 focus-visible:py-2 focus-visible:rounded-sm"
     >
       Skip to content
     </a>
     <BackgroundsVantaBirds class="fixed inset-0 z-0" aria-hidden="true" :calm="route.path !== '/'" />
-    <div class="fixed inset-0 bg-grid-pattern opacity-10 z-[1]" aria-hidden="true"/>
+    <div class="fixed inset-0 bg-grid-pattern opacity-10 z-1" aria-hidden="true"/>
     <OrganismsSiteHeader class="z-20" />
-    <main id="main-content" tabindex="-1" class="flex-grow flex justify-center items-start z-10 mt-16 w-full max-w-full outline-none">
+    <main id="main-content" tabindex="-1" class="grow flex justify-center items-start z-10 mt-16 w-full max-w-full outline-hidden">
       <NuxtPage />
     </main>
     <OrganismsSiteFooter class="mt-auto z-10" />

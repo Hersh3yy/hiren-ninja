@@ -54,7 +54,7 @@ const props = defineProps({
 defineEmits(['click'])
 
 const buttonClasses = computed(() => {
-  const base = 'inline-flex items-center justify-center rounded-full p-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40 disabled:cursor-not-allowed'
+  const base = 'inline-flex items-center justify-center rounded-full p-2 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40 disabled:cursor-not-allowed'
 
   const variants = {
     ghost: 'text-content-muted hover:text-content hover:bg-elevated',

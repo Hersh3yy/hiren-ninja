@@ -8,7 +8,7 @@
     @close="emit('close')"
   >
     <template #header="{ titleId: id, close }">
-      <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
+      <div class="sticky top-0 z-10 bg-surface/95 backdrop-blur-sm border-b border-border-subtle px-4 py-3 sm:px-6 flex justify-between items-center gap-4">
         <p class="text-xs uppercase tracking-widest text-content-muted">Project</p>
         <span :id="id" class="sr-only">{{ project?.title }}</span>
         <!-- Previous/next live in the sticky header so they never move while you click through. -->

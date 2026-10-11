@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="to"
-    class="nav-link text-content hover:text-accent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-sm"
+    class="nav-link text-content hover:text-accent transition-colors duration-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-xs"
     :aria-current="isCurrent ? 'page' : undefined"
   >
     {{ text }}
@@ -40,7 +40,7 @@ const isCurrent = computed(() => route.path === props.to || route.path.startsWit
   left: 0;
   width: 0;
   height: 1px;
-  background-color: theme("colors.accent.DEFAULT");
+  background-color: var(--color-accent);
   transition: width 0.2s ease;
   pointer-events: none;
 }
