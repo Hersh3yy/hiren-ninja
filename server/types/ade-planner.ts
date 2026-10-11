@@ -29,6 +29,8 @@ export interface AdeEvent {
   genres?: string[]
   eventTypes?: string[]
   area?: string | null
+  /** where the venue is (VAMS ade-venue, geocoded): for maps and travel times */
+  place?: VenuePlace | null
   address?: string | null
   tags?: string[]
   /** derived by VAMS AdeEventClassifier on every sync */
@@ -92,10 +94,26 @@ export interface MatchedEvent extends AdeEvent {
   lineupNames: string[]
 }
 
+export interface VenuePlace {
+  lat: number
+  lng: number
+  neighbourhood?: string | null
+  /** north of the IJ: the ferry from the centre */
+  acrossIj?: boolean
+}
+
+export interface AdeVenue extends Partial<VenuePlace> {
+  name: string
+  address?: string | null
+  /** Amsterdam district in English (Centre, North, ...) or the town */
+  area?: string | null
+}
+
 export interface AdeData {
   source: 'vams' | 'snapshot'
   artists: AdeArtist[]
   events: AdeEvent[]
+  venues?: AdeVenue[]
 }
 
 export type MatchType = 'exact' | 'part-of-act'

@@ -35,11 +35,11 @@ function countFavorite(eventId, action) {
 function snapshotOf(event, artists) {
   const {
     id, title, subtitle, startsAt, endsAt, venue, address, area, adeUrl, ticketUrl, ticketLabel, ticketStatus,
-    genres, kinds, topics, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates
+    genres, kinds, topics, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates, place
   } = event
   return {
     id, title, subtitle, startsAt, endsAt, venue, address, area, adeUrl, ticketUrl, ticketLabel, ticketStatus,
-    genres, kinds, topics, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates, artists
+    genres, kinds, topics, lineupNames, program, isParty, timeOfDay, format, durationMinutes, seriesDates, place, artists
   }
 }
 

@@ -18,6 +18,7 @@
     "@types/three": "^0.180.0",
     "axios": "^1.18.1",
     "howler": "^2.2.4",
+    "leaflet": "^1.9.4",
     "nuxt": "^4.4.8",
     "nuxt-site-config": "^3.2.9",
     "three": "^0.134.0",

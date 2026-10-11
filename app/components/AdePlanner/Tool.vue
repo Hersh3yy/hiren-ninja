@@ -9,22 +9,35 @@
         @update:model-value="selectTab"
       />
 
-      <ClientOnly>
+      <div class="flex flex-wrap items-center gap-2">
+        <ClientOnly>
+          <AtomsChip
+            :text="`★ My plan (${favorites.length})`"
+            :pressed="planOpen"
+            :aria-expanded="planOpen"
+            aria-controls="ade-my-plan"
+            @click="planOpen = !planOpen; planOpen && track('ade-plan-open', { saved: favorites.length })"
+          />
+          <template #fallback>
+            <AtomsChip text="★ My plan" />
+          </template>
+        </ClientOnly>
         <AtomsChip
-          :text="`★ My plan (${favorites.length})`"
-          :pressed="planOpen"
-          :aria-expanded="planOpen"
-          aria-controls="ade-my-plan"
-          @click="planOpen = !planOpen; planOpen && track('ade-plan-open', { saved: favorites.length })"
+          text="Near me"
+          :pressed="nearOpen"
+          :aria-expanded="nearOpen"
+          aria-controls="ade-near-me"
+          @click="nearOpen = !nearOpen"
         />
-        <template #fallback>
-          <AtomsChip text="★ My plan" />
-        </template>
-      </ClientOnly>
+      </div>
     </div>
 
     <ClientOnly>
       <AdePlannerMyPlan v-if="planOpen" id="ade-my-plan" />
+    </ClientOnly>
+
+    <ClientOnly>
+      <AdePlannerNearMe v-if="nearOpen" id="ade-near-me" />
     </ClientOnly>
 
     <div
@@ -67,6 +80,7 @@ const daytimeVisited = ref(tab.value === 'daytime')
 const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
+const nearOpen = ref(false)
 
 function selectTab(id) {
   if (tab.value !== id) track('ade-tab', { tab: id })

@@ -1,4 +1,5 @@
-import type { AdeArtist, AdeData, AdeEvent } from '../../types/ade-planner'
+import type { AdeArtist, AdeData, AdeEvent, AdeVenue } from '../../types/ade-planner'
+import { withVenues } from './venues'
 
 // Kind, intent, format, party or daytime: all classified by VAMS on sync (AdeEventClassifier).
 
@@ -6,9 +7,11 @@ async function loadFromVams(): Promise<AdeData | null> {
   if (!isVamsConfigured()) return null
 
   try {
-    const [artistEntries, eventEntries] = await Promise.all([
+    const [artistEntries, eventEntries, venueEntries] = await Promise.all([
       fetchVamsEntries('ade-artist'),
       fetchVamsEntries('ade-event'),
+      // Optional: without venues the planner still works, just without places.
+      fetchVamsEntries('ade-venue').catch(() => []),
     ])
     if (artistEntries.length === 0) return null
 
@@ -30,6 +33,7 @@ async function loadFromVams(): Promise<AdeData | null> {
         title,
         lineup: (content.lineup as string[]) ?? [],
       })),
+      venues: venueEntries.map(({ title, content }) => ({ name: title, ...(content as Omit<AdeVenue, 'name'>) })),
     }
   } catch (error) {
     console.warn('[ade-planner] VAMS unavailable, using snapshot:', (error as Error).message)
@@ -47,6 +51,6 @@ async function loadFromSnapshot(): Promise<AdeData> {
 
 /** The ADE program: VAMS when reachable, otherwise the bundled snapshot. Cached for an hour. */
 export const loadAdeData = defineCachedFunction(
-  async (): Promise<AdeData> => (await loadFromVams()) ?? loadFromSnapshot(),
+  async (): Promise<AdeData> => withVenues((await loadFromVams()) ?? await loadFromSnapshot()),
   { name: 'ade-planner-data', maxAge: 60 * 60, swr: true },
 )

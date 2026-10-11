@@ -25,7 +25,9 @@
         </template>
       </p>
 
-      <p v-if="event.address" class="text-sm text-content-muted">{{ event.address }}</p>
+      <p v-if="event.address" class="text-sm text-content-muted">
+        {{ [event.address, event.place?.neighbourhood, event.area].filter(Boolean).join(' · ') }}<span v-if="event.place?.acrossIj"> · north of the IJ, take the ferry</span>
+      </p>
 
       <div v-if="tags.length" class="flex flex-wrap gap-1">
         <AtomsBadge v-for="tag in tags" :key="tag" :text="tag" tone="muted" />

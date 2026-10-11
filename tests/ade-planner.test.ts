@@ -5,6 +5,9 @@ import { browseDaytime } from '../server/utils/ade-planner/browse'
 import { spotifyGid } from '../server/utils/ade-planner/playlist'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../app/utils/timetable.js'
+import { describeTrip, travel } from '../server/utils/ade-planner/travel'
+import { withVenues } from '../server/utils/ade-planner/venues'
+import { eventsNearby } from '../server/utils/ade-planner/nearby'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
@@ -292,5 +295,46 @@ describe('timetable', () => {
     expect(ics).toContain('SUMMARY:Drumcode\\, Awakenings\r\n')
     expect(ics).toContain('DTSTART:20261022T210000Z\r\nDTEND:20261022T220000Z')
     expect(ics.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true)
+  })
+})
+
+describe('venues and travel', () => {
+  const felix = { lat: 52.36999, lng: 4.88428 }
+  const nextDoor = { lat: 52.3672, lng: 4.8843 } // ~300 m down the Keizersgracht
+  const ndsm = { lat: 52.39939, lng: 4.89482, acrossIj: true }
+
+  it('walks short hops, bikes longer ones and adds the ferry across the IJ', () => {
+    expect(travel(felix, nextDoor)).toMatchObject({ mode: 'walk', ferry: false })
+    const north = travel(felix, ndsm)
+    expect(north).toMatchObject({ mode: 'bike', ferry: true })
+    expect(north.minutes).toBeGreaterThan(20)
+    expect(describeTrip(north)).toMatch(/^~\d+ min by bike, incl\. the ferry$/)
+  })
+
+  it('gives events their venue place and fills a missing area from the venue', () => {
+    const joined = withVenues({ ...data, venues: [{ name: 'Gashouder', lat: 52.385, lng: 4.873, area: 'West' }] })
+    const drumcode = joined.events.find(event => event.id === 'e1')!
+    expect(drumcode.area).toBe('West')
+    expect(drumcode.place).toMatchObject({ lat: 52.385, lng: 4.873, acrossIj: false })
+    expect(joined.events.find(event => event.id === 'e2')!.place).toBeUndefined()
+  })
+})
+
+describe('nearby', () => {
+  it('lists events starting in the next two hours, nearest first', () => {
+    const at = new Date('2026-10-22T19:30:00+02:00')
+    const place = (lat: number, lng: number) => ({ lat, lng })
+    const nearbyData: AdeData = {
+      ...data,
+      events: [
+        { ...data.events[1]!, id: 'soon-far', startsAt: '2026-10-22T20:00:00+02:00', place: place(52.39, 4.85) },
+        { ...data.events[1]!, id: 'soon-close', startsAt: '2026-10-22T21:00:00+02:00', place: place(52.371, 4.885) },
+        { ...data.events[1]!, id: 'later', startsAt: '2026-10-22T23:00:00+02:00', place: place(52.37, 4.884) },
+        { ...data.events[1]!, id: 'no-place', startsAt: '2026-10-22T20:00:00+02:00' },
+      ] as AdeData['events'],
+    }
+    const result = eventsNearby(nearbyData, at, { lat: 52.37, lng: 4.884 })
+    expect(result.map(item => item.event.id)).toEqual(['soon-close', 'soon-far'])
+    expect(result[0]!.startsInMinutes).toBe(90)
   })
 })

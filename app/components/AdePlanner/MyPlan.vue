@@ -26,10 +26,22 @@
 
     <template v-if="favorites.length">
       <AdePlannerTimetable v-if="view === 'timetable'" :columns="weekColumns" :px-per-minute="0.9" :lane-width="128" :mark-saved="false" />
+      <AdePlannerPlanMap v-else-if="view === 'map'" :stops="mapStops" :missing="favorites.length - mapStops.length" />
       <AdePlannerDayGroups v-else :days="days" />
+
+      <div v-if="trips.length" class="space-y-1">
+        <AtomsHeading text="Getting around" :level="3" size="sm" class="uppercase tracking-wide" />
+        <ul class="space-y-1 text-sm text-content-muted">
+          <li v-for="trip in trips" :key="trip.id" :class="trip.tight ? 'text-danger' : ''">
+            <span class="font-mono text-xs">{{ trip.day }}</span>
+            {{ trip.from }} → {{ trip.to }}: {{ trip.text }}{{ trip.tight ? `, but only ${trip.gap} min between them` : '' }}
+          </li>
+        </ul>
+      </div>
 
       <div class="flex flex-wrap items-center gap-2">
         <AtomsButton size="sm" variant="outline" text="Add to calendar (.ics)" @click="downloadCalendar" />
+        <AtomsButton size="sm" variant="outline" text="Share as story image" @click="shareStory" />
       </div>
     </template>
   </section>
@@ -38,12 +50,15 @@
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { groupEventsByDay } from '~/composables/useAdePlanner.js'
-import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '~/utils/timetable.js'
+import { findClashes, formatMinutes, layoutLanes, minutesOnDay, planningDay, toIcs } from '~/utils/timetable.js'
 import { track } from '~/utils/track'
+import { drawPlanStory, shareCanvas } from '~/utils/storyImage.js'
+import { describeTrip, travel } from '../../../server/utils/ade-planner/travel'
 
 const VIEWS = [
   { id: 'timetable', label: 'Timetable' },
-  { id: 'list', label: 'List' }
+  { id: 'list', label: 'List' },
+  { id: 'map', label: 'Map' }
 ]
 const ADE_DAYS = ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25']
 const dayName = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', timeZone: 'UTC' })
@@ -77,12 +92,61 @@ const weekColumns = computed(() => {
   })
 })
 
+// Map pins: saved events with a known place, numbered in order per day.
+const mapStops = computed(() => ADE_DAYS.flatMap((day) => {
+  const items = placed.value.filter(item => item.day === day && item.event.place).sort((a, b) => a.from - b.from)
+  return items.map((item, i) => ({
+    id: item.event.id,
+    lat: item.event.place.lat,
+    lng: item.event.place.lng,
+    day,
+    dayLabel: dayName.format(new Date(`${day}T12:00:00Z`)),
+    order: i + 1,
+    title: item.event.title,
+    time: formatMinutes(item.from)
+  }))
+}))
+
+// From one saved event to the next on the same day: how long it takes, and whether
+// the gap between them is long enough. Needs both venues' places (VAMS ade-venue).
+const trips = computed(() => ADE_DAYS.flatMap((day) => {
+  const items = placed.value.filter(item => item.day === day).sort((a, b) => a.from - b.from)
+  return items.slice(1).flatMap((next, i) => {
+    const prev = items[i]
+    if (!prev.event.place || !next.event.place || prev.event.venue === next.event.venue) return []
+    const trip = travel(prev.event.place, next.event.place)
+    const gap = next.from - prev.to
+    return [{
+      id: `${prev.event.id}-${next.event.id}`,
+      day: dayName.format(new Date(`${day}T12:00:00Z`)),
+      from: prev.event.venue,
+      to: next.event.venue,
+      text: describeTrip(trip),
+      gap,
+      tight: gap >= 0 && gap < trip.minutes
+    }]
+  })
+}))
+
 const clashText = computed(() => {
   if (!clashes.value.length) return ''
   const [first, second] = clashes.value[0]
   const more = clashes.value.length > 1 ? ` (and ${clashes.value.length - 1} more)` : ''
   return `You can't be in two places: "${first.event.title}" and "${second.event.title}" overlap${more}.`
 })
+
+// A 9:16 picture of the week for an Instagram or WhatsApp story.
+async function shareStory() {
+  const canvas = document.createElement('canvas')
+  drawPlanStory(canvas, weekColumns.value.filter(column => ADE_DAYS.includes(column.id)).map(column => ({
+    label: column.label,
+    items: [...column.items].sort((a, b) => a.from - b.from).map(item => ({
+      time: formatMinutes(item.from), title: item.event.title, venue: item.event.venue, party: item.event.isParty !== false
+    }))
+  })))
+  const result = await shareCanvas(canvas, 'my-ade-2026.png')
+  track('ade-story-image', { result, saved: favorites.value.length })
+}
 
 function downloadCalendar() {
   const blob = new Blob([toIcs(favorites.value)], { type: 'text/calendar;charset=utf-8' })
