@@ -8,14 +8,14 @@
 
 # hiren.ninja — map
 
-**What it is** · Hiren's site at [hiren.ninja](https://hiren.ninja): home, about, services (request form), projects gallery, contact, experiments (Three.js LED-sculpture generator) and the **ADE Planner** at `/ade-planner`, a free fan tool that matches your playlist against the Amsterdam Dance Event 2026 program.
-**Stack** · Nuxt 4 · Vue 3 · Tailwind 3 · Nitro on Netlify · Three.js + Vanta (birds) · Leaflet (plan map, lazy) · Umami (cookieless) · Vitest.
+**What it is** · Hiren's site at [hiren.ninja](https://hiren.ninja): home, about, services (request form), projects gallery, contact and the **ADE Planner** at `/ade-planner`, a free fan tool that matches your playlist against the Amsterdam Dance Event 2026 program.
+**Stack** · Nuxt 4 · Vue 3 · Tailwind 4 (`@theme` in `main.css`) · Nitro on Netlify · Three.js + Vanta (birds) · Leaflet (plan map, lazy) · Umami (cookieless) · Vitest.
 **Content** · Projects and the whole ADE program come from **VAMS** (`koala/VAMS`, app.use-vams.me) through server routes with a private key; bundled snapshots in `server/assets/` are the fallback. Leads (contact + service forms) become **ClickUp** tasks. Services and skills are hardcoded.
-**Status** · 🟢 `main` builds, deploys and is live; 30 Vitest tests, ESLint clean (0 errors). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
+**Status** · 🟢 `main` builds, deploys and is live; 36 Vitest tests, ESLint clean (0 warnings). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
 **Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · one branch: **`main`** (small, tested commits straight to main this sprint, with Hiren's go).
 **Package manager** · **npm** (`package-lock.json`).
 **ClickUp** · roadmap not linked; leads list "Contact Form Submissions" (id 901507749589) via `CLICKUP_API_KEY`/`CLICKUP_LIST_ID` on Netlify.
-**Last assessed** · 2026-10-11
+**Last assessed** · 2026-10-12
 
 ---
 
@@ -24,31 +24,29 @@
 ```bash
 npm install
 npm run dev          # http://localhost:3000 (VAMS_API_URL + VAMS_API_KEY in .env for live data)
-npm test             # vitest run (30 tests: matching, playlists, timetable, travel, nearby, topics)
+npm test             # vitest run (36 tests: matching, playlists, timetable, travel, nearby, duplicates, plan links)
 npm run lint         # eslint (raw <button>/<a>/<input> outside atoms/molecules is an error)
 npm run build
 ```
-Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAMS change, restart dev or delete `.nuxt/cache/nitro/functions/ade-planner-data`. A Tailwind config change can kill `nuxi dev`; restart it. ADE data refresh lives in VAMS (`php artisan ade:sync --reuse-pages`, see VAMS's map).
+Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAMS change, restart dev or delete `.nuxt/cache/nitro/functions/ade-planner-data`. A Tailwind `@theme` change can kill `nuxi dev`; restart it. `typescript-eslint` is pinned to 8.70.1 in `overrides` (8.71.1 flags every used variable in `.js` as "only used as a type"); drop the pin once a fixed release ships. ADE data refresh lives in VAMS (`php artisan ade:sync --reuse-pages`, see VAMS's map).
 
 ## Status
 
-The site is in good shape after a two-week sprint: secrets moved to env (the leaked ClickUp token was rotated), Hygraph is gone, OG images, JSON-LD, canonicals and llms.txt are in, interactive HTML is lint-locked into atoms/molecules, modals/menu/accordion use native `<dialog>`/`popover`/`<details>`. The ADE Planner is the active product: playlists from five services, typo-tolerant matching, a daytime tab with topics, school-timetable views, a week plan with travel times, a map, "near me" and a story image. What's left is mostly old experiment debt (LSS WebGL disposal), two unused deps, and turning the ADE data into a few posts before 21 Oct.
+The site is in good shape after a two-week sprint: secrets moved to env (the leaked ClickUp token was rotated), Hygraph is gone, OG images, JSON-LD, canonicals and llms.txt are in, interactive HTML is lint-locked into atoms/molecules, modals/menu/accordion use native `<dialog>`/`popover`/`<details>`. The ADE Planner is the active product: playlists from five services, typo-tolerant matching, a daytime tab with topics, school-timetable views, a week plan with travel times, a map, "near me", a story image and a share link. The LED-sculpture experiment is gone, packages are current (Tailwind 4, ESLint 10, Vitest 5). What's left is the launch work before 21 Oct and the ADE-week resyncs.
 
 ## Issues
 
 | Sev | Issue | Where |
 |---|---|---|
-| warning | **LSS WebGL leaks**: geometries/materials rebuilt per parameter change are never `.dispose()`d; unmount only disposes the renderer. | `app/components/LSS/Viewer.vue` (only `renderer.dispose()` at :377) |
 | warning | **Undocumented third-party endpoints** carry the planner: Spotify web-player `spclient` (tracks past 100), Tidal's public web token, YouTube Music/Apple page data. Any can change without notice; the planner degrades to "partial" and says so. | `server/utils/ade-planner/playlist.ts`, `tidal-deezer.ts`, `youtube-music.ts` |
 | warning | ADE data only refreshes when someone runs `ade:sync` in VAMS (no schedule, on purpose); new daytime events then need `ade:topics`. | VAMS `routes/console.php` (empty), VAMS map |
-| note | Unused deps `axios`, `howler`. | `package.json` |
-| note | Majors waiting: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4; `three` pinned at 0.134 by `vanta`. Minor: nuxt 4.6.1, sitemap 8.6.1, robots 6.2.4. | `npm outdated` |
-| note | Mystic Garden and Dockyard Festival are one event that ADE lists twice; the planner shows both. | ADE data |
+| note | `three` stays at 0.134: `vanta` (the birds) needs it. | `package.json` |
+| note | `typescript-eslint` pinned to 8.70.1 (see Run it). | `package.json` `overrides` |
 
 ## Guide
 
 - **Pages:** `app/pages/*` under `layouts/default.vue` (Vanta birds: full on the home hero, calm elsewhere; header with `popover` phone menu; footer). Canonical, `og:url`, JSON-LD (Person, ProfessionalService, WebSite) in the layout; WebApplication on `/ade-planner`. Home, about, services, projects and contact are ISR-cached on Netlify (hourly).
-- **Design system:** `app/components/{atoms,molecules,organisms}` plus feature folders (`AdePlanner/`, `LSS/`, `Experiments/`). Rules in `app/components/README.md`: props over slots, interactive HTML only in atoms/molecules (lint), native HTML first.
+- **Design system:** `app/components/{atoms,molecules,organisms}` plus the feature folder `AdePlanner/`. Rules in `app/components/README.md`: props over slots, interactive HTML only in atoms/molecules (lint), native HTML first.
 - **Projects:** `server/api/projects.get.ts` → `server/utils/projects.ts` → VAMS `projects` entries, snapshot fallback.
 - **Leads:** `server/api/{contact,service-request}.post.ts` → `server/utils/leads.ts` → ClickUp task (markdown description, tags, priority), rate-limited per IP.
 - **ADE Planner:** `app/components/AdePlanner/*` (Tool → Parties/Daytime panels, MyPlan, NearMe, Timetable) and `server/api/ade-planner/*`:
@@ -106,17 +104,17 @@ flowchart LR
 - [x] Venue geocoding and a map (PDOK + Amsterdam geosearch, Leaflet) <!-- id:a13 -->
 - [x] Day timetable with clashes and gaps <!-- id:a14 -->
 - [x] Interest search for the daytime tab (tags, genres, topics, did-you-mean) <!-- id:a11 -->
-- [ ] Share-my-plan link (encode saved ids in the URL, no login) <!-- id:a15 -->
-- [ ] Merge events ADE lists twice (same lineup, venue and time) <!-- id:a16 -->
+- [x] Share-my-plan link (encode saved ids in the URL, no login) <!-- id:a15 -->
+- [x] Merge events ADE lists twice (same lineup, venue and time) <!-- id:a16 -->
 - [ ] Re-sync before and during ADE week (`ade:sync`, `ade:topics --missing`, `ade:venues`, export snapshot) <!-- id:a17 -->
 
 ### Site
-- [ ] Remove unused `axios` + `howler`; take nuxt 4.6, sitemap 8.6, robots 6.2.4 <!-- id:n8 -->
-- [ ] LSS WebGL disposal (dispose geometry/material on rebuild; `forceContextLoss()` on unmount) <!-- id:f2 -->
+- [x] Remove unused `axios` + `howler`; take nuxt 4.6, sitemap 8.6, robots 6.2.4 <!-- id:n8 -->
+- [x] ~~LSS WebGL disposal~~: the LED-sculpture experiment was removed instead <!-- id:f2 -->
 
 ## Roadmap — far future
 
-- [ ] Major upgrades behind the build/test check: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4 <!-- id:f6 -->
+- [x] Major upgrades behind the build/test check: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4 <!-- id:f6 -->
 - [ ] Real blog content (or keep `/blog` noindexed) <!-- id:f5 -->
 - [ ] Optional logins: Spotify (dev-mode user cap), Apple Music ($99/yr) <!-- id:a6 -->
 - [ ] After ADE: turn the planner into a reusable "festival planner" (any program feed) <!-- id:a18 -->
@@ -132,6 +130,14 @@ flowchart LR
 ---
 
 ## Diary
+
+### 2026-10-12 — cleanup, package updates, share link, duplicates merged
+- Removed the LED-sculpture 3D builder and the `/experiments` page (its only experiment; it also leaked WebGL memory). `/experiments` 301s home, out of the nav. `EXPERIMENTS.md`, the unused `AtomsSlider` and `escapeHtml` went too; project descriptions render in the template instead of `v-html`.
+- Packages: dropped `axios`, `howler`, `@types/three`; nuxt 4.6, sitemap 8.6, robots 6.2.4, ESLint 10, Vitest 5, `nuxt-site-config` 4 (robots and sitemap already shipped v4, so a duplicate copy went). `typescript-eslint` pinned to 8.70.1 because 8.71.1 gave 180 false "only used as a type" warnings.
+- Tailwind 4 via the official upgrade tool, `@tailwindcss/vite` instead of PostCSS. Fixed what it got wrong (renamed the `'outline'` variant value of AtomsButton/AtomsBadge) and kept v3 looks (grey default border, pointer cursor on buttons, grey placeholders, popover menu padding, hero line height, `modal-dialog` in the components layer). A computed-style diff of six pages against a v3 baseline came back clean.
+- Project cards get the yellow hover border on touch screens (`pointer-coarse:`), since phones can't hover.
+- One card for shows ADE lists twice (same start, venue and 2+ act lineup): Mystic Garden / Dockyard Festival and the two Vault Sessions x SK_eleven listings. The listing with tickets stays, stars add up, "Also listed by ADE as ..." links the other. Old ids resolve for stats and shared links (`server/utils/ade-planner/duplicates.ts`).
+- Share-my-plan link: each saved event id packed into 22 URL-safe characters (`plan-link.ts`), `/ade-planner?plan=...` shows "A friend's plan" with "Add all to my plan" (`/api/ade-planner/plan`). No login, nothing stored.
 
 ### 2026-10-11 — timetables, venues, map, near me, story image; data resync
 - School-timetable views: daytime tab List/Timetable (a column per venue, ADE Pro first, overlapping sessions get "rooms"); My plan as a week timetable (Wed-Sun, after-midnight parties on the night before) with clash warnings. Blocks open the full event in a native dialog. "Save to my plan" button in every opened event.
