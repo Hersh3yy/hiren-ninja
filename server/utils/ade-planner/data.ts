@@ -1,4 +1,5 @@
 import type { AdeArtist, AdeData, AdeEvent, AdeVenue } from '../../types/ade-planner'
+import { mergeDuplicateEvents } from './duplicates'
 import { withVenues } from './venues'
 
 // Kind, intent, format, party or daytime: all classified by VAMS on sync (AdeEventClassifier).
@@ -51,6 +52,6 @@ async function loadFromSnapshot(): Promise<AdeData> {
 
 /** The ADE program: VAMS when reachable, otherwise the bundled snapshot. Cached for an hour. */
 export const loadAdeData = defineCachedFunction(
-  async (): Promise<AdeData> => withVenues((await loadFromVams()) ?? await loadFromSnapshot()),
+  async (): Promise<AdeData> => withVenues(mergeDuplicateEvents((await loadFromVams()) ?? await loadFromSnapshot())),
   { name: 'ade-planner-data', maxAge: 60 * 60, swr: true },
 )

@@ -8,6 +8,7 @@ import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../a
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
+import { mergeDuplicateEvents, resolveEventId } from '../server/utils/ade-planner/duplicates'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
@@ -336,5 +337,50 @@ describe('nearby', () => {
     const result = eventsNearby(nearbyData, at, { lat: 52.37, lng: 4.884 })
     expect(result.map(item => item.event.id)).toEqual(['soon-close', 'soon-far'])
     expect(result[0]!.startsInMinutes).toBe(90)
+  })
+})
+
+describe('mergeDuplicateEvents', () => {
+  const at = '2026-10-24T13:00:00+02:00'
+  const base = { subtitle: null, endsAt: null, categories: null, soldOut: false, startsAt: at }
+  const dupData: AdeData = {
+    source: 'snapshot',
+    artists: [{ id: 'a1', name: 'Act One', country: null, spotifyId: null, adeUrl: 'https://ade/a1', eventIds: ['mystic', 'dockyard'] }],
+    events: [
+      { ...base, id: 'mystic', title: 'Mystic Garden Festival ADE', venue: 'Havenpark', adeUrl: 'https://ade/mystic', ticketUrl: null, favorites: 2, lineup: ['a1', 'a2'] },
+      { ...base, id: 'dockyard', title: 'Dockyard Festival ADE', venue: 'Havenpark', adeUrl: 'https://ade/dockyard', ticketUrl: 'https://shop', favorites: 1, lineup: ['a2', 'a1'] },
+      // Parallel rooms: same venue and time, no lineup. Not the same show.
+      { ...base, id: 'room-a', title: 'Meet the Makers | A', venue: 'Midi', adeUrl: 'https://ade/ra', lineup: [] },
+      { ...base, id: 'room-b', title: 'Meet the Makers | B', venue: 'Midi', adeUrl: 'https://ade/rb', lineup: [] },
+      // Same lineup and time somewhere else: two shows.
+      { ...base, id: 'elsewhere', title: 'Other', venue: 'Paradiso', adeUrl: 'https://ade/o', lineup: ['a1', 'a2'] },
+    ],
+  }
+
+  it('folds one show listed twice into the listing with tickets, keeping both names and stars', () => {
+    const merged = mergeDuplicateEvents(dupData)
+    expect(merged.events.map(e => e.id)).toEqual(['dockyard', 'room-a', 'room-b', 'elsewhere'])
+    const show = merged.events[0]!
+    expect(show.title).toBe('Dockyard Festival ADE / Mystic Garden Festival ADE')
+    expect(show.favorites).toBe(3)
+    expect(show.alsoListedAs).toEqual([{ id: 'mystic', title: 'Mystic Garden Festival ADE', adeUrl: 'https://ade/mystic', ticketUrl: null }])
+    expect(merged.artists[0]!.eventIds).toEqual(['dockyard'])
+    expect(resolveEventId(merged, 'mystic')).toBe('dockyard')
+    expect(resolveEventId(merged, 'room-a')).toBe('room-a')
+  })
+
+  it('keeps one name when one title contains the other', () => {
+    const merged = mergeDuplicateEvents({
+      ...dupData,
+      events: [
+        { ...base, id: 'v1', title: 'Vault Sessions x SK_eleven | Blast Galaxy', venue: 'Blast Galaxy', adeUrl: 'https://ade/v1', ticketUrl: 'https://vault', lineup: ['a1', 'a2'] },
+        { ...base, id: 'v2', title: 'Vault Sessions x SK_eleven', venue: 'Blast Galaxy', adeUrl: 'https://ade/v2', lineup: ['a1', 'a2'] },
+      ],
+    })
+    expect(merged.events.map(e => [e.id, e.title])).toEqual([['v1', 'Vault Sessions x SK_eleven | Blast Galaxy']])
+  })
+
+  it('leaves the data alone when nothing is listed twice', () => {
+    expect(mergeDuplicateEvents(data)).toBe(data)
   })
 })

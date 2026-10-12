@@ -29,6 +29,13 @@
         {{ [event.address, event.place?.neighbourhood, event.area].filter(Boolean).join(' · ') }}<span v-if="event.place?.acrossIj"> · north of the IJ, take the ferry</span>
       </p>
 
+      <p v-if="event.alsoListedAs?.length" class="text-sm text-content-muted">
+        Also listed by ADE as
+        <template v-for="(other, i) in event.alsoListedAs" :key="other.id">
+          <AtomsButton variant="link-muted" :href="other.ticketUrl || other.adeUrl" external :text="other.title" />{{ i < event.alsoListedAs.length - 1 ? ', ' : '' }}
+        </template>
+      </p>
+
       <div v-if="tags.length" class="flex flex-wrap gap-1">
         <AtomsBadge v-for="tag in tags" :key="tag" :text="tag" tone="muted" />
       </div>
@@ -173,5 +180,6 @@ const tags = computed(() => [
 ])
 
 // TicketSwap has no public API; a search on the event title is the best deep link.
-const ticketSwapUrl = computed(() => `https://www.ticketswap.com/search?query=${encodeURIComponent(props.event.title)}`)
+// A merged listing ("A / B") searches on its first name.
+const ticketSwapUrl = computed(() => `https://www.ticketswap.com/search?query=${encodeURIComponent(props.event.title.split(' / ')[0])}`)
 </script>

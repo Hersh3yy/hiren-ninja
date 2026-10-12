@@ -48,6 +48,8 @@ export interface AdeEvent {
   /** same event at the same venue on several days */
   series?: string | null
   seriesDates?: string[]
+  /** other ADE listings of this same show, folded into this one (duplicates.ts) */
+  alsoListedAs?: { id: string, title: string, adeUrl: string, ticketUrl: string | null }[]
 }
 
 export type Intent = 'party' | 'learn' | 'meet' | 'listen' | 'recharge' | 'other'
@@ -114,6 +116,8 @@ export interface AdeData {
   artists: AdeArtist[]
   events: AdeEvent[]
   venues?: AdeVenue[]
+  /** dropped duplicate event id -> the id it was merged into */
+  aliases?: Record<string, string>
 }
 
 export type MatchType = 'exact' | 'part-of-act'
