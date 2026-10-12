@@ -33,6 +33,10 @@
     </div>
 
     <ClientOnly>
+      <AdePlannerSharedPlan v-if="sharedPlan" :plan="sharedPlan" @close="closeSharedPlan" />
+    </ClientOnly>
+
+    <ClientOnly>
       <AdePlannerMyPlan v-if="planOpen" id="ade-my-plan" />
     </ClientOnly>
 
@@ -81,6 +85,12 @@ const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
 const nearOpen = ref(false)
+// A friend's plan from a shared link (?plan=...), shown above everything else.
+const sharedPlan = computed(() => (typeof route.query.plan === 'string' ? route.query.plan : ''))
+
+function closeSharedPlan() {
+  router.replace({ query: { ...route.query, plan: undefined } })
+}
 
 function selectTab(id) {
   if (tab.value !== id) track('ade-tab', { tab: id })

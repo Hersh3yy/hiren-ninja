@@ -9,6 +9,8 @@ import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
 import { mergeDuplicateEvents, resolveEventId } from '../server/utils/ade-planner/duplicates'
+import { decodePlan, encodePlan } from '../server/utils/ade-planner/plan-link'
+import { sharedPlanEvents } from '../server/utils/ade-planner/share'
 import type { AdeData } from '../server/types/ade-planner'
 import { parseYouTubeMusicPage, youTubeMusicContinuation, youTubeMusicListId, youTubeMusicTitle, youTubeMusicTracks } from '../server/utils/ade-planner/youtube-music'
 
@@ -382,5 +384,42 @@ describe('mergeDuplicateEvents', () => {
 
   it('leaves the data alone when nothing is listed twice', () => {
     expect(mergeDuplicateEvents(data)).toBe(data)
+  })
+})
+
+describe('shared plan links', () => {
+  const ids = ['17dd0fd6-f257-4bad-ac53-5c4979a1717c', 'a1ca9b40-c664-4f45-8418-8f87a73691d5', '835fbc7f-b702-4f93-bc6f-12baa0ab1f12']
+
+  it('packs each event id into 22 URL-safe characters and back', () => {
+    const plan = encodePlan(ids)
+    expect(plan).toHaveLength(66)
+    expect(plan).toMatch(/^[A-Za-z0-9_-]+$/)
+    expect(decodePlan(plan)).toEqual(ids)
+  })
+
+  it('drops ids it cannot pack and links it cannot read', () => {
+    expect(encodePlan(['e1', ids[0]!, ids[0]!])).toHaveLength(22)
+    expect(decodePlan('not a plan!')).toEqual([])
+    expect(decodePlan(`${encodePlan([ids[0]!])}abc`)).toEqual([ids[0]])
+  })
+
+  it('returns the events with their lineup, following merged duplicates', () => {
+    const at = '2026-10-24T13:00:00+02:00'
+    const base = { subtitle: null, endsAt: null, categories: null, soldOut: false, startsAt: at, venue: 'Havenpark' }
+    const merged = mergeDuplicateEvents({
+      source: 'snapshot',
+      artists: [
+        { id: 'a1', name: 'Dax J', country: null, spotifyId: null, adeUrl: 'https://ade/a1', eventIds: [ids[0]!, ids[1]!] },
+        { id: 'a2', name: 'BLANKA', country: null, spotifyId: null, adeUrl: 'https://ade/a2', eventIds: [ids[0]!, ids[1]!] },
+      ],
+      events: [
+        { ...base, id: ids[0]!, title: 'Dockyard Festival ADE', adeUrl: 'https://ade/d', ticketUrl: 'https://shop', lineup: ['a1', 'a2'] },
+        { ...base, id: ids[1]!, title: 'Mystic Garden Festival ADE', adeUrl: 'https://ade/m', lineup: ['a1', 'a2'] },
+      ],
+    })
+    // The Mystic Garden id was merged into Dockyard; the third id isn't on the program.
+    const { events, missing } = sharedPlanEvents(merged, ids)
+    expect(events.map(e => [e.id, e.lineupNames])).toEqual([[ids[0], ['BLANKA', 'Dax J']]])
+    expect(missing).toBe(1)
   })
 })

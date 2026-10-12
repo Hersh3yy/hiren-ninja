@@ -62,5 +62,15 @@ export function useAdeFavorites() {
     save()
   }
 
-  return { favorites, isFavorite, toggleFavorite }
+  /** Saves every item not saved yet (a friend's shared plan); returns how many were new. */
+  function addFavorites(items) {
+    const added = items.filter(({ event }) => !isFavorite(event.id))
+    if (!added.length) return 0
+    added.forEach(({ event }) => countFavorite(event.id, 'add'))
+    favorites.value = [...favorites.value, ...added.map(({ event, artists }) => snapshotOf(event, artists ?? []))]
+    save()
+    return added.length
+  }
+
+  return { favorites, isFavorite, toggleFavorite, addFavorites }
 }

@@ -42,6 +42,8 @@
       <div class="flex flex-wrap items-center gap-2">
         <AtomsButton size="sm" variant="outline" text="Add to calendar (.ics)" @click="downloadCalendar" />
         <AtomsButton size="sm" variant="outline" text="Share as story image" @click="shareStory" />
+        <AtomsButton size="sm" variant="outline" text="Share a link to my plan" @click="sharePlanLink" />
+        <span v-if="linkText" class="text-sm text-success" role="status">{{ linkText }}</span>
       </div>
     </template>
   </section>
@@ -54,6 +56,7 @@ import { findClashes, formatMinutes, layoutLanes, minutesOnDay, planningDay, toI
 import { track } from '~/utils/track'
 import { drawPlanStory, shareCanvas } from '~/utils/storyImage.js'
 import { describeTrip, travel } from '../../../server/utils/ade-planner/travel'
+import { encodePlan } from '../../../server/utils/ade-planner/plan-link'
 
 const VIEWS = [
   { id: 'timetable', label: 'Timetable' },
@@ -146,6 +149,34 @@ async function shareStory() {
   })))
   const result = await shareCanvas(canvas, 'my-ade-2026.png')
   track('ade-story-image', { result, saved: favorites.value.length })
+}
+
+// The plan travels in the link itself: no account, nothing stored on the server.
+const linkText = ref('')
+
+async function sharePlanLink() {
+  const url = `${window.location.origin}/ade-planner?plan=${encodePlan(favorites.value.map(favorite => favorite.id))}`
+  let result = 'copied'
+  // Phones get the share sheet (WhatsApp, Messages); computers copy the link.
+  const touch = window.matchMedia?.('(pointer: coarse)').matches
+  if (touch && navigator.share) {
+    try {
+      await navigator.share({ url, title: 'My ADE 2026 plan' })
+      result = 'shared'
+    } catch {
+      result = 'cancelled'
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      // No clipboard access (insecure context, permissions): show the link to copy by hand.
+      window.prompt('Copy this link to your plan:', url)
+    }
+  }
+  linkText.value = result === 'copied' ? 'Link copied. Anyone with it sees your plan.' : ''
+  if (linkText.value) setTimeout(() => { linkText.value = '' }, 5000)
+  track('ade-share-plan-link', { result, saved: favorites.value.length })
 }
 
 function downloadCalendar() {
