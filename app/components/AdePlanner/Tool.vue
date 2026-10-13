@@ -23,6 +23,13 @@
           </template>
         </ClientOnly>
         <AtomsChip
+          text="Free parties"
+          :pressed="freeOpen"
+          :aria-expanded="freeOpen"
+          aria-controls="ade-free-parties"
+          @click="freeOpen = !freeOpen"
+        />
+        <AtomsChip
           text="Near me"
           :pressed="nearOpen"
           :aria-expanded="nearOpen"
@@ -38,6 +45,10 @@
 
     <ClientOnly>
       <AdePlannerMyPlan v-if="planOpen" id="ade-my-plan" />
+    </ClientOnly>
+
+    <ClientOnly>
+      <AdePlannerFreeParties v-if="freeOpen" id="ade-free-parties" />
     </ClientOnly>
 
     <ClientOnly>
@@ -85,6 +96,7 @@ const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
 const nearOpen = ref(false)
+const freeOpen = ref(false)
 // A friend's plan from a shared link (?plan=...), shown above everything else.
 const sharedPlan = computed(() => (typeof route.query.plan === 'string' ? route.query.plan : ''))
 

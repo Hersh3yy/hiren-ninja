@@ -49,9 +49,12 @@
     <AdePlannerResults
       v-if="result"
       v-model:genre-filter="genreFilter"
+      v-model:budget="budget"
+      :budget-counts="budgetCounts"
       :days="days"
       :sound="sound"
       :match-count="result.matches.length"
+      :event-total="matchedEventCount"
       :query-count="result.matches.length + result.unmatched.length"
       :unmatched="result.unmatched"
       :artists-without-events="artistsWithoutEvents"
@@ -71,6 +74,7 @@
       :suggestions="suggestions"
       :loading="suggestionsLoading"
       :exclude-event-ids="matchedEventIds"
+      :budget="budget"
     />
 
   </div>
@@ -90,8 +94,8 @@ defineEmits(['show-daytime'])
 const EXAMPLE = EXAMPLE_INPUT
 
 const {
-  input, isLoading, error, playlist, result, days, sound, genreFilter,
-  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
+  input, isLoading, error, playlist, result, days, sound, genreFilter, budget, budgetCounts,
+  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run, matchedEventCount,
   daytimeWithYourArtists, daytimeQuery
 } = useAdePlanner()
 

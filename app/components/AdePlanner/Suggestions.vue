@@ -25,12 +25,15 @@
 <script setup>
 import { useAdeHidden } from '~/composables/useAdeHidden.js'
 import { groupEventsByDay } from '~/composables/useAdePlanner.js'
+import { withinBudget } from '../../../server/utils/ade-planner/price'
 
 const props = defineProps({
   suggestions: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
   // Events already in your results; no need to suggest them again.
-  excludeEventIds: { type: Array, default: () => [] }
+  excludeEventIds: { type: Array, default: () => [] },
+  // Same price filter as your own results.
+  budget: { type: String, default: '' }
 })
 
 const { isHidden } = useAdeHidden()
@@ -52,7 +55,7 @@ const events = computed(() => {
   const byEvent = new Map()
   for (const suggestion of props.suggestions) {
     for (const event of suggestion.events) {
-      if (exclude.has(event.id)) continue
+      if (exclude.has(event.id) || !withinBudget(event, props.budget)) continue
       const entry = byEvent.get(event.id) ?? { event, artists: [], reasons: [] }
       entry.artists.push(suggestion.artist.name)
       entry.reasons.push(...suggestion.reasons)

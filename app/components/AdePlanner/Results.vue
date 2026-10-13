@@ -11,10 +11,13 @@
 
     <AdePlannerSoundBar :sound="sound" :model-value="genreFilter" @update:model-value="$emit('update:genreFilter', $event)" />
 
+    <AdePlannerBudgetBar :model-value="budget" :counts="budgetCounts" @update:model-value="$emit('update:budget', $event)" />
+
     <AdePlannerDayGroups :days="days" />
 
-    <p v-if="genreFilter && !days.length" class="text-sm text-content-muted">
-      None of your events are tagged {{ genreFilter }}.
+    <p v-if="(genreFilter || budget) && !days.length" class="text-sm text-content-muted">
+      None of your events {{ budget === 'free' ? 'are free' : budget ? `have a known ticket price up to €${budget}` : '' }}{{ budget && genreFilter ? ' and ' : '' }}{{ genreFilter ? `are tagged ${genreFilter}` : '' }}.
+      <template v-if="budget">Try "Free parties" at the top for every free one.</template>
     </p>
 
     <p v-if="artistsWithoutEvents.length" class="text-sm text-content-muted">
@@ -46,7 +49,10 @@ const props = defineProps({
   days: { type: Array, required: true },
   sound: { type: Array, default: () => [] },
   genreFilter: { type: String, default: '' },
+  budget: { type: String, default: '' },
+  budgetCounts: { type: Object, default: () => ({}) },
   matchCount: { type: Number, required: true },
+  eventTotal: { type: Number, required: true },
   queryCount: { type: Number, required: true },
   unmatched: { type: Array, default: () => [] },
   /** [{ query, name }]: a typed name that is probably a typo of a lineup name */
@@ -55,7 +61,8 @@ const props = defineProps({
   source: { type: String, default: 'vams' }
 })
 
-defineEmits(['update:genreFilter', 'use-suggestion'])
+defineEmits(['update:genreFilter', 'update:budget', 'use-suggestion'])
 
-const eventCount = computed(() => props.days.reduce((sum, day) => sum + day.items.length, 0))
+// All your events, before the genre and price filters.
+const eventCount = computed(() => props.eventTotal)
 </script>

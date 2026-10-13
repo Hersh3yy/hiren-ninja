@@ -91,6 +91,7 @@
 <script setup>
 import { TOPIC_LABELS } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
+import { isFreeEntry, priceLabel } from '../../../server/utils/ade-planner/price'
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -161,10 +162,11 @@ const meta = computed(() => [
 const badge = computed(() => {
   switch (props.event.ticketStatus) {
     case 'sold out': return { text: 'Sold out', tone: 'danger' }
-    case 'free': return { text: 'Free', tone: 'accent' }
     case 'pro pass': return { text: 'ADE Pro', tone: 'outline' }
-    default: return null
   }
+  const price = priceLabel(props.event)
+  if (!price) return null
+  return { text: price, tone: isFreeEntry(props.event) ? 'accent' : 'outline' }
 })
 
 const lineup = computed(() => [

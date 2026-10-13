@@ -5,6 +5,7 @@ import { browseDaytime } from '../server/utils/ade-planner/browse'
 import { spotifyGid } from '../server/utils/ade-planner/playlist'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../app/utils/timetable.js'
+import { priceLabel, withinBudget } from '../server/utils/ade-planner/price'
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
@@ -421,5 +422,27 @@ describe('shared plan links', () => {
     const { events, missing } = sharedPlanEvents(merged, ids)
     expect(events.map(e => [e.id, e.lineupNames])).toEqual([[ids[0], ['BLANKA', 'Dax J']]])
     expect(missing).toBe(1)
+  })
+})
+
+describe('ticket price bands', () => {
+  const free = { ticketStatus: 'free' }
+  const freeTicket = { ticketStatus: 'available', categories: 'Free Festival Events / Intimate venues' }
+  const cheap = { ticketStatus: 'available', priceFrom: 12.5 }
+  const pricey = { ticketStatus: 'available', priceFrom: 45 }
+  const unknown = { ticketStatus: 'available' }
+  const soldOut = { ticketStatus: 'sold out', priceFrom: 10 }
+
+  it('labels what entry costs', () => {
+    expect([free, freeTicket, cheap, unknown, soldOut].map(priceLabel)).toEqual(['Free', 'Free, get a ticket', 'From €12.50', '', ''])
+    expect(priceLabel({ ticketStatus: 'available', priceFrom: 0 })).toBe('Free, get a ticket')
+  })
+
+  it('filters by budget: free always passes, unknown prices only without a budget', () => {
+    const all = [free, freeTicket, cheap, pricey, unknown, soldOut]
+    expect(all.filter(event => withinBudget(event, ''))).toHaveLength(6)
+    expect(all.filter(event => withinBudget(event, 'free'))).toEqual([free, freeTicket])
+    expect(all.filter(event => withinBudget(event, '15'))).toEqual([free, freeTicket, cheap])
+    expect(all.filter(event => withinBudget(event, '25'))).toEqual([free, freeTicket, cheap])
   })
 })

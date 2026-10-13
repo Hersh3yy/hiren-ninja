@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { track } from '../utils/track'
+import { BUDGETS, withinBudget } from '../../server/utils/ade-planner/price'
 
 const TIME_ZONE = 'Europe/Amsterdam'
 const PLAYLIST_URL = /^https:\/\/(open\.spotify\.com|music\.apple\.com|(music\.|www\.|m\.)?youtube\.com|(listen\.|www\.)?tidal\.com|(www\.)?deezer\.com|link\.deezer\.com|deezer\.page\.link)\//
@@ -90,6 +91,8 @@ export function useAdePlanner() {
   const suggestions = ref([])
   const suggestionsLoading = ref(false)
   const genreFilter = ref('')
+  // '' (any), 'free', or a maximum ticket price in euros.
+  const budget = ref('')
 
   // First line may be a playlist link; any lines after it are extra artist names.
   const firstLine = computed(() => input.value.trim().split('\n')[0].trim())
@@ -101,11 +104,11 @@ export function useAdePlanner() {
   const daytimeWithYourArtists = computed(() => daytimeEvents.value.length)
   const daytimeQuery = computed(() => [...new Set(daytimeEvents.value.flatMap(({ artists }) => artists))].join(', '))
   const sound = computed(() => genreProfile(matchedEvents.value))
-  const days = computed(() => groupEventsByDay(
-    genreFilter.value
-      ? matchedEvents.value.filter(({ event }) => event.genres?.includes(genreFilter.value))
-      : matchedEvents.value,
-  ))
+  const inGenre = computed(() => (genreFilter.value
+    ? matchedEvents.value.filter(({ event }) => event.genres?.includes(genreFilter.value))
+    : matchedEvents.value))
+  const days = computed(() => groupEventsByDay(inGenre.value.filter(({ event }) => withinBudget(event, budget.value))))
+  const budgetCounts = computed(() => Object.fromEntries(BUDGETS.map(({ value }) => [value, inGenre.value.filter(({ event }) => withinBudget(event, value)).length])))
   const artistsWithoutEvents = computed(() => (result.value?.matches ?? []).filter(match => match.events.length === 0))
 
   async function run() {
@@ -118,6 +121,7 @@ export function useAdePlanner() {
     result.value = null
     suggestions.value = []
     genreFilter.value = ''
+    budget.value = ''
 
     // A Tidal or SoundCloud link would otherwise be searched as one artist name.
     if (!isPlaylistLink.value && /^https?:\/\//i.test(firstLine.value)) {
@@ -192,8 +196,9 @@ export function useAdePlanner() {
   }
 
   return {
-    input, isLoading, error, playlist, result, days, sound, genreFilter,
+    input, isLoading, error, playlist, result, days, sound, genreFilter, budget, budgetCounts,
     suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
+    matchedEventCount: computed(() => matchedEvents.value.length),
     daytimeWithYourArtists, daytimeQuery,
   }
 }

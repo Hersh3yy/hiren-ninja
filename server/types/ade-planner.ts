@@ -37,6 +37,9 @@ export interface AdeEvent {
   kinds?: EventKind[]
   /** daytime topic slugs (shared/ade-topics.js), classified per event in VAMS */
   topics?: string[]
+  /** lowest ticket on sale in euros, from Weeztix or Resident Advisor (VAMS ade:prices) */
+  priceFrom?: number | null
+  priceSource?: 'weeztix' | 'ra' | null
   /** people who starred it in ADE Planner (VAMS counter) */
   favorites?: number
   intent?: Intent
