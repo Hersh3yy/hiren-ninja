@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-2">
     <p class="text-sm text-content-muted">
-      On a budget? Free parties, or the cheapest ticket on sale where the shop shows it.
+      Just here for the vibe? Free nights, or a cheap ticket where the shop shows its price.
     </p>
     <div class="flex flex-wrap gap-2" role="group" aria-label="Filter by ticket price">
       <AtomsChip
@@ -11,7 +11,7 @@
         :text="option.label"
         :count="counts[option.value] ?? 0"
         :pressed="modelValue === option.value"
-        @click="$emit('update:modelValue', modelValue === option.value ? '' : option.value)"
+        @click="choose(option.value)"
       />
     </div>
     <p v-if="modelValue && modelValue !== 'free'" class="text-xs text-content-muted">
@@ -22,12 +22,19 @@
 
 <script setup>
 import { BUDGETS } from '../../../server/utils/ade-planner/price'
+import { track } from '~/utils/track'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: String, default: '' },
   /** budget value -> number of your events within it */
   counts: { type: Object, default: () => ({}) }
 })
 
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
+
+function choose(value) {
+  const next = props.modelValue === value ? '' : value
+  if (next) track('ade-budget', { budget: next, results: props.counts[next] ?? 0 })
+  emit('update:modelValue', next)
+}
 </script>

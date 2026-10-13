@@ -16,7 +16,7 @@
     <AdePlannerDayGroups :days="days" />
 
     <p v-if="(genreFilter || budget) && !days.length" class="text-sm text-content-muted">
-      None of your events {{ budget === 'free' ? 'are free' : budget ? `have a known ticket price up to €${budget}` : '' }}{{ budget && genreFilter ? ' and ' : '' }}{{ genreFilter ? `are tagged ${genreFilter}` : '' }}.
+      None of your events {{ budget === 'free' ? 'are free' : budget ? `have a known ticket price under €${budget}` : '' }}{{ budget && genreFilter ? ' and ' : '' }}{{ genreFilter ? `are tagged ${genreFilter}` : '' }}.
       <template v-if="budget">Try "Free parties" at the top for every free one.</template>
     </p>
 

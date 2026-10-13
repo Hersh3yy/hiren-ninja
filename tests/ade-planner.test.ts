@@ -6,6 +6,7 @@ import { spotifyGid } from '../server/utils/ade-planner/playlist'
 import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../app/composables/useAdePlanner.js'
 import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../app/utils/timetable.js'
 import { priceLabel, withinBudget } from '../server/utils/ade-planner/price'
+import { usageKey } from '../app/utils/track.js'
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
@@ -442,7 +443,17 @@ describe('ticket price bands', () => {
     const all = [free, freeTicket, cheap, pricey, unknown, soldOut]
     expect(all.filter(event => withinBudget(event, ''))).toHaveLength(6)
     expect(all.filter(event => withinBudget(event, 'free'))).toEqual([free, freeTicket])
-    expect(all.filter(event => withinBudget(event, '15'))).toEqual([free, freeTicket, cheap])
     expect(all.filter(event => withinBudget(event, '25'))).toEqual([free, freeTicket, cheap])
+    expect(all.filter(event => withinBudget(event, '50'))).toEqual([free, freeTicket, cheap, pricey])
+    expect(withinBudget({ ticketStatus: 'available', priceFrom: 25 }, '25')).toBe(false)
+  })
+})
+
+describe('usage keys for VAMS feature counts', () => {
+  it('keeps the event name and one safe detail', () => {
+    expect(usageKey('ade-budget', { budget: '25', results: 4 })).toBe('ade-budget:25')
+    expect(usageKey('ade-tab', { tab: 'daytime' })).toBe('ade-tab:daytime')
+    expect(usageKey('ade-free-open', { events: 67 })).toBe('ade-free-open')
+    expect(usageKey('ade-story-image', { result: 'Downloaded!', saved: 3 })).toBe('ade-story-image:downloaded')
   })
 })

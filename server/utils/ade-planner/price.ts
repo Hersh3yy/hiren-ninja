@@ -25,12 +25,12 @@ export function priceBand(event: Priced): PriceBand {
 
 export const isFreeEntry = (event: Priced): boolean => ['free', 'free-ticket'].includes(priceBand(event))
 
-/** Budget filter: '' = any, 'free', or a maximum in euros ('15', '25'). Unknown prices only pass 'any'. */
+/** Budget filter: '' = any, 'free', or a limit in euros ('25' = under €25). Unknown prices only pass 'any'. */
 export function withinBudget(event: Priced, budget: string): boolean {
   if (!budget) return true
   if (isFreeEntry(event)) return true
   if (budget === 'free') return false
-  return priceBand(event) === 'paid' && (event.priceFrom as number) <= Number(budget)
+  return priceBand(event) === 'paid' && (event.priceFrom as number) < Number(budget)
 }
 
 const wholeEuros = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
@@ -50,6 +50,6 @@ export function priceLabel(event: Priced): string {
 
 export const BUDGETS = Object.freeze([
   { value: 'free', label: 'Free' },
-  { value: '15', label: 'Up to €15' },
-  { value: '25', label: 'Up to €25' },
+  { value: '25', label: 'Under €25' },
+  { value: '50', label: 'Under €50' },
 ])

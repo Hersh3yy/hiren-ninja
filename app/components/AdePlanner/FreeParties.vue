@@ -17,7 +17,7 @@
           :text="genre"
           :count="count"
           :pressed="genre === genreFilter"
-          @click="genreFilter = genre === genreFilter ? '' : genre"
+          @click="genreFilter = genre === genreFilter ? '' : genre; genreFilter && track('ade-free-genre', { genre })"
         />
       </div>
       <AdePlannerDayGroups :days="days" :heading-level="3" />

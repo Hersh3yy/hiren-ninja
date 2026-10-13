@@ -30,6 +30,8 @@ interface AdeStats {
   favorites?: { id: string, delta: 1 | -1 }[]
   /** one search for the anonymous log (VAMS ade-search): what, never who */
   search?: AdeSearchLog
+  /** planner features used, e.g. "ade-free-open" (VAMS ade-usage, per day) */
+  features?: string[]
 }
 
 const SOURCES = ['spotify', 'apple-music', 'youtube-music', 'tidal', 'deezer', 'names', 'daytime']
@@ -59,11 +61,11 @@ export function parseSearchLog(value: unknown): Omit<AdeSearchLog, 'artistCount'
  * Counts only, never who. Awaited with a short timeout: Netlify may stop a function
  * once it has answered. A failure never breaks the planner.
  */
-export async function recordAdeStats(_data: AdeData, stats: AdeStats): Promise<void> {
+export async function recordAdeStats(_data: AdeData | null, stats: AdeStats): Promise<void> {
   // The bundled snapshot is exported from VAMS with the same entry ids, so counting
   // still works while the site runs on it (e.g. during a VAMS deploy).
   if (!isVamsConfigured()) return
-  if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.opens?.length && !stats.ticketClicks?.length && !stats.search) return
+  if (!stats.hits?.length && !stats.searched?.length && !stats.favorites?.length && !stats.opens?.length && !stats.ticketClicks?.length && !stats.search && !stats.features?.length) return
   try {
     await postVams('/ade-planner/stats', { ...stats })
   } catch (error) {

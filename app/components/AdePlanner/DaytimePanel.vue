@@ -86,7 +86,7 @@
         variant="ghost"
         size="sm"
         :text="`Show ${group.events.length - limits[group.id]} more`"
-        @click="limits[group.id] += 15"
+        @click="showMore(group)"
       />
     </section>
 
@@ -110,6 +110,7 @@
 import { TOPIC_LABELS, useDaytimeBrowse } from '~/composables/useDaytimeBrowse.js'
 import { layoutLanes, minutesOnDay } from '~/utils/timetable.js'
 import { track } from '~/utils/track'
+import { PROGRAM_LABELS, daytimeProgram } from '../../../server/utils/ade-planner/programs'
 
 const props = defineProps({
   initialQuery: { type: String, default: '' }
@@ -136,13 +137,21 @@ const partyArtistsText = computed(() => result.value.partyArtists
   .map(artist => `${artist.name} plays ${artist.parties} ${artist.parties === 1 ? 'party or concert' : 'parties or concerts'}`)
   .join('; ') + '.')
 
-// ADE Pro (and ADE Lab) first: the conference is why you plan a day at ADE.
+// ADE Pro and ADE Lab first: the conference is why you plan a day at ADE. They sit in
+// different parts of town, so each gets its own section.
 const sessionGroups = computed(() => [
-  { id: 'pro', title: 'ADE Pro & Lab', hint: '', events: result.value.sessions.filter(event => event.program === 'pro') },
-  { id: 'more', title: 'More by day', hint: 'Festival daytime events: showcases, record stores, art, wellbeing.', events: result.value.sessions.filter(event => event.program !== 'pro') }
+  { id: 'pro', title: 'ADE Pro', hint: 'Talks, panels and networking, mostly in the city centre (Felix Meritis, Andaz, Rosewood).', events: result.value.sessions.filter(event => daytimeProgram(event) === 'pro') },
+  { id: 'lab', title: 'ADE Lab', hint: 'Gear demos, listening sessions and hubs around Westergas in Westerpark.', events: result.value.sessions.filter(event => daytimeProgram(event) === 'lab') },
+  { id: 'more', title: 'More by day', hint: 'Festival daytime events: showcases, record stores, art, wellbeing.', events: result.value.sessions.filter(event => daytimeProgram(event) === 'festival') }
 ].filter(group => group.events.length))
 
-const limits = reactive({ pro: 15, more: 10 })
+const LIMITS = { pro: 15, lab: 15, more: 10 }
+const limits = reactive({ ...LIMITS })
+
+function showMore(group) {
+  limits[group.id] += 15
+  track('ade-daytime-more', { section: group.id })
+}
 
 const VIEWS = [
   { id: 'timetable', label: 'Timetable' },
@@ -150,8 +159,11 @@ const VIEWS = [
 ]
 const view = ref('timetable')
 
-// The day as a school timetable: one column per venue, ADE Pro venues first, then the
-// busiest. Sessions only; drop-ins (all day, exhibitions) stay in the list below.
+// The day as a school timetable: one column per venue, ADE Pro venues first, then ADE
+// Lab (Westerpark), then the busiest. Sessions only; drop-ins (all day, exhibitions) stay in the list below.
+const VENUE_ORDER = { pro: 0, lab: 1, festival: 2 }
+const venueRank = events => Math.min(...events.map(event => VENUE_ORDER[daytimeProgram(event)]))
+
 const venueColumns = computed(() => {
   const byVenue = new Map()
   for (const event of result.value.sessions) {
@@ -159,13 +171,13 @@ const venueColumns = computed(() => {
     byVenue.set(key, [...(byVenue.get(key) ?? []), event])
   }
   return [...byVenue.entries()]
-    .sort(([, a], [, b]) => Number(b.some(e => e.program === 'pro')) - Number(a.some(e => e.program === 'pro')) || b.length - a.length)
+    .sort(([, a], [, b]) => venueRank(a) - venueRank(b) || b.length - a.length)
     .map(([venue, events]) => {
       const { items, lanes } = layoutLanes(events.map(event => ({ event, ...minutesOnDay(event, 45) })))
       return {
         id: venue,
         label: venue,
-        sublabel: [events[0].area, events.some(e => e.program === 'pro') ? 'ADE Pro' : ''].filter(Boolean).join(' · '),
+        sublabel: [events[0].area, PROGRAM_LABELS[daytimeProgram(events[0])]].filter(Boolean).join(' · '),
         lanes,
         items: items.map(item => ({ ...item, meta: item.event.subtitle || '' }))
       }
@@ -182,7 +194,7 @@ const visibleTopics = computed(() => showAllTopics.value
   ? topicOptions.value
   : topicOptions.value.filter((topic, i) => i < TOPICS_SHOWN || filters.topics.includes(topic.value)))
 
-watch(day, () => { Object.assign(limits, { pro: 15, more: 10 }) })
+watch(day, () => { Object.assign(limits, LIMITS) })
 
 function asDay(events) {
   return [{ key: day.value || 'all', label: '', items: events.map(event => ({ event, artists: [] })) }]
