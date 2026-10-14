@@ -1,0 +1,18 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-14T12:00:00Z"},
+  "lists": "css",
+  "title": "hiren.ninja for Nami",
+  "order": ["cover", "why", "tour", "birds", "content", "radar", "journey", "numbers", "spotify", "midnight", "privacy", "saved", "safety", "roadmap", "turn"],
+  "sections": {
+    "s1": {"description": "What hiren.ninja is, why a personal site, the rooms, the birds, and where projects come from", "start": "cover"},
+    "s2": {"description": "The ADE Planner: what it does, how it works stop by stop, real numbers, the Spotify trick, the midnight maths, privacy", "start": "radar"},
+    "s3": {"description": "Where everything is kept and one true safety story", "start": "saved"},
+    "s4": {"description": "The roadmap and a game to end on", "start": "roadmap"}
+  },
+  "faces": {
+    "fredoka": {"family": "Fredoka", "href": "https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400;600;800&display=swap"},
+    "nunito": {"family": "Nunito", "href": "https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400;600;800&display=swap"}
+  },
+  "designSystems": []
+}
