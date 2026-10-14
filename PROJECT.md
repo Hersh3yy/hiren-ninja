@@ -4,18 +4,18 @@
   each session; the Diary at the bottom only grows. App-code changes need a green light;
   main is merged to only when sure.
 -->
-<!-- clickup_list: not linked yet -->
+<!-- clickup_list:901501166163 -->
 
 # hiren.ninja — map
 
 **What it is** · Hiren's site at [hiren.ninja](https://hiren.ninja): home, about, services (request form), projects gallery, contact and the **ADE Planner** at `/ade-planner`, a free fan tool that matches your playlist against the Amsterdam Dance Event 2026 program.
 **Stack** · Nuxt 4 · Vue 3 · Tailwind 4 (`@theme` in `main.css`) · Nitro on Netlify · Three.js + Vanta (birds) · Leaflet (plan map, lazy) · Umami (cookieless) · Vitest.
 **Content** · Projects and the whole ADE program come from **VAMS** (`koala/VAMS`, app.use-vams.me) through server routes with a private key; bundled snapshots in `server/assets/` are the fallback. Leads (contact + service forms) become **ClickUp** tasks. Services and skills are hardcoded.
-**Status** · 🟢 `main` builds, deploys and is live; 36 Vitest tests, ESLint clean (0 warnings). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
+**Status** · 🟢 `main` builds, deploys and is live; 39 Vitest tests, ESLint clean (0 warnings). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
 **Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · one branch: **`main`** (small, tested commits straight to main this sprint, with Hiren's go).
 **Package manager** · **npm** (`package-lock.json`).
 **ClickUp** · roadmap not linked; leads list "Contact Form Submissions" (id 901507749589) via `CLICKUP_API_KEY`/`CLICKUP_LIST_ID` on Netlify.
-**Last assessed** · 2026-10-12
+**Last assessed** · 2026-10-14
 
 ---
 
@@ -32,7 +32,7 @@ Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAM
 
 ## Status
 
-The site is in good shape after a two-week sprint: secrets moved to env (the leaked ClickUp token was rotated), Hygraph is gone, OG images, JSON-LD, canonicals and llms.txt are in, interactive HTML is lint-locked into atoms/molecules, modals/menu/accordion use native `<dialog>`/`popover`/`<details>`. The ADE Planner is the active product: playlists from five services, typo-tolerant matching, a daytime tab with topics, school-timetable views, a week plan with travel times, a map, "near me", a story image and a share link. The LED-sculpture experiment is gone, packages are current (Tailwind 4, ESLint 10, Vitest 5). What's left is the launch work before 21 Oct and the ADE-week resyncs.
+The site is in good shape after a two-week sprint: secrets moved to env (the leaked ClickUp token was rotated), Hygraph is gone, OG images, JSON-LD, canonicals and llms.txt are in, interactive HTML is lint-locked into atoms/molecules, modals/menu/accordion use native `<dialog>`/`popover`/`<details>`. The ADE Planner is the active product: playlists from five services, typo-tolerant matching, a daytime tab with topics, school-timetable views, a week plan with travel times, a map, "near me", a story image and a share link. The LED-sculpture experiment is gone, packages are current (Tailwind 4, ESLint 10, Vitest 5). The planner now also filters parties by price (Free / Under €25 / Under €50), lists the free parties outright, and has an ADE Lab section; the snapshot was resynced to 1,757 events with ticket prices. What's left is the launch work before 21 Oct and the ADE-week resyncs.
 
 ## Issues
 
@@ -92,44 +92,48 @@ flowchart LR
 ## Roadmap — near future
 
 ### Launch and growth (before ADE, 21-25 Oct)
-- [ ] Post the "most wanted acts not at ADE" story (Chris Lake, Bicep, Fred again.., Fisher) on Instagram + LinkedIn <!-- id:g1 -->
-- [ ] Second sharing wave around 14 Oct with the timetable and story image <!-- id:g2 -->
-- [ ] Email Bravoure (draft ready in the 1 Oct chat) <!-- id:g3 -->
-- [ ] Add Instagram/LinkedIn links to footer + JSON-LD `sameAs` once the accounts exist <!-- id:g4 -->
-- [ ] DMARC TXT record at Porkbun (`_dmarc`, `v=DMARC1; p=none; rua=mailto:hello@hiren.ninja`) (Hiren) <!-- id:g5 -->
-- [ ] ~300 more words on the home page (thin content, GEO) from Hiren's notes <!-- id:g6 -->
+- [ ] Post the "most wanted acts not at ADE" story (Chris Lake, Bicep, Fred again.., Fisher) on Instagram + LinkedIn <!-- id:g1 cu:123kjkdmpqm -->
+- [ ] Second sharing wave around 14 Oct with the timetable and story image <!-- id:g2 cu:123kjkdmpqn -->
+- [ ] Email Bravoure (draft ready in the 1 Oct chat) <!-- id:g3 cu:123kjkdmpqp -->
+- [ ] Add Instagram/LinkedIn links to footer + JSON-LD `sameAs` once the accounts exist <!-- id:g4 cu:123kjkdmpqq -->
+- [ ] DMARC TXT record at Porkbun (`_dmarc`, `v=DMARC1; p=none; rua=mailto:hello@hiren.ninja`) (Hiren) <!-- id:g5 cu:123kjkdmpqr -->
+- [ ] ~300 more words on the home page (thin content, GEO) from Hiren's notes <!-- id:g6 cu:123kjkdmpqt -->
 
 ### ADE Planner
-- [x] Calendar export (.ics) <!-- id:a12 -->
-- [x] Venue geocoding and a map (PDOK + Amsterdam geosearch, Leaflet) <!-- id:a13 -->
-- [x] Day timetable with clashes and gaps <!-- id:a14 -->
-- [x] Interest search for the daytime tab (tags, genres, topics, did-you-mean) <!-- id:a11 -->
-- [x] Share-my-plan link (encode saved ids in the URL, no login) <!-- id:a15 -->
-- [x] Merge events ADE lists twice (same lineup, venue and time) <!-- id:a16 -->
-- [ ] Re-sync before and during ADE week (`ade:sync`, `ade:topics --missing`, `ade:venues`, export snapshot) <!-- id:a17 -->
+- [x] Calendar export (.ics) <!-- id:a12 cu:123kjkdmpqu -->
+- [x] Venue geocoding and a map (PDOK + Amsterdam geosearch, Leaflet) <!-- id:a13 cu:123kjkdmpqv -->
+- [x] Day timetable with clashes and gaps <!-- id:a14 cu:123kjkdmpqw -->
+- [x] Interest search for the daytime tab (tags, genres, topics, did-you-mean) <!-- id:a11 cu:123kjkdmpqx -->
+- [x] Share-my-plan link (encode saved ids in the URL, no login) <!-- id:a15 cu:123kjkdmpqy -->
+- [x] Merge events ADE lists twice (same lineup, venue and time) <!-- id:a16 cu:123kjkdmpr0 -->
+- [ ] Re-sync before and during ADE week (`ade:sync`, `ade:topics --missing`, `ade:venues`, export snapshot) <!-- id:a17 cu:123kjkdmpr1 -->
 
 ### Site
-- [x] Remove unused `axios` + `howler`; take nuxt 4.6, sitemap 8.6, robots 6.2.4 <!-- id:n8 -->
-- [x] ~~LSS WebGL disposal~~: the LED-sculpture experiment was removed instead <!-- id:f2 -->
+- [x] Remove unused `axios` + `howler`; take nuxt 4.6, sitemap 8.6, robots 6.2.4 <!-- id:n8 cu:123kjkdmpr2 -->
+- [x] ~~LSS WebGL disposal~~: the LED-sculpture experiment was removed instead <!-- id:f2 cu:123kjkdmpr3 -->
 
 ## Roadmap — far future
 
-- [x] Major upgrades behind the build/test check: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4 <!-- id:f6 -->
-- [ ] Real blog content (or keep `/blog` noindexed) <!-- id:f5 -->
-- [ ] Optional logins: Spotify (dev-mode user cap), Apple Music ($99/yr) <!-- id:a6 -->
-- [ ] After ADE: turn the planner into a reusable "festival planner" (any program feed) <!-- id:a18 -->
-- [ ] Link a ClickUp list + sync this roadmap <!-- id:f7 -->
-- [x] Hygraph → VAMS migration (projects) <!-- id:f1 -->
-- [x] Rotate + env-ize secrets (ClickUp, VAMS key; Hygraph removed) <!-- id:n3 -->
-- [x] OG images, apple-touch-icon, canonical, JSON-LD <!-- id:n4 -->
-- [x] Perf: portrait 2.4 MB → 8-37 KB `<picture>`, fonts via `<link>`, ISR <!-- id:n5 -->
-- [x] a11y pass (axe 0 violations, native dialog/popover/details, reduced motion) <!-- id:n6 -->
-- [x] Service-request double submit (forms now post to Nitro routes) <!-- id:f3 -->
-- [x] Atomic-design cleanup, lint-enforced <!-- id:f4 -->
+- [x] Major upgrades behind the build/test check: Tailwind 4, Vitest 5, ESLint 10, `nuxt-site-config` 4 <!-- id:f6 cu:123kjkdmpr4 -->
+- [ ] Real blog content (or keep `/blog` noindexed) <!-- id:f5 cu:123kjkdmpr6 -->
+- [ ] Optional logins: Spotify (dev-mode user cap), Apple Music ($99/yr) <!-- id:a6 cu:123kjkdmpr7 -->
+- [ ] After ADE: turn the planner into a reusable "festival planner" (any program feed) <!-- id:a18 cu:123kjkdmpr8 -->
+- [ ] Link a ClickUp list + sync this roadmap <!-- id:f7 cu:123kjkdmpr9 -->
+- [x] Hygraph → VAMS migration (projects) <!-- id:f1 cu:123kjkdmpra -->
+- [x] Rotate + env-ize secrets (ClickUp, VAMS key; Hygraph removed) <!-- id:n3 cu:123kjkdmprb -->
+- [x] OG images, apple-touch-icon, canonical, JSON-LD <!-- id:n4 cu:123kjkdmprc -->
+- [x] Perf: portrait 2.4 MB → 8-37 KB `<picture>`, fonts via `<link>`, ISR <!-- id:n5 cu:123kjkdmprd -->
+- [x] a11y pass (axe 0 violations, native dialog/popover/details, reduced motion) <!-- id:n6 cu:123kjkdmpre -->
+- [x] Service-request double submit (forms now post to Nitro routes) <!-- id:f3 cu:123kjkdmprf -->
+- [x] Atomic-design cleanup, lint-enforced <!-- id:f4 cu:123kjkdmprg -->
 
 ---
 
 ## Diary
+
+### 2026-10-14 — price filter, free parties, ADE Lab, usage counts; snapshot resync
+- Reassessment only (no app-code changes): the Hygraph→VAMS migration is fully landed. No `apollo`/`hygraph`/`graphql`/`gql` left in source or `package.json`; projects come through the server proxy `server/api/projects.get.ts` → `server/utils/projects.ts` → `server/utils/vams.ts` (REST `by-type/projects`, `X-API-Key`, snapshot fallback). The old `app/composables/useProjects.js` from the ticket no longer exists. `npm run build` green (3m35s), 39 Vitest tests pass (was 36), ESLint clean. Branch `main`, working tree clean, up to date with origin; `fix/build-sitemap` is gone (merged/salvaged back on 28 Sep, no local or remote ref).
+- New since 12 Oct (three commits by Hiren): a price filter for parties (Free / Under €25 / Under €50) with a `BudgetBar`, a `FreeParties` list, `server/api/ade-planner/free.get.ts` and `server/utils/ade-planner/price.ts`; an ADE Lab section in the daytime panel; per-filter usage counts sent to VAMS (`server/api/ade-planner/usage.post.ts`, `programs.ts`, `track.js`). Snapshot resynced to 1,757 events with ticket prices and ADE Lab "On Track".
 
 ### 2026-10-12 — cleanup, package updates, share link, duplicates merged
 - Removed the LED-sculpture 3D builder and the `/experiments` page (its only experiment; it also leaked WebGL memory). `/experiments` 301s home, out of the nav. `EXPERIMENTS.md`, the unused `AtomsSlider` and `escapeHtml` went too; project descriptions render in the template instead of `v-html`.
