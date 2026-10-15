@@ -1,5 +1,10 @@
 <template>
   <div class="max-w-3xl text-center px-4 my-32">
+    <div v-if="spotlight" class="mb-10 flex flex-col items-center gap-3">
+      <p class="text-xs uppercase tracking-[0.3em] text-accent">ADE · 21–25 October</p>
+      <AtomsButton to="/ade-planner" text="Open the ADE Planner →" size="lg" variant="outline" class="ade-glow" data-umami-event="ade-hero-click" @click="track('ade-hero-click')" />
+      <p class="text-sm text-content-muted">Paste a playlist, see who plays when and where. Free parties too.</p>
+    </div>
     <p class="text-xs sm:text-sm uppercase tracking-[0.3em] text-content-muted mb-6">
       Software · AI &amp; Automation · For creative businesses
     </p>
@@ -12,6 +17,13 @@
     </p>
   </div>
 </template>
+
+<script setup>
+import { adeSpotlightOn } from '~/utils/adeSpotlight'
+import { track } from '~/utils/track'
+
+const spotlight = adeSpotlightOn()
+</script>
 
 <style scoped>
 .accent-phrase {

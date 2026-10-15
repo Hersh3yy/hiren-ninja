@@ -3,6 +3,7 @@
     :to="to"
     class="nav-link text-content hover:text-accent transition-colors duration-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded-xs"
     :aria-current="isCurrent ? 'page' : undefined"
+    :class="{ 'ade-glow': glow }"
   >
     {{ text }}
   </NuxtLink>
@@ -20,6 +21,11 @@ const props = defineProps({
   text: {
     type: String,
     required: true
+  },
+  // A pulsing accent glow to draw the eye (ADE week, see utils/adeSpotlight.js).
+  glow: {
+    type: Boolean,
+    default: false
   }
 })
 

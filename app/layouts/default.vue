@@ -18,8 +18,19 @@
 </template>
 
 <script setup>
+import { track } from '~/utils/track'
+
 // Full birds on the home hero only; on pages you read they'd pull focus, so they calm down.
 const route = useRoute()
+
+// QR stickers point at hiren.ninja/?s=qr: count scans per day in VAMS (ade-qr-scan),
+// then drop the parameter so shared links stay clean.
+onMounted(() => {
+  if (route.query.s !== 'qr') return
+  track('ade-qr-scan', { result: route.path === '/' ? 'home' : 'page' })
+  const { s: _s, ...query } = route.query
+  navigateTo({ path: route.path, query, hash: route.hash }, { replace: true })
+})
 
 const SITE = 'https://hiren.ninja'
 // One URL per page for search engines and share cards (no trailing slash, no query).
