@@ -1,0 +1,98 @@
+/* Layout: a festival-programme report. The planner's own yellow-on-ink palette (a deliberate single dark look); a condensed display face for headings like a timetable board; numbers in mono. */
+:root {
+  --ink: #0d0d0d; --surface: #171715; --raise: #22221e; --line: #2e2e27; --fg: #f4f4ea; --muted: #a6a698;
+  --accent: #ffff07; --accent-dim: #8f8f2c; --accent-ink: #0d0d0d; --sold: #ff7a6b; --ok: #8ee59a; --quiet: #3a3a33;
+  --display: "Archivo Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+body { background: var(--ink); color: var(--fg); font: 15px/1.55 var(--body); margin: 0 }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 40px 64px; padding-inline: 20px }
+h1, h2, h3 { font-family: var(--display); text-transform: uppercase; text-wrap: balance; margin: 0 }
+h1 { font-size: clamp(34px, 6vw, 64px); line-height: .95; font-weight: 700; letter-spacing: .005em }
+h1 em { font-style: normal; color: var(--accent) }
+h2 { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: .01em }
+h3 { font-size: 14px; font-weight: 700; letter-spacing: .08em; color: var(--muted) }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent) }
+.lede { color: var(--muted); max-width: 62ch; margin: 0 }
+header { display: grid; gap: 14px; padding-bottom: 28px; border-bottom: 1px solid var(--line) }
+.meta { font: 13px/1.5 var(--mono); color: var(--muted) }
+.since { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; font: 13px/1.6 var(--mono); color: var(--muted) }
+.since b { color: var(--accent); font-weight: 600 }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 18px 0 8px }
+.kpi { background: var(--ink); padding: 16px 18px }
+.kpi b { display: block; font: 700 34px/1.05 var(--display); font-variant-numeric: tabular-nums }
+.kpi span { font-size: 13px; color: var(--muted) }
+.kpi.hot b { color: var(--accent) }
+section { margin-top: 52px; display: grid; gap: 16px }
+.head { display: grid; gap: 6px }
+.head p { margin: 0; color: var(--muted); max-width: 66ch }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px; min-width: 0 }
+.split { display: flex; height: 34px; border-radius: 4px; overflow: hidden; gap: 2px }
+.split div { display: flex; align-items: center; padding: 0 10px; font: 600 12px var(--mono); white-space: nowrap; overflow: hidden; min-width: 0 }
+.s1 { background: var(--accent); color: var(--accent-ink) }
+.s2 { background: var(--accent-dim); color: var(--accent-ink) }
+.s3 { background: var(--quiet); color: var(--fg) }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); margin-top: 10px }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px }
+.cols { display: flex; align-items: flex-end; gap: 8px; height: 170px; padding-top: 22px; margin-top: 8px }
+.col { flex: 1; display: flex; flex-direction: column; height: 100%; justify-content: flex-end; gap: 6px; min-width: 0 }
+.colbar { background: var(--accent); border-radius: 3px 3px 0 0; position: relative; min-height: 4px }
+.colbar span { position: absolute; top: -19px; left: 0; right: 0; text-align: center; font: 600 12px var(--mono); color: var(--fg) }
+.lab { text-align: center; font: 11px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden }
+.hours { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; height: 96px; align-items: end; margin-top: 26px }
+.h { height: 100%; display: flex; align-items: flex-end }
+.h div { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0 }
+.hlab { display: flex; justify-content: space-between; font: 11px var(--mono); color: var(--muted); margin-top: 6px }
+.scroll { overflow: auto; border: 1px solid var(--line); border-radius: 6px; max-height: 560px }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 660px }
+th { position: sticky; top: 0; background: var(--raise); text-align: left; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; z-index: 1 }
+td { padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top }
+td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap }
+td.strong { color: var(--accent); font-weight: 600 }
+td.t { font-weight: 600 }
+.sub { font-weight: 400; font-size: 12.5px; color: var(--muted); margin-top: 2px }
+.nowrap { white-space: nowrap }
+.fitcell { display: flex; align-items: center; gap: 8px; justify-content: flex-end }
+.fit { width: 70px; height: 6px; background: var(--raise); border-radius: 3px; overflow: hidden }
+.fit span { display: block; height: 100%; background: var(--accent) }
+.tag { font: 600 11px var(--mono); color: var(--accent); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-left: 4px }
+.pill { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; padding: 2px 7px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap }
+.pill.sold { color: var(--sold); border-color: var(--sold) }
+.pill.ok { color: var(--ok); border-color: var(--quiet) }
+.bars { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 7px }
+.bars li { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 34px; gap: 10px; align-items: center; font-size: 14px }
+.bars.g li { grid-template-columns: minmax(0, 140px) minmax(0, 1fr) }
+.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0 }
+.track { height: 10px; background: var(--raise); border-radius: 2px; overflow: hidden }
+.track span { display: block; height: 100%; background: var(--accent) }
+.bars .n { font: 600 13px var(--mono); text-align: right; font-variant-numeric: tabular-nums }
+.plain { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px }
+.plain li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 6px; min-width: 0 }
+.plain .n { font: 600 13px var(--mono); color: var(--accent); white-space: nowrap }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: 14px }
+.chip b { font: 600 12px var(--mono); color: var(--accent) }
+.callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px }
+.callout { border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 0 0 6px 6px; background: var(--surface); padding: 12px 14px; min-width: 0 }
+.callout b { display: block; font: 700 22px/1.1 var(--display); text-transform: uppercase; overflow-wrap: anywhere }
+.callout span { font-size: 13px; color: var(--muted) }
+.funnel { display: grid; gap: 8px; margin-top: 14px }
+.funnel div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 40px; gap: 10px; align-items: center; font-size: 14px }
+.funnel .n { font: 600 13px var(--mono); text-align: right }
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px }
+.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; align-content: start }
+.finding h3 { color: var(--fg); font-size: 16px; letter-spacing: .02em }
+.finding p { margin: 0; color: var(--muted); font-size: 14px }
+.status { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent) }
+.status.next { color: var(--ok) }
+.status.idea { color: var(--muted) }
+.note { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; margin-top: 56px; display: grid; gap: 6px; max-width: 80ch }
+@media (max-width: 520px) {
+  .bars li { grid-template-columns: minmax(0, 120px) minmax(0, 1fr) 30px }
+  .funnel div { grid-template-columns: minmax(0, 130px) minmax(0, 1fr) 34px }
+  .cols { gap: 4px }
+}

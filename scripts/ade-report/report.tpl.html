@@ -1,0 +1,110 @@
+<title>ADE Planner Search Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&family=Archivo+Narrow:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>{{CSS}}</style>
+<div class="wrap">
+<header>
+  <div class="eyebrow">ADE Planner · hiren.ninja/ade-planner</div>
+  <h1>Who's planning <em>ADE 2026</em></h1>
+  <p class="lede">What people searched for in the planner since launch: the playlists they pasted, the artists they look for, the events those searches lead to, what they click and save, and the acts they want who aren't on the lineup.</p>
+  <div class="meta">{{FIRST}} to {{LAST}} · Amsterdam time · anonymous: what was searched, never who</div>
+</header>
+
+<div class="since">{{SINCE}}</div>
+<div class="kpis">
+  <div class="kpi hot"><b>{{TOTAL}}</b><span>real searches</span></div>
+  <div class="kpi"><b>{{PLAYLISTS}}</b><span>different playlists</span></div>
+  <div class="kpi"><b>{{TRACKS}}</b><span>tracks scanned</span></div>
+  <div class="kpi"><b>{{EVENTS}}</b><span>ADE events reached</span></div>
+  <div class="kpi"><b>{{SOLDOUT}}</b><span>of those sold out</span></div>
+</div>
+
+<section>
+  <div class="head"><h2>How people search</h2><p>Half paste a playlist, half type names. Spotify is almost every playlist.</p></div>
+  <div class="panel">
+    <div class="split"><div class="s1" style="flex:{{PLAYLIST_N}}">Playlist {{PLAYLIST_N}}</div><div class="s2" style="flex:{{NAMES_N}}">Typed names {{NAMES_N}}</div><div class="s3" style="flex:{{DAY_FLEX}}">{{DAY_N}}</div></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>Playlist: {{SOURCES}}</span>
+      <span><i style="background:var(--accent-dim)"></i>Typed artist names</span>
+      <span><i style="background:var(--quiet)"></i>Daytime search</span>
+      <span>{{EXAMPLES}} "Try an example" runs left out</span>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h3>Searches per day</h3><div class="cols">{{DAYS}}</div><div class="meta" style="margin-top:8px">Peaks after the Reddit post (Thu 1 and Fri 2 Oct) and on Mon 5 Oct. The last day is partial.</div></div>
+    <div class="panel"><h3>By hour of day</h3><div class="hours">{{HOURS}}</div><div class="hlab"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div><div class="meta" style="margin-top:8px">Evening planning: most searches between 18:00 and midnight.</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="head"><h2>Every day</h2><p>Searches from the search log; everything else is counted per feature in VAMS since Tue 13 Oct (– before that). Newest day first, today is partial.</p></div>
+  <div class="scroll"><table><thead><tr><th>Day</th>{{DAILY_HEAD}}</tr></thead><tbody>{{DAILY_ROWS}}</tbody></table></div>
+  <details class="panel"><summary class="meta" style="cursor:pointer">Every feature counter since 13 Oct</summary><ul class="plain">{{FEATURES}}</ul></details>
+</section>
+
+<section>
+  <div class="head"><h2>Playlists scanned</h2><p>All {{PLAYLISTS}} playlists, most artists on the ADE lineup first. A playlist searched more than once counts once (marked ×2). Fit is the share of a playlist's artists who play ADE.</p></div>
+  <div class="callouts">
+    <div class="callout"><b>{{MOST_T}}</b><span>Most artists on ADE: {{MOST_M}} of {{MOST_A}}</span></div>
+    <div class="callout"><b>{{BIG_T}}</b><span>Biggest: {{BIG_N}} tracks read</span></div>
+    <div class="callout"><b>{{BEST_T}}</b><span>Best fit: {{BEST_F}}% of its artists play ADE</span></div>
+    <div class="callout"><b>{{WORST_T}}</b><span>Worst fit: {{WORST_F}}%</span></div>
+  </div>
+  <div class="scroll"><table><thead><tr><th>Playlist</th><th>From</th><th class="n">Tracks</th><th class="n">Artists</th><th class="n">On ADE</th><th class="n">Fit</th></tr></thead><tbody>{{ROWS_PL}}</tbody></table></div>
+</section>
+
+<section>
+  <div class="head"><h2>Most frequent artists</h2><p>In how many searches an artist turned up, playlists and typed names together. Big pasted playlists drive this list, so it leans house, tech house and melodic.</p></div>
+  <div class="grid2">
+    <div class="panel"><h3>Found in the most searches</h3><ul class="bars">{{ARTISTS}}</ul></div>
+    <div class="panel">
+      <h3>Typed by name</h3><p class="meta" style="margin:6px 0 0">The stronger signal: someone looked these up on purpose.</p><ul class="plain">{{TYPED}}</ul>
+      <h3 style="margin-top:24px">Genres of the events found</h3><ul class="bars g">{{GENRES}}</ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="head"><h2>Events searches lead to</h2><p>How many separate searches showed each event. Mystic Garden and Dockyard are one event that ADE lists twice.</p></div>
+  <div class="scroll"><table><thead><tr><th class="n">Searches</th><th>Event</th><th>When</th><th>Venue</th><th>Tickets</th></tr></thead><tbody>{{ROWS_EV}}</tbody></table></div>
+</section>
+
+<section>
+  <div class="head"><h2>Clicked and saved</h2><p>Per event, counted in VAMS: details opened and ticket clicks since Mon 5 Oct, stars since launch. Once per visitor per event.</p></div>
+  <div class="grid2">
+    <div class="panel"><h3>From search to action</h3>
+      <div class="funnel">{{FUNNEL}}</div>
+      <p class="meta" style="margin:12px 0 0">Stars went from 2 to {{STARS_TOTAL}} once events got a "Save to my plan" button.</p>
+    </div>
+    <div class="panel">
+      <h3>Most opened and clicked events</h3><ul class="plain">{{OPENED}}</ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="head"><h2>Wanted, but not at ADE</h2><p>Artists from people's playlists and searches who aren't on the 2026 lineup, by how many searches had them. The top names were checked against the program: none of them play.</p></div>
+  <div class="chips">{{WANTED}}</div>
+</section>
+
+<section>
+  <div class="head"><h2>What the searches taught us</h2><p>Problems the log showed, and what changed because of them.</p></div>
+  <div class="findings">
+    <div class="finding"><h3>Big playlists stopped at 100 tracks</h3><p>Spotify cut every playlist at 100 tracks, so [IVY], at tracks 704 to 961 of a 966-track playlist, was never searched. Playlists now read up to 1,000 tracks.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Lineups with country codes</h3><p>A pasted lineup written as "Bassjackers (NL)" matched 1 of 60 names. Tags like (NL) and (live) are ignored now, and 35 of the 60 match.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>"Nimino" found nothing</h3><p>ADE lists the artist as "Nimino Banner". The planner now also matches the title of a show with one artist on it.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Tidal and SoundCloud links</h3><p>People pasted links the planner couldn't read. Tidal and Deezer playlists work now. SoundCloud likes are always private.</p><span class="status">Fixed for Tidal and Deezer</span></div>
+    <div class="finding"><h3>Typos lose people</h3><p>"enrico sanguiliano" and "Dave Clark" found nothing. Typed names now get "Did you mean Enrico Sangiuliano?".</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Daytime searches are genres</h3><p>"Acid", "Hardstyle" and "House" found nothing. Daytime search now reads ADE's tags and genres, says when a genre is night-only, and has 16 topics.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Stars barely got used</h3><p>2 stars in five days. With a "Save to my plan" button, a week timetable, a map and a story image, stars went to {{STARS_TOTAL}}.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Tickets are expensive</h3><p>ADE publishes no prices. "On a budget" lists free parties and tickets under €25 or €50 (prices read from Weeztix and Resident Advisor on each sync), with a club or laid-back vibe and venue size.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Big names missing</h3><p>Chris Lake, Bicep, Fred again.. and Fisher are the most wanted acts not on the lineup: a ready-made "missing from ADE" post.</p><span class="status idea">Idea</span></div>
+  </div>
+</section>
+
+<div class="note">
+  <div>Source: ADE Planner's anonymous search log and per-event counters in VAMS (what was searched, opened and saved, never who). "Try an example" runs are left out, and a playlist searched more than once counts once.</div>
+  <div>Program: the synced Amsterdam Dance Event 2026 program. ADE Planner is a fan tool, not affiliated with Amsterdam Dance Event. Generated {{GENERATED}}.</div>
+</div>
+</div>

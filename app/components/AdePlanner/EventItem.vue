@@ -118,11 +118,12 @@ function countEventAction(action) {
 function toggleDetails() {
   expanded.value = !expanded.value
   if (!expanded.value) return
-  track('ade-event-details', { party: props.event.isParty !== false, title: props.event.title })
+  track('ade-event-details', { kind: props.event.isParty !== false ? 'party' : 'daytime', party: props.event.isParty !== false, title: props.event.title })
   countEventAction('open')
 }
 
 function countTicketClick() {
+  track('ade-ticket-click', { kind: props.event.isParty !== false ? 'party' : 'daytime' })
   countEventAction('ticket')
 }
 
