@@ -8,6 +8,7 @@ import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../a
 import { priceLabel, withinBudget } from '../server/utils/ade-planner/price'
 import { usageKey } from '../app/utils/track.js'
 import { vibeLabel } from '../server/utils/ade-planner/vibe'
+import { planningDate, slugify } from '../server/utils/ade-planner/seo'
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
@@ -465,5 +466,16 @@ describe('party vibe and size labels', () => {
     expect(vibeLabel({ isParty: true, vibe: 'club', size: 'large' })).toBe('Large venue')
     expect(vibeLabel({ isParty: false, vibe: null, size: 'mid-size' })).toBe('')
     expect(usageKey('ade-budget-filter', { group: 'vibe-laid-back' })).toBe('ade-budget-filter:vibe-laid-back')
+  })
+})
+
+describe('ADE SEO pages', () => {
+  it('slugs artist names for URLs', () => {
+    expect(slugify('Âme & Dixon (live)')).toBe('ame-and-dixon-live')
+    expect(slugify('[IVY]')).toBe('ivy')
+  })
+  it('puts after-midnight parties on the night before', () => {
+    expect(planningDate({ startsAt: '2026-10-24T02:00:00+02:00', isParty: true })).toBe('2026-10-23')
+    expect(planningDate({ startsAt: '2026-10-24T02:00:00+02:00', isParty: false })).toBe('2026-10-24')
   })
 })

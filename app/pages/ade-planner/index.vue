@@ -7,6 +7,8 @@
         <AdePlannerTool />
       </MoleculesCard>
 
+      <AdePlannerBrowseLinks class="mt-6" :show-planner="false" />
+
       <p class="mt-6 max-w-2xl text-sm text-content-muted">
         Built by Hiren, an Amsterdam developer who makes websites and tools for artists, labels and events.
         Need something like this?

@@ -79,6 +79,10 @@ export default defineNuxtConfig({
   site: {
     url: 'https://hiren.ninja'
   },
+  sitemap: {
+    // ADE Planner day, budget and artist pages (thousands, from the live program).
+    sources: ['/api/__sitemap__/ade-planner']
+  },
   routeRules: {
     // Served from Netlify's CDN cache, rebuilt at most hourly: no cold server start for
     // a first visitor (the SEO audit measured 1.5s). Not /ade-planner: its ?tab= query
@@ -88,6 +92,9 @@ export default defineNuxtConfig({
     '/services': { isr: 3600 },
     '/projects': { isr: 3600 },
     '/contact': { isr: 3600 },
+    // ADE Planner pages for search: no query dependence, so CDN-cached like the rest.
+    '/ade-planner/*': { isr: 3600 },
+    '/ade-planner/artist/**': { isr: 3600 },
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },
