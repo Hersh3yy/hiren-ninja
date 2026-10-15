@@ -23,13 +23,6 @@
           </template>
         </ClientOnly>
         <AtomsChip
-          text="On a budget"
-          :pressed="freeOpen"
-          :aria-expanded="freeOpen"
-          aria-controls="ade-budget-parties"
-          @click="freeOpen = !freeOpen"
-        />
-        <AtomsChip
           text="Near me"
           :pressed="nearOpen"
           :aria-expanded="nearOpen"
@@ -37,6 +30,21 @@
           @click="nearOpen = !nearOpen"
         />
       </div>
+    </div>
+
+    <!-- Casual visitors: straight to free or cheap nights, no playlist needed. -->
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Parties by ticket price">
+      <span class="text-xs font-bold uppercase tracking-wide text-content-muted">On a budget</span>
+      <AtomsChip
+        v-for="option in BUDGETS"
+        :key="option.value"
+        size="sm"
+        :text="option.label"
+        :pressed="budget === option.value"
+        :aria-expanded="budget === option.value"
+        aria-controls="ade-budget-parties"
+        @click="chooseBudget(option.value)"
+      />
     </div>
 
     <ClientOnly>
@@ -48,7 +56,7 @@
     </ClientOnly>
 
     <ClientOnly>
-      <AdePlannerBudgetParties v-if="freeOpen" id="ade-budget-parties" />
+      <AdePlannerBudgetParties v-if="budget" id="ade-budget-parties" :budget="budget" @close="budget = ''" />
     </ClientOnly>
 
     <ClientOnly>
@@ -79,6 +87,7 @@
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { track } from '~/utils/track'
+import { BUDGETS } from '../../../server/utils/ade-planner/price'
 
 const TABS = [
   { id: 'parties', label: 'Parties & concerts', shortLabel: 'Parties' },
@@ -96,7 +105,13 @@ const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
 const nearOpen = ref(false)
-const freeOpen = ref(false)
+// '' (closed), 'free', '25' or '50': which budget list is open.
+const budget = ref('')
+
+function chooseBudget(value) {
+  budget.value = budget.value === value ? '' : value
+  if (budget.value) track('ade-budget', { budget: budget.value, result: 'top' })
+}
 // A friend's plan from a shared link (?plan=...), shown above everything else.
 const sharedPlan = computed(() => (typeof route.query.plan === 'string' ? route.query.plan : ''))
 

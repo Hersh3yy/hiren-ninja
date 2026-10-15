@@ -1,16 +1,26 @@
 <template>
   <section class="space-y-4 rounded-xl border border-accent-muted p-4" aria-labelledby="ade-budget-heading">
-    <AtomsHeading id="ade-budget-heading" text="On a budget" :level="2" size="xl" class="uppercase tracking-wide" />
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <AtomsHeading id="ade-budget-heading" :text="heading" :level="2" size="xl" class="uppercase tracking-wide" />
+      <AtomsButton variant="ghost" size="sm" text="Close" @click="$emit('close')" />
+    </div>
     <p class="text-sm text-content-muted">
-      In town for ADE but not paying €100 for a night? Free parties and cheap tickets, by day.
-      "Free, get a ticket" is free, but claim it first: they run out.
+      {{ budget === 'free' ? '"Free, get a ticket" is free, but claim it first: they run out.' : 'Free parties included. Prices are the cheapest ticket on sale at Weeztix and Resident Advisor; parties sold elsewhere only show up when they\'re free.' }}
     </p>
 
     <AtomsLoader v-if="isLoading" type="spinner" size="md" color="accent" text="Finding cheap nights" />
     <MoleculesStatusAlert :message="error" type="error" />
 
     <template v-if="events.length">
-      <div class="space-y-3">
+      <AtomsButton
+        variant="ghost"
+        size="sm"
+        :text="showMore ? 'Fewer filters' : `More filters${activeCount ? ` (${activeCount})` : ''}`"
+        :aria-expanded="showMore"
+        aria-controls="ade-budget-more"
+        @click="showMore = !showMore"
+      />
+      <div v-show="showMore" id="ade-budget-more" class="space-y-3">
         <div v-for="group in filterGroups" :key="group.key" class="flex flex-wrap items-center gap-2" role="group" :aria-label="group.label">
           <span class="w-12 text-xs uppercase tracking-wide text-content-muted">{{ group.title }}</span>
           <AtomsChip
@@ -24,9 +34,6 @@
           />
         </div>
       </div>
-      <p class="text-xs text-content-muted">
-        Prices are the cheapest ticket on sale at Weeztix and Resident Advisor; parties sold elsewhere only show up when they're free.
-      </p>
       <p v-if="!days.length" class="text-sm text-content-muted">Nothing matches all of these. Try fewer filters.</p>
       <AdePlannerDayGroups :days="days" :heading-level="3" />
     </template>
@@ -36,16 +43,26 @@
 <script setup>
 import { genreProfile, groupEventsByDay } from '~/composables/useAdePlanner.js'
 import { track } from '~/utils/track'
-import { BUDGETS, withinBudget } from '../../../server/utils/ade-planner/price'
+import { withinBudget } from '../../../server/utils/ade-planner/price'
 import { SIZES, VIBES } from '../../../server/utils/ade-planner/vibe'
+
+const props = defineProps({
+  // 'free', '25' or '50', picked in the planner's "On a budget" row.
+  budget: { type: String, required: true }
+})
+defineEmits(['close'])
+
+const HEADINGS = { free: 'Free parties', 25: 'Parties under €25', 50: 'Parties under €50' }
+const heading = computed(() => HEADINGS[props.budget] ?? 'On a budget')
+const showMore = ref(false)
+const activeCount = computed(() => ['vibe', 'size', 'genre'].filter(key => filters[key]).length)
 
 const isLoading = ref(true)
 const error = ref('')
 const events = ref([])
-// Free first: the reason most people open this.
-const filters = reactive({ budget: 'free', vibe: '', size: '', genre: '' })
+const filters = reactive({ vibe: '', size: '', genre: '' })
 
-const matches = (event, skip) => (skip === 'budget' || withinBudget(event, filters.budget))
+const matches = (event, skip) => withinBudget(event, props.budget)
   && (skip === 'vibe' || !filters.vibe || event.vibe === filters.vibe)
   && (skip === 'size' || !filters.size || event.size === filters.size)
   && (skip === 'genre' || !filters.genre || event.genres?.includes(filters.genre))
@@ -54,7 +71,6 @@ const matches = (event, skip) => (skip === 'budget' || withinBudget(event, filte
 const countFor = (key, test) => events.value.filter(event => matches(event, key) && test(event)).length
 
 const filterGroups = computed(() => [
-  { key: 'budget', title: 'Price', label: 'Filter by ticket price', options: BUDGETS.map(b => ({ ...b, count: countFor('budget', e => withinBudget(e, b.value)) })) },
   { key: 'vibe', title: 'Vibe', label: 'Filter by vibe', options: VIBES.map(v => ({ ...v, count: countFor('vibe', e => e.vibe === v.value) })) },
   { key: 'size', title: 'Size', label: 'Filter by venue size', options: SIZES.map(s => ({ ...s, count: countFor('size', e => e.size === s.value) })) },
   {
