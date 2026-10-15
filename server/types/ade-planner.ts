@@ -37,6 +37,10 @@ export interface AdeEvent {
   kinds?: EventKind[]
   /** daytime topic slugs (shared/ade-topics.js), classified per event in VAMS */
   topics?: string[]
+  /** parties: 'club' or 'laid-back' (concert hall, museum, church, listening); VAMS classifier */
+  vibe?: 'club' | 'laid-back' | null
+  /** ADE's venue-size label, copied to other events at the same venue */
+  size?: 'intimate' | 'mid-size' | 'large' | null
   /** lowest ticket on sale in euros, from Weeztix or Resident Advisor (VAMS ade:prices) */
   priceFrom?: number | null
   priceSource?: 'weeztix' | 'ra' | null

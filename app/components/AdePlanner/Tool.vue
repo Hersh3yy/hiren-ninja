@@ -23,10 +23,10 @@
           </template>
         </ClientOnly>
         <AtomsChip
-          text="Free parties"
+          text="On a budget"
           :pressed="freeOpen"
           :aria-expanded="freeOpen"
-          aria-controls="ade-free-parties"
+          aria-controls="ade-budget-parties"
           @click="freeOpen = !freeOpen"
         />
         <AtomsChip
@@ -48,7 +48,7 @@
     </ClientOnly>
 
     <ClientOnly>
-      <AdePlannerFreeParties v-if="freeOpen" id="ade-free-parties" />
+      <AdePlannerBudgetParties v-if="freeOpen" id="ade-budget-parties" />
     </ClientOnly>
 
     <ClientOnly>

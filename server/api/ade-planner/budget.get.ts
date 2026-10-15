@@ -1,13 +1,13 @@
 import { loadAdeData } from '../../utils/ade-planner/data'
 import { buildIndex } from '../../utils/ade-planner/match'
-import { isFreeEntry } from '../../utils/ade-planner/price'
+import { withinBudget } from '../../utils/ade-planner/price'
 
-/** Every free party and concert (free entry, or a free ticket to claim), by start time. */
+/** Parties and concerts for casual visitors: free, or a known ticket under €50. The panel narrows further. */
 export default defineEventHandler(async () => {
   const data = await loadAdeData()
   const index = buildIndex(data)
   return data.events
-    .filter(event => event.isParty !== false && isFreeEntry(event))
+    .filter(event => event.isParty !== false && withinBudget(event, '50'))
     .map(event => ({
       ...event,
       lineupNames: [...new Set((event.lineup ?? []).map(id => index.artistNamesById.get(id)).filter(name => name !== undefined))]

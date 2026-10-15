@@ -92,6 +92,7 @@
 import { TOPIC_LABELS } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
 import { isFreeEntry, priceLabel } from '../../../server/utils/ade-planner/price'
+import { vibeLabel } from '../../../server/utils/ade-planner/vibe'
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -155,6 +156,7 @@ const durationLabel = computed(() => {
 const meta = computed(() => [
   props.event.venue,
   props.event.area,
+  vibeLabel(props.event),
   isDropIn.value ? `Drop-in${seriesRange.value ? ` · ${seriesRange.value}` : ''}` : ''
 ].filter(Boolean).join(' · '))
 

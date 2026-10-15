@@ -7,6 +7,7 @@ import { genreProfile, groupByDay, groupEventsByDay, parseArtistList } from '../
 import { findClashes, layoutLanes, minutesOnDay, planningDay, toIcs } from '../app/utils/timetable.js'
 import { priceLabel, withinBudget } from '../server/utils/ade-planner/price'
 import { usageKey } from '../app/utils/track.js'
+import { vibeLabel } from '../server/utils/ade-planner/vibe'
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
@@ -455,5 +456,14 @@ describe('usage keys for VAMS feature counts', () => {
     expect(usageKey('ade-tab', { tab: 'daytime' })).toBe('ade-tab:daytime')
     expect(usageKey('ade-free-open', { events: 67 })).toBe('ade-free-open')
     expect(usageKey('ade-story-image', { result: 'Downloaded!', saved: 3 })).toBe('ade-story-image:downloaded')
+  })
+})
+
+describe('party vibe and size labels', () => {
+  it('describes laid-back and sized parties, nothing for daytime', () => {
+    expect(vibeLabel({ isParty: true, vibe: 'laid-back', size: 'intimate' })).toBe('Laid-back · Intimate venue')
+    expect(vibeLabel({ isParty: true, vibe: 'club', size: 'large' })).toBe('Large venue')
+    expect(vibeLabel({ isParty: false, vibe: null, size: 'mid-size' })).toBe('')
+    expect(usageKey('ade-budget-filter', { group: 'vibe-laid-back' })).toBe('ade-budget-filter:vibe-laid-back')
   })
 })

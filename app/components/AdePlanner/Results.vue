@@ -17,7 +17,7 @@
 
     <p v-if="(genreFilter || budget) && !days.length" class="text-sm text-content-muted">
       None of your events {{ budget === 'free' ? 'are free' : budget ? `have a known ticket price under €${budget}` : '' }}{{ budget && genreFilter ? ' and ' : '' }}{{ genreFilter ? `are tagged ${genreFilter}` : '' }}.
-      <template v-if="budget">Try "Free parties" at the top for every free one.</template>
+      <template v-if="budget">Try "On a budget" at the top for every free or cheap one.</template>
     </p>
 
     <p v-if="artistsWithoutEvents.length" class="text-sm text-content-muted">
