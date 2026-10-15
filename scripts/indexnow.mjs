@@ -8,7 +8,7 @@ const SITE = 'https://hiren.ninja'
 const pages = await (await fetch(`${SITE}/api/__sitemap__/ade-planner`)).json()
 const urlList = [`${SITE}/`, `${SITE}/ade-planner`, ...pages.map(page => SITE + page.loc)]
 for (let i = 0; i < urlList.length; i += 10000) {
-  const response = await fetch('https://api.indexnow.org/indexnow', {
+  const response = await fetch('https://www.bing.com/indexnow', {
     method: 'POST',
     headers: { 'content-type': 'application/json; charset=utf-8' },
     body: JSON.stringify({ host: 'hiren.ninja', key: KEY, keyLocation: `${SITE}/${KEY}.txt`, urlList: urlList.slice(i, i + 10000) }),
