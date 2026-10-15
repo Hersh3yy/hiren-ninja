@@ -112,3 +112,60 @@ export function eventJsonLd(event: AdeEvent & { lineupNames?: string[] }, pageUr
     url: event.adeUrl || pageUrl,
   }
 }
+
+/** How often a listing page's events were looked at in the planner: busiest first when a page must be cut. */
+const interest = (event: AdeEvent): number => (event.favorites ?? 0) * 3 + ((event as { opens?: number }).opens ?? 0) + (event.lineup?.length ?? 0) / 10
+
+/** Genres with enough parties for a page of their own, by slug. */
+export function genresBySlug(data: AdeData): Map<string, { genre: string, count: number }> {
+  const counts = new Map<string, number>()
+  for (const event of data.events) {
+    if (event.isParty === false) continue
+    for (const genre of event.genres ?? []) counts.set(genre, (counts.get(genre) ?? 0) + 1)
+  }
+  return new Map([...counts].filter(([, count]) => count >= 8).sort((a, b) => b[1] - a[1])
+    .map(([genre, count]) => [slugify(genre), { genre, count }]))
+}
+
+/** Venues with ADE events, by slug (the busiest venue wins a shared slug). */
+export function venuesBySlug(data: AdeData): Map<string, { venue: string, count: number }> {
+  const counts = new Map<string, number>()
+  for (const event of data.events) if (event.venue) counts.set(event.venue, (counts.get(event.venue) ?? 0) + 1)
+  const bySlug = new Map<string, { venue: string, count: number }>()
+  for (const [venue, count] of [...counts].sort((a, b) => b[1] - a[1])) {
+    const slug = slugify(venue)
+    if (slug && !bySlug.has(slug)) bySlug.set(slug, { venue, count })
+  }
+  return bySlug
+}
+
+const isLab = (event: AdeEvent): boolean => (event.tags ?? []).includes('ADE Lab') || /(^|\/)\s*ADE Lab\s*(\/|$)/.test(event.categories ?? '')
+
+export type ListingKind = 'genre' | 'venue' | 'lab' | 'pro'
+
+/** Events for a listing page; at most `limit`, the most looked-at kept, then by time. */
+export function listing(data: AdeData, kind: ListingKind, slug = '', limit = 160) {
+  let name: string
+  let events: AdeEvent[]
+  if (kind === 'genre') {
+    const genre = genresBySlug(data).get(slug)
+    if (!genre) return null
+    name = genre.genre
+    events = data.events.filter(event => event.isParty !== false && event.genres?.includes(genre.genre))
+  } else if (kind === 'venue') {
+    const venue = venuesBySlug(data).get(slug)
+    if (!venue) return null
+    name = venue.venue
+    events = data.events.filter(event => event.venue === venue.venue)
+  } else if (kind === 'lab') {
+    name = 'ADE Lab'
+    events = data.events.filter(isLab)
+  } else {
+    name = 'ADE Pro'
+    events = data.events.filter(event => event.program === 'pro' && !isLab(event))
+  }
+  const total = events.length
+  const kept = total > limit ? [...events].sort((a, b) => interest(b) - interest(a)).slice(0, limit) : events
+  const free = events.filter(event => priceBand(event) === 'free' || priceBand(event) === 'free-ticket').length
+  return { kind, slug, name, total, free, events: withLineupNames(data, kept) }
+}

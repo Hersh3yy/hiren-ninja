@@ -95,6 +95,8 @@ export default defineNuxtConfig({
     // ADE Planner pages for search: no query dependence, so CDN-cached like the rest.
     '/ade-planner/*': { isr: 3600 },
     '/ade-planner/artist/**': { isr: 3600 },
+    '/ade-planner/genre/**': { isr: 3600 },
+    '/ade-planner/venue/**': { isr: 3600 },
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },

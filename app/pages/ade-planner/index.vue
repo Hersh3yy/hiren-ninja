@@ -3,11 +3,22 @@
     <div class="container mx-auto px-4 sm:px-6 py-8 relative z-10">
       <p class="text-sm font-bold uppercase tracking-widest text-accent">ADE · 21–25 Oct 2026</p>
       <AtomsHeading text="ADE Planner" :level="1" size="2xl" variant="page" class="uppercase tracking-tight" />
+      <p class="mb-4 max-w-2xl text-sm text-content-muted">
+        The ADE 2026 timetable, made searchable: paste a playlist to see which of your artists play Amsterdam Dance Event
+        (21–25 October), when and where. Or browse by day, genre, free parties, ADE Lab and ADE Pro below.
+      </p>
       <MoleculesCard :blur="false">
         <AdePlannerTool />
       </MoleculesCard>
 
       <AdePlannerBrowseLinks class="mt-6" :show-planner="false" />
+
+      <div class="mt-10 grid max-w-4xl gap-6 sm:grid-cols-2">
+        <div v-for="item in FAQ" :key="item.q" class="space-y-1">
+          <AtomsHeading :text="item.q" :level="2" size="sm" />
+          <p class="text-sm text-content-muted">{{ item.a }}</p>
+        </div>
+      </div>
 
       <p class="mt-6 max-w-2xl text-sm text-content-muted">
         Built by Hiren, an Amsterdam developer who makes websites and tools for artists, labels and events.
@@ -21,10 +32,20 @@
 </template>
 
 <script setup>
+// Questions people search before ADE, answered in plain text (helps search, and people).
+const FAQ = [
+  { q: 'When is ADE 2026?', a: 'Amsterdam Dance Event 2026 runs Wednesday 21 to Sunday 25 October: about 1,800 parties, concerts, talks and sessions across Amsterdam.' },
+  { q: 'Which of my artists play ADE?', a: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist (or type names) above and the planner lists every show of your artists, by day.' },
+  { q: 'Are there free ADE parties?', a: 'Yes, around 70 parties and concerts are free, and many more have tickets under €25. See Free & cheap parties, or open On a budget above.' },
+  { q: 'What is the difference between ADE Pro and ADE Lab?', a: 'ADE Pro is the conference, mostly in the city centre (Felix Meritis, Andaz, Rosewood), and needs a Pro pass. ADE Lab is for new artists and producers, around Westergas in Westerpark, and is often free.' },
+  { q: 'Is there an ADE timetable per day?', a: 'Yes: every day has its own page with all parties and concerts, from the afternoon until the next morning, and the daytime tab shows talks and sessions as a timetable.' },
+  { q: 'Can I add ADE events to my calendar?', a: 'Save events to My plan, then export them as a calendar file (.ics), share your plan as a link, or download it as a story image.' },
+]
+
 useSeoMeta({
-  title: 'ADE Planner 2026: Find Your Artists at Amsterdam Dance Event',
-  ogTitle: 'ADE Planner 2026: Find Your Artists at Amsterdam Dance Event',
-  description: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist and see which of your artists play Amsterdam Dance Event 2026, when and where.',
+  title: 'ADE 2026 Timetable & Planner: Find Your Artists at Amsterdam Dance Event',
+  ogTitle: 'ADE 2026 Timetable & Planner: Find Your Artists at Amsterdam Dance Event',
+  description: 'The ADE 2026 timetable, searchable: paste a playlist to see which of your artists play Amsterdam Dance Event, when and where. Free parties, ADE Lab, ADE Pro, by day.',
   ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
   ogImage: 'https://hiren.ninja/og/og-ade.png',
   ogImageAlt: 'ADE Planner: paste a playlist, see which of your artists play ADE 2026',
