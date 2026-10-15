@@ -23,11 +23,12 @@ import { track } from '~/utils/track'
 // Full birds on the home hero only; on pages you read they'd pull focus, so they calm down.
 const route = useRoute()
 
-// QR stickers point at hiren.ninja/?s=qr: count scans per day in VAMS (ade-qr-scan),
-// then drop the parameter so shared links stay clean.
+// QR stickers point at hiren.ninja/?s=qr (or ?s=qr-<spot> per sticker spot): count scans
+// per day in VAMS (ade-qr-scan:qr-<spot>), then drop the parameter so shared links stay clean.
 onMounted(() => {
-  if (route.query.s !== 'qr') return
-  track('ade-qr-scan', { result: route.path === '/' ? 'home' : 'page' })
+  const source = typeof route.query.s === 'string' ? route.query.s.toLowerCase() : ''
+  if (!/^qr(-[a-z0-9-]{1,24})?$/.test(source)) return
+  track('ade-qr-scan', { result: source })
   const { s: _s, ...query } = route.query
   navigateTo({ path: route.path, query, hash: route.hash }, { replace: true })
 })
