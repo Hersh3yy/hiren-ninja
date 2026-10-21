@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Sixtyfour&family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#000}
+.slide{width:1080px;height:1350px;position:relative;overflow:hidden;background:#0d0d0d;color:#f4f4f5;font-family:Inter,sans-serif}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,7,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,7,.05) 1px,transparent 1px);background-size:54px 54px}
+.eyebrow{font:700 30px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#ffff07;text-transform:uppercase}
+.brand{font-family:Sixtyfour;color:#ffff07;font-size:44px;letter-spacing:.02em}
+.foot{position:absolute;left:80px;right:80px;bottom:70px;display:flex;justify-content:space-between;align-items:center}
+.url{font:800 40px Inter;color:#ffff07}
+.page{font:700 26px 'JetBrains Mono';color:#a1a1aa}
+/* Slide 1: haiku over the map */
+.s1 .map{position:absolute;inset:0;background:url(map-big.png) 50% 58%/118% no-repeat;filter:brightness(1.35) saturate(1.5) contrast(1.05)}
+.s1 .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,.92) 0%,rgba(13,13,13,.15) 36%,rgba(13,13,13,.25) 60%,rgba(13,13,13,.95) 100%)}
+.s1 .top{position:absolute;left:80px;right:80px;top:80px}
+.s1 h1{font:900 112px/0.95 Inter;letter-spacing:-.02em;text-transform:uppercase;margin-top:22px}
+.s1 h1 em{font-style:normal;color:#ffff07}
+.haiku{position:absolute;left:80px;right:80px;bottom:200px;font:600 56px/1.32 Inter;text-shadow:0 2px 24px #000}
+.haiku span{display:block}
+.haiku span:nth-child(2){color:#ffff07}
+/* Slides 2-3: text + phone */
+.copy{position:absolute;left:80px;top:90px;width:470px}
+.copy h2{font:900 82px/0.98 Inter;text-transform:uppercase;letter-spacing:-.02em;margin-top:26px}
+.copy h2 em{font-style:normal;color:#ffff07}
+.copy p{font:400 36px/1.35 Inter;color:#a1a1aa;margin-top:34px}
+.copy ul{list-style:none;padding:0;margin-top:34px;font:600 34px/1.5 Inter}
+.copy li::before{content:'→ ';color:#ffff07}
+.phone{position:absolute;right:70px;top:120px;width:430px;height:902px;border-radius:58px;border:12px solid #27272a;box-shadow:0 0 0 2px #3f3f46,0 30px 90px rgba(255,255,7,.18);overflow:hidden;background:#0d0d0d}
+.phone img{width:100%;display:block}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:120px;height:30px;border-radius:20px;background:#000;z-index:2}
+</style></head><body>
+
+<section class="slide s1" id="s1">
+  <div class="map"></div><div class="shade"></div><div class="grid"></div>
+  <div class="top">
+    <div class="eyebrow">ADE 2026 · 21–25 Oct · Amsterdam</div>
+    <h1>The ADE<br><em>Planner</em></h1>
+  </div>
+  <div class="haiku"><span>Your playlist whispers</span><span>eighteen hundred nights answer</span><span>here is where they play</span></div>
+  <div class="foot"><span class="url">hiren.ninja</span><span class="page">1 / 3</span></div>
+</section>
+
+<section class="slide" id="s2">
+  <div class="grid"></div>
+  <div class="copy">
+    <div class="eyebrow">Paste a playlist</div>
+    <h2>See who plays <em>when</em> &amp; <em>where</em></h2>
+    <p>Spotify, Apple Music, YouTube Music, Tidal, Deezer, or just type names.</p>
+    <ul><li>Every show, by day</li><li>Venues, times, tickets</li><li>Save it, add to calendar</li></ul>
+  </div>
+  <div class="phone"><img src="results.png"></div>
+  <div class="foot"><span class="url">hiren.ninja</span><span class="page">2 / 3</span></div>
+</section>
+
+<section class="slide" id="s3">
+  <div class="grid"></div>
+  <div class="copy">
+    <div class="eyebrow">Here for the vibe?</div>
+    <h2><em>70</em> free parties</h2>
+    <p>Or under €25 / €50. Club nights or laid-back: churches, concert halls, listening sessions.</p>
+    <ul><li>Live map near you</li><li>No account, free</li></ul>
+  </div>
+  <div class="phone"><img src="free.png"></div>
+  <div class="foot"><span class="url">hiren.ninja/ade-planner</span><span class="page">3 / 3</span></div>
+</section>
+</body></html>

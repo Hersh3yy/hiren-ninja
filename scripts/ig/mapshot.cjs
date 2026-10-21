@@ -1,0 +1,16 @@
+const { chromium } = require(require('path').join(require('os').homedir(), 'Documents/koala/VAMS/node_modules/playwright-core'))
+const OUT = process.argv[2]
+;(async () => {
+  const b = await chromium.launch({ channel: 'chrome' })
+  const p = await b.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 2 })
+  await p.goto('https://hiren.ninja/ade-planner', { waitUntil: 'networkidle' })
+  await p.addStyleTag({ content: '#ade-map [role=region]{height:1350px!important} .leaflet-control-zoom,.leaflet-control-attribution{display:none!important}' })
+  await p.getByRole('button', { name: 'Map', exact: true }).click()
+  await p.waitForTimeout(2500)
+  await p.locator('#ade-map').getByRole('button', { name: 'Tonight' }).click()
+  await p.waitForTimeout(2000)
+  await p.locator('#ade-map').getByRole('button', { name: '2 km' }).click()
+  await p.waitForTimeout(4000)
+  await p.locator('#ade-map [role=region]').screenshot({ path: OUT + '/map-big.png' })
+  await b.close()
+})()

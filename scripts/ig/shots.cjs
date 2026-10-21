@@ -1,0 +1,32 @@
+const { chromium } = require(require('path').join(require('os').homedir(), 'Documents/koala/VAMS/node_modules/playwright-core'))
+const OUT = process.argv[2]
+;(async () => {
+  const b = await chromium.launch({ channel: 'chrome' })
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true })
+  const p = await ctx.newPage()
+  await p.goto('https://hiren.ninja/ade-planner', { waitUntil: 'networkidle' })
+  // Map, tonight, anywhere
+  await p.getByRole('button', { name: 'Map', exact: true }).click()
+  await p.waitForTimeout(2500)
+  await p.locator('#ade-map').getByRole('button', { name: 'Tonight' }).click()
+  await p.waitForTimeout(2500)
+  await p.locator('#ade-map').getByRole('button', { name: 'Anywhere' }).click()
+  await p.waitForTimeout(3500)
+  await p.locator('#ade-map [role=region]').screenshot({ path: OUT + '/map.png' })
+  await p.locator('#ade-map').getByRole('button', { name: 'Close' }).click()
+  // Search results
+  await p.locator('textarea').fill('Joris Voorn\nAmelie Lens\nCamelphat\nEric Prydz\nAdriatique\nBlack Coffee')
+  await p.getByRole('button', { name: 'Find my ADE' }).click()
+  await p.waitForTimeout(7000)
+  const day = p.locator('[aria-live=polite] h2').first()
+  await day.scrollIntoViewIfNeeded()
+  await p.evaluate(() => window.scrollBy(0, -20))
+  await p.screenshot({ path: OUT + '/results.png' })
+  // Free parties
+  await p.goto('https://hiren.ninja/ade-planner', { waitUntil: 'networkidle' })
+  await p.getByRole('button', { name: 'Free', exact: true }).click()
+  await p.waitForTimeout(3000)
+  await p.locator('#ade-budget-parties').scrollIntoViewIfNeeded()
+  await p.screenshot({ path: OUT + '/free.png' })
+  await b.close()
+})()

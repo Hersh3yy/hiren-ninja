@@ -11,11 +11,11 @@
 **What it is** · Hiren's site at [hiren.ninja](https://hiren.ninja): home, about, services (request form), projects gallery, contact and the **ADE Planner** at `/ade-planner`, a free fan tool that matches your playlist against the Amsterdam Dance Event 2026 program.
 **Stack** · Nuxt 4 · Vue 3 · Tailwind 4 (`@theme` in `main.css`) · Nitro on Netlify · Three.js + Vanta (birds) · Leaflet (plan map, lazy) · Umami (cookieless) · Vitest.
 **Content** · Projects and the whole ADE program come from **VAMS** (`koala/VAMS`, app.use-vams.me) through server routes with a private key; bundled snapshots in `server/assets/` are the fallback. Leads (contact + service forms) become **ClickUp** tasks. Services and skills are hardcoded.
-**Status** · 🟢 `main` builds, deploys and is live; 39 Vitest tests, ESLint clean (0 warnings). ADE Planner launched 1 Oct (Reddit): 191 real searches, 78 playlists, 44 stars by 10 Oct.
+**Status** · 🟢 `main` builds, deploys and is live; 42 Vitest tests, ESLint clean. ADE week (21–25 Oct): 335 real searches, 136 playlists, 488 event opens, 193 ticket clicks, 178 stars by 21 Oct morning. Usage report: `scripts/ade-report/run.sh` → artifact claude.ai/artifact/2fQHCSNtZpFDKjpXDMu8PW.
 **Repo** · `koala/hiren-ninja` · GitHub `Hersh3yy/hiren-ninja` · one branch: **`main`** (small, tested commits straight to main this sprint, with Hiren's go).
 **Package manager** · **npm** (`package-lock.json`).
 **ClickUp** · roadmap not linked; leads list "Contact Form Submissions" (id 901507749589) via `CLICKUP_API_KEY`/`CLICKUP_LIST_ID` on Netlify.
-**Last assessed** · 2026-10-14
+**Last assessed** · 2026-10-21 (ADE day 1)
 
 ---
 
@@ -24,11 +24,18 @@
 ```bash
 npm install
 npm run dev          # http://localhost:3000 (VAMS_API_URL + VAMS_API_KEY in .env for live data)
-npm test             # vitest run (36 tests: matching, playlists, timetable, travel, nearby, duplicates, plan links)
+npm test             # vitest run (42 tests: matching, playlists, timetable, travel, prices, vibe, SEO slugs, usage keys)
 npm run lint         # eslint (raw <button>/<a>/<input> outside atoms/molecules is an error)
 npm run build
 ```
-Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAMS change, restart dev or delete `.nuxt/cache/nitro/functions/ade-planner-data`. A Tailwind `@theme` change can kill `nuxi dev`; restart it. `typescript-eslint` is pinned to 8.70.1 in `overrides` (8.71.1 flags every used variable in `.js` as "only used as a type"); drop the pin once a fixed release ships. ADE data refresh lives in VAMS (`php artisan ade:sync --reuse-pages`, see VAMS's map).
+Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAMS change, restart dev or delete `.nuxt/cache/nitro/functions/ade-planner-data`. A Tailwind `@theme` change can kill `nuxi dev`; restart it. `typescript-eslint` is pinned to 8.70.1 in `overrides` (8.71.1 flags every used variable in `.js` as "only used as a type"); drop the pin once a fixed release ships. ADE data refresh lives in VAMS (`php artisan ade:sync --reuse-pages`, see VAMS's map). During ADE week the site reads the bundled snapshot **first** (`server/utils/ade-planner/data.ts`; `ADE_DATA_SOURCE=vams` flips it back): after every sync, `php artisan ade:export ../hiren-ninja/server/assets/ade-planner/snapshot.json`, commit, push, or the live site shows old data.
+
+### New machine (e.g. the personal laptop)
+1. `git clone git@github.com:Hersh3yy/hiren-ninja.git` and `VAMS` side by side in `~/Documents/koala/`; `npm install` here (Node 24).
+2. `.env` here: `VAMS_API_URL`, `VAMS_API_KEY`, `CLICKUP_API_KEY`, `CLICKUP_LIST_ID`. Copy from the old laptop by password manager or AirDrop, never chat or git.
+3. Usage report and syncs read the VAMS prod DB, which only accepts trusted IPs: add the new network's IP in DigitalOcean (Databases → Settings → Trusted sources) or the scripts time out.
+4. Report: `scripts/ade-report/run.sh` (needs php + VAMS checked out next to this repo); scheduled-task prompt in `scripts/ade-report/SCHEDULED-TASK.md`. IG slides: re-render from `scripts/ig/` if kept.
+5. Claude skills/memory: `~/Desktop/claude-personal-setup/` on the work laptop (personal skills only; see its README).
 
 ## Status
 
@@ -95,7 +102,7 @@ flowchart LR
 - [ ] Post the "most wanted acts not at ADE" story (Chris Lake, Bicep, Fred again.., Fisher) on Instagram + LinkedIn <!-- id:g1 cu:123kjkdmpqm -->
 - [ ] Second sharing wave around 14 Oct with the timetable and story image <!-- id:g2 cu:123kjkdmpqn -->
 - [ ] Email Bravoure (draft ready in the 1 Oct chat) <!-- id:g3 cu:123kjkdmpqp -->
-- [ ] Add Instagram/LinkedIn links to footer + JSON-LD `sameAs` once the accounts exist <!-- id:g4 cu:123kjkdmpqq -->
+- [ ] Add Instagram/LinkedIn links to footer + JSON-LD `sameAs` once the accounts exist (Instagram @hiren.ninja being made 21 Oct; first post = ADE Planner carousel) <!-- id:g4 cu:123kjkdmpqq -->
 - [ ] DMARC TXT record at Porkbun (`_dmarc`, `v=DMARC1; p=none; rua=mailto:hello@hiren.ninja`) (Hiren) <!-- id:g5 cu:123kjkdmpqr -->
 - [ ] ~300 more words on the home page (thin content, GEO) from Hiren's notes <!-- id:g6 cu:123kjkdmpqt -->
 
@@ -130,6 +137,16 @@ flowchart LR
 ---
 
 ## Diary
+
+### 2026-10-21 — ADE day 1: failed searches fixed, map, mobile, IG carousel
+- 8 of 10 searches this morning failed. Likely cause: cold Netlify starts first fetched the whole program from VAMS (3 calls, up to 4 s each) near the 10 s function limit; a live match took 7.3 s. The site now reads the bundled snapshot first; failures are counted with their reason (`ade-search-failed:playlist-504`).
+- "Near me" became **Map**: every event with a place, one marker per venue, On now & next 3h / Tonight / Today, within 1/2/5 km (2 km default) or anywhere, list by distance; location stays in the browser.
+- Mobile: smaller titles/meta, more space between cards. Budget is one row (Free / Under €25 / Under €50) under the tabs; vibe/size/sound behind "More filters".
+- ADE spotlight until 26 Oct: glowing nav link and phone pill, home-hero button; QR stickers point at `hiren.ninja/?s=qr` (counted as `ade-qr-scan`).
+- SEO pages since 15 Oct: per day, free-parties, ~4,700 artists, 52 genres, 371 venues, Lab, Pro; Event JSON-LD; sitemap ~5,300 URLs pushed to Bing via IndexNow (`scripts/indexnow.mjs`). Google Search Console still to do (Hiren).
+- Usage report moved into the repo (`scripts/ade-report/`), every 3 h via a desktop scheduled task; it stopped after 18 Oct (app closed or a permission prompt).
+- IG carousel for the launch post rendered from live screenshots (`~/Desktop/ade-planner-ig/`).
+- Open: the "Free, get a ticket" badge squeezes long titles on phones.
 
 ### 2026-10-14 — price filter, free parties, ADE Lab, usage counts; snapshot resync
 - Reassessment only (no app-code changes): the Hygraph→VAMS migration is fully landed. No `apollo`/`hygraph`/`graphql`/`gql` left in source or `package.json`; projects come through the server proxy `server/api/projects.get.ts` → `server/utils/projects.ts` → `server/utils/vams.ts` (REST `by-type/projects`, `X-API-Key`, snapshot fallback). The old `app/composables/useProjects.js` from the ticket no longer exists. `npm run build` green (3m35s), 39 Vitest tests pass (was 36), ESLint clean. Branch `main`, working tree clean, up to date with origin; `fix/build-sitemap` is gone (merged/salvaged back on 28 Sep, no local or remote ref).
