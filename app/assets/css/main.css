@@ -206,3 +206,8 @@ html:has(.modal-dialog[open]) {
     text-shadow: 0 0 10px rgb(255 255 7 / 0.7);
   }
 }
+
+/* Leaflet map tiles (OpenStreetMap), darkened to match the site: PlanMap and MapView. */
+.ade-map-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6);
+}

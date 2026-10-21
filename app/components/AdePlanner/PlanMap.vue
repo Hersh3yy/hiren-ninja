@@ -66,9 +66,3 @@ onBeforeUnmount(() => {
   map = null
 })
 </script>
-
-<style>
-.ade-map-tiles {
-  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9) saturate(0.6);
-}
-</style>

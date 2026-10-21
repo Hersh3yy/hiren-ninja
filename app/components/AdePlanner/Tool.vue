@@ -23,10 +23,10 @@
           </template>
         </ClientOnly>
         <AtomsChip
-          text="Near me"
+          text="Map"
           :pressed="nearOpen"
           :aria-expanded="nearOpen"
-          aria-controls="ade-near-me"
+          aria-controls="ade-map"
           @click="nearOpen = !nearOpen"
         />
       </div>
@@ -60,7 +60,7 @@
     </ClientOnly>
 
     <ClientOnly>
-      <AdePlannerNearMe v-if="nearOpen" id="ade-near-me" />
+      <AdePlannerMapView v-if="nearOpen" id="ade-map" @close="nearOpen = false" />
     </ClientOnly>
 
     <div
