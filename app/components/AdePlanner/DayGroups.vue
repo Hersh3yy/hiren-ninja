@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-10 sm:space-y-8">
     <div v-for="day in visibleDays" :key="day.key">
       <AtomsHeading v-if="showDayHeadings" :text="day.label" :level="headingLevel" size="md" class="mb-3 uppercase tracking-wide" />
-      <ul class="space-y-2">
+      <ul class="space-y-3 sm:space-y-2">
         <template v-for="item in day.items" :key="item.event.id">
           <AdePlannerEventItem
             :event="item.event"

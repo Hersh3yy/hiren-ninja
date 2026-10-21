@@ -4,9 +4,6 @@
       <span class="text-3xl font-bold text-accent">{{ matchCount }}</span>
       of your {{ queryCount }} artists {{ matchCount === 1 ? 'is' : 'are' }} on the ADE 2026 lineup,
       across {{ eventCount }} {{ eventCount === 1 ? 'event' : 'events' }}.
-      <span v-if="source === 'snapshot'" class="block text-xs text-content-muted mt-1">
-        Using the bundled program snapshot.
-      </span>
     </p>
 
     <AdePlannerSoundBar :sound="sound" :model-value="genreFilter" @update:model-value="$emit('update:genreFilter', $event)" />

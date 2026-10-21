@@ -127,7 +127,7 @@ export function useAdePlanner() {
     if (!isPlaylistLink.value && /^https?:\/\//i.test(firstLine.value)) {
       const host = firstLine.value.replace(/^https?:\/\/(?:www\.)?([^/]+).*/i, '$1')
       error.value = `Links from ${host} aren't supported yet. Use a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist, or type artist names.`
-      track('ade-search-failed', { input: 'unsupported-link', host })
+      track('ade-search-failed', { input: 'unsupported-link', host, result: `link-${host}` })
       isLoading.value = false
       return
     }
@@ -168,7 +168,9 @@ export function useAdePlanner() {
       loadSuggestions(artists)
     } catch (err) {
       error.value = err?.data?.statusMessage || err?.statusMessage || 'Something went wrong. Try again.'
-      track('ade-search-failed', { input: isPlaylistLink.value ? 'playlist' : 'names', status: err?.statusCode ?? err?.status ?? 0 })
+      const status = err?.statusCode ?? err?.status ?? 0
+      // Counted in VAMS as e.g. ade-search-failed:playlist-504, so we can see why.
+      track('ade-search-failed', { input: isPlaylistLink.value ? 'playlist' : 'names', status, result: `${isPlaylistLink.value ? 'playlist' : 'names'}-${status}` })
     } finally {
       isLoading.value = false
     }

@@ -50,8 +50,25 @@ async function loadFromSnapshot(): Promise<AdeData> {
   return { source: 'snapshot', ...snapshot }
 }
 
-/** The ADE program: VAMS when reachable, otherwise the bundled snapshot. Cached for an hour. */
+/**
+ * The ADE program, cached for an hour. During ADE week the bundled snapshot comes first:
+ * a cold serverless start then reads one local file instead of three VAMS calls (up to
+ * 4 s each, which pushed searches past Netlify's 10 s limit). The snapshot is re-exported
+ * after every sync anyway. Set ADE_DATA_SOURCE=vams to read VAMS first again.
+ */
+const VAMS_FIRST = process.env.ADE_DATA_SOURCE === 'vams'
+
+async function loadSnapshotOrNull(): Promise<AdeData | null> {
+  try {
+    return await loadFromSnapshot()
+  } catch {
+    return null
+  }
+}
+
 export const loadAdeData = defineCachedFunction(
-  async (): Promise<AdeData> => withVenues(mergeDuplicateEvents((await loadFromVams()) ?? await loadFromSnapshot())),
+  async (): Promise<AdeData> => withVenues(mergeDuplicateEvents(VAMS_FIRST
+    ? (await loadFromVams()) ?? await loadFromSnapshot()
+    : (await loadSnapshotOrNull()) ?? (await loadFromVams()) ?? await loadFromSnapshot())),
   { name: 'ade-planner-data', maxAge: 60 * 60, swr: true },
 )

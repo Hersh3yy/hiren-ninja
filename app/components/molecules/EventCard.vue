@@ -1,6 +1,6 @@
 <template>
   <article
-    class="flex gap-3 border border-border-subtle bg-surface px-4 py-3 transition-colors"
+    class="flex gap-3 border border-border-subtle bg-surface px-3.5 py-3.5 transition-colors sm:px-4 sm:py-3"
     :class="expanded ? 'rounded-t-lg border-accent-muted' : 'rounded-lg hover:border-border-default'"
   >
     <div class="hidden w-16 shrink-0 font-mono leading-tight sm:block">
@@ -15,12 +15,12 @@
       :aria-controls="detailsId || undefined"
       @click="$emit('toggle-details')"
     >
-      <span class="block font-mono text-xs font-bold text-accent sm:hidden">
+      <span class="mb-1 block font-mono text-xs font-bold text-accent sm:mb-0 sm:hidden">
         {{ timeLabel }}<span v-if="durationLabel" class="font-normal text-content-muted"> · {{ durationLabel }}</span>
       </span>
-      <span class="font-bold text-content line-clamp-2">{{ title }}</span>
-      <span v-if="meta" class="block truncate text-sm text-content-muted">{{ meta }}</span>
-      <span v-if="people.length" class="mt-1 text-sm text-content-muted line-clamp-2">
+      <span class="text-[15px] font-bold leading-snug text-content line-clamp-2 sm:text-base sm:leading-normal">{{ title }}</span>
+      <span v-if="meta" class="mt-1 block truncate text-xs text-content-muted sm:mt-0 sm:text-sm">{{ meta }}</span>
+      <span v-if="people.length" class="mt-1.5 text-xs leading-relaxed text-content-muted line-clamp-2 sm:mt-1 sm:text-sm sm:leading-normal">
         <template v-for="(person, i) in shownPeople" :key="person.name">
           <span :class="person.highlight ? 'font-bold text-accent' : 'text-content'">{{ person.name }}</span>{{ i < shownPeople.length - 1 ? ', ' : '' }}
         </template>
