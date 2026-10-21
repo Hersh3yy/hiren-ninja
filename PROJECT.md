@@ -35,7 +35,7 @@ Gotchas: Nitro caches the ADE data for an hour (`ade-planner-data`); after a VAM
 2. `.env` here: `VAMS_API_URL`, `VAMS_API_KEY`, `CLICKUP_API_KEY`, `CLICKUP_LIST_ID`. Copy from the old laptop by password manager or AirDrop, never chat or git.
 3. Usage report and syncs read the VAMS prod DB, which only accepts trusted IPs: add the new network's IP in DigitalOcean (Databases → Settings → Trusted sources) or the scripts time out.
 4. Report: `scripts/ade-report/run.sh` (needs php + VAMS checked out next to this repo); scheduled-task prompt in `scripts/ade-report/SCHEDULED-TASK.md`. IG slides: re-render from `scripts/ig/` if kept.
-5. Claude skills/memory: `~/Desktop/claude-personal-setup/` on the work laptop (personal skills only; see its README).
+5. Claude skills/memory: `~/Dropbox/Projects/hiren.ninja/claude-personal-setup/` (personal skills only; see its README).
 
 ## Status
 
@@ -145,7 +145,7 @@ flowchart LR
 - ADE spotlight until 26 Oct: glowing nav link and phone pill, home-hero button; QR stickers point at `hiren.ninja/?s=qr` (counted as `ade-qr-scan`).
 - SEO pages since 15 Oct: per day, free-parties, ~4,700 artists, 52 genres, 371 venues, Lab, Pro; Event JSON-LD; sitemap ~5,300 URLs pushed to Bing via IndexNow (`scripts/indexnow.mjs`). Google Search Console still to do (Hiren).
 - Usage report moved into the repo (`scripts/ade-report/`), every 3 h via a desktop scheduled task; it stopped after 18 Oct (app closed or a permission prompt).
-- IG carousel for the launch post rendered from live screenshots (`~/Desktop/ade-planner-ig/`).
+- IG carousel for the launch post rendered from live screenshots (`~/Dropbox/Projects/hiren.ninja/instagram/ade-planner-launch/`).
 - Open: the "Free, get a ticket" badge squeezes long titles on phones.
 
 ### 2026-10-14 — price filter, free parties, ADE Lab, usage counts; snapshot resync
