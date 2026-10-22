@@ -4,6 +4,7 @@
 import type { AdeEvent } from '../../types/ade-planner'
 import { planningDate } from './seo'
 import { withinBudget } from './price'
+import { isAdeLab } from './programs'
 
 export const AREAS = Object.freeze({
   west: ['West', 'Nieuw-West'],
@@ -16,10 +17,10 @@ export const AREAS = Object.freeze({
 } as const)
 
 export type AreaKey = keyof typeof AREAS
-export type WhatKey = 'parties' | 'talks' | 'demos' | 'listening' | 'networking'
+export type WhatKey = 'parties' | 'lab' | 'talks' | 'demos' | 'listening' | 'networking'
 export type Budget = '' | 'free' | '25' | '50'
 
-const WHAT_KINDS: Record<Exclude<WhatKey, 'parties'>, string[]> = {
+const WHAT_KINDS: Record<Exclude<WhatKey, 'parties' | 'lab'>, string[]> = {
   talks: ['talks', 'interviews', 'masterclasses', 'meet-the'],
   demos: ['gear', 'instore'],
   listening: ['listening'],
@@ -78,7 +79,7 @@ export function startMinutes(event: Pick<AdeEvent, 'startsAt' | 'isParty'>): num
 export const formatMinutes = (minutes: number): string =>
   `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 
-const isWhat = (value: unknown): value is WhatKey => typeof value === 'string' && (value === 'parties' || value in WHAT_KINDS)
+const isWhat = (value: unknown): value is WhatKey => typeof value === 'string' && (value === 'parties' || value === 'lab' || value in WHAT_KINDS)
 const isArea = (value: unknown): value is AreaKey => typeof value === 'string' && value in AREAS
 const isBudget = (value: unknown): value is Budget => value === '' || value === 'free' || value === '25' || value === '50'
 
@@ -137,6 +138,7 @@ const AREA_WORDS: [AreaKey, RegExp][] = [
   ['south-east', /\b(?:zuidoost|south[- ]?east|bijlmer)\b/],
 ]
 const WHAT_WORDS: [WhatKey, RegExp][] = [
+  ['lab', /\b(?:ade )?lab\b/],
   ['talks', /\b(?:interviews?|talks?|panels?|conversations?|speakers?|masterclass(?:es)?|keynotes?)\b/],
   ['demos', /\b(?:demos?|gear|workshops?|try[- ]?outs?|brand)\b/],
   ['listening', /\blistening\b/],
@@ -166,7 +168,10 @@ export function heuristicSlots(prompt: string, today: string, adeDays: readonly 
 
 function readClause(text: string, today: string, adeDays: readonly string[], genres: readonly string[]): Slot {
   let day = today
-  if (/\btomorrow\b/.test(text)) day = addDays(today, 1)
+  const date = text.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s*(?:of\s+)?oct(?:ober)?\b|\boct(?:ober)?\s+(\d{1,2})(?:st|nd|rd|th)?\b|\b(\d{1,2})[/-]10\b/)
+  const dated = date ? `${today.slice(0, 8)}${String(date[1] ?? date[2] ?? date[3]).padStart(2, '0')}` : ''
+  if (dated && adeDays.includes(dated)) day = dated
+  else if (/\btomorrow\b/.test(text)) day = addDays(today, 1)
   else if (!/\b(?:tonight|today|tonite)\b/.test(text)) {
     const named = DAY_NAMES.findIndex(name => new RegExp(`\\b${name}\\b`).test(text))
     const match = named >= 0 ? adeDays.find(date => DAY_NAMES[new Date(`${date}T12:00:00Z`).getUTCDay()] === DAY_NAMES[named]) : undefined
@@ -184,7 +189,7 @@ function readClause(text: string, today: string, adeDays: readonly string[], gen
     const word = clockTime[1]
     if (word === 'before' || word === 'until') to = minutes
     else from = word === 'around' || word === 'about' ? minutes - 60 : minutes
-  } else if (/\b(?:day ?time|during the day|afternoon|morning|lunch)\b/.test(text)) {
+  } else if (/\b(?:day ?time|during the day|throughout the day|all day|afternoon|morning|lunch)\b/.test(text)) {
     ({ from, to } = PERIODS.daytime)
   } else if (/\b(?:late|after ?hours|all night)\b/.test(text)) {
     from = PERIODS.late.from
@@ -220,7 +225,9 @@ function matchesWhat(event: AdeEvent, what: WhatKey[]): boolean {
   if (!what.length) return true
   return what.some(key => key === 'parties'
     ? event.isParty !== false
-    : (event.kinds ?? []).some(kind => WHAT_KINDS[key].includes(kind)))
+    : key === 'lab'
+      ? isAdeLab(event)
+      : (event.kinds ?? []).some(kind => WHAT_KINDS[key].includes(kind)))
 }
 
 /** The events a slot asks for: not over, not sold out, one per show; best taste match, then most starred, first. */
@@ -249,12 +256,14 @@ export function selectEvents(events: AdeEvent[], slot: Slot, now: Date = new Dat
     })
     .map(event => ({ event, score: tasteScore(event, slot.taste) }))
     .sort((a, b) => b.score - a.score || (b.event.favorites ?? 0) - (a.event.favorites ?? 0) || a.event.startsAt.localeCompare(b.event.startsAt))
+    // A taste ("psy trance") narrows to what mentions it, when anything does.
+    .filter((item, _, all) => !all[0]?.score || item.score > 0)
     .map(({ event }) => event)
 }
 
 const dayLabel = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, weekday: 'long', day: 'numeric', month: 'long' })
 const AREA_LABELS: Record<AreaKey, string> = { west: 'West', harbour: 'Harbour', centre: 'Centre', north: 'North', east: 'East', south: 'South', 'south-east': 'Zuidoost' }
-const WHAT_LABELS: Record<WhatKey, string> = { parties: 'parties', talks: 'talks and interviews', demos: 'demos and gear', listening: 'listening sessions', networking: 'networking' }
+const WHAT_LABELS: Record<WhatKey, string> = { parties: 'parties', lab: 'ADE Lab', talks: 'talks and interviews', demos: 'demos and gear', listening: 'listening sessions', networking: 'networking' }
 
 /** "Tonight, from 18:00, West: talks and interviews" for the heading above a slot's results. */
 export function describeSlot(slot: Slot, today: string): { label: string, summary: string } {
@@ -274,4 +283,10 @@ export function describeSlot(slot: Slot, today: string): { label: string, summar
     label: `${when}${time ? `, ${time}` : ''}`,
     summary: `${dayLabel.format(new Date(`${slot.day}T12:00:00Z`))} · ${parts.slice(1).join(' · ') || 'everything'}`,
   }
+}
+
+/** True when a typed request gave the rules nothing to go on (no day, time, place, kind, price or taste). */
+export function understoodNothing(prompt: string, slots: Slot[], today: string): boolean {
+  if (DAY_WORD.test(prompt.toLowerCase())) return false
+  return slots.every(slot => slot.day === today && slot.from === undefined && slot.to === undefined && !slot.what.length && !slot.areas.length && !slot.budget && !slot.taste)
 }

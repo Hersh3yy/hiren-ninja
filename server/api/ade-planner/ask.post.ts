@@ -1,8 +1,11 @@
+import type { AdeData } from '../../types/ade-planner'
 import { loadAdeData } from '../../utils/ade-planner/data'
+import { getEventsForArtist } from '../../utils/ade-planner/match'
+import { closestName } from '../../utils/ade-planner/normalize'
 import { askGemini } from '../../utils/ade-planner/gemini'
 import { ADE_DAYS, withLineupNames } from '../../utils/ade-planner/seo'
 import {
-  applyFilters, describeSlot, heuristicSlots, PERIODS, sanitizeSlots, selectEvents, todayInAmsterdam,
+  applyFilters, describeSlot, heuristicSlots, PERIODS, sanitizeSlots, selectEvents, todayInAmsterdam, understoodNothing,
   type AskFilters, type Slot,
 } from '../../utils/ade-planner/shortlist'
 import { recordAdeStats } from '../../utils/ade-planner/stats'
@@ -12,6 +15,7 @@ import { recordAdeStats } from '../../utils/ade-planner/stats'
 const PARSE_MS = 6_000
 const PROMPT_PICKS = 10 // per slot, when someone typed what they want
 const FILTER_PICKS = 25 // per slot, filters only
+const MAX_LIMIT = 120 // Schedule mode asks for a longer, time-ordered list
 
 const text = (value: unknown, max: number): string => (typeof value === 'string' ? value.trim().slice(0, max) : '')
 
@@ -39,7 +43,7 @@ Now: ${weekday} ${today}, ${clock} Amsterdam time. ADE days: ${ADE_DAYS.map(day 
 Return JSON {"slots":[...]} with 1 to 3 slots, one per separate thing asked for ("daytime tomorrow" and "a night out tonight" are two). Each slot:
 {"day":"YYYY-MM-DD","from":"HH:MM"|null,"to":"HH:MM"|null,"what":[...],"areas":[...],"budget":""|"free"|"25"|"50","taste":"..."}
 - "from"/"to" bound the START time. "around 8pm" -> from 19:00. Daytime or afternoon -> 09:00 to 18:00. "tonight"/"evening" -> from 18:00. null when no time is implied.
-- "what" uses only: parties, talks (talks, interviews, panels), demos (gear and brand demos, workshops), listening, networking. Empty when open. A music night (techno, house) means parties.
+- "what" uses only: parties, lab (ADE Lab: new artists and producers, around Westergas), talks (talks, interviews, panels), demos (gear and brand demos, workshops), listening, networking. Empty when open. A music night (techno, house) means parties.
 - "areas" uses only: west (West and Nieuw-West), harbour (Westpoort), centre, north, east, south, south-east (Zuidoost). Empty when open. A place named once applies to every slot unless another is named.
 - "budget": "free", "25" (cheap) or "50". Empty when no price is implied.
 - "taste": genres, moods or names the visitor likes, comma-separated, max 6 words, else "".
@@ -48,19 +52,48 @@ Return JSON {"slots":[...]} with 1 to 3 slots, one per separate thing asked for 
 Request: ${JSON.stringify(prompt)}`
 }
 
+/**
+ * The typed text is artist names ("Silva Bumpa", "Polygonia, Mau P"), or a likely typo of one:
+ * those belong in Your artists. Only asked when the rules found nothing else in the text.
+ */
+function artistNames(data: AdeData, prompt: string): string[] | null {
+  const parts = prompt.split(/\s*(?:,|\n|\s&\s|\sb2b\s)\s*/i).map(part => part.trim()).filter(Boolean)
+  if (!parts.length || parts.length > 12) return null
+  const found = parts.map(part => getEventsForArtist(data, part)[0]?.artist.name ?? null)
+  if (found.every(Boolean)) return found as string[]
+  if (parts.length === 1 && parts[0].split(/\s+/).length <= 4) {
+    const near = closestName(parts[0], data.artists.filter(artist => artist.eventIds.length).map(artist => artist.name))
+    return near ? [near] : null
+  }
+  return null
+}
+
 export default defineEventHandler(async (event) => {
   rateLimit(event, 'ask', 10, 60)
-  const body = await readBody<{ prompt?: unknown, filters?: unknown }>(event)
+  const body = await readBody<{ prompt?: unknown, filters?: unknown, limit?: unknown }>(event)
   const started = Date.now()
   const today = todayInAmsterdam()
   const prompt = text(body?.prompt, 400)
   const filters = readFilters(body?.filters, today)
+  const limit = Math.min(Math.max(Number(body?.limit) || 0, 0), MAX_LIMIT)
 
   if (!prompt && !hasFilters(filters)) {
     throw createError({ statusCode: 400, statusMessage: 'Type what you are after, or pick a day, place or kind of event.' })
   }
 
   const data = await loadAdeData()
+  const adeDays = ADE_DAYS.map(day => day.date)
+  const genres = [...new Set(data.events.flatMap(item => item.genres ?? []).map(genre => genre.toLowerCase()))]
+
+  // A playlist link or artist names: hand them to Your artists instead of guessing events.
+  const keywordSlots = prompt ? heuristicSlots(prompt, today, adeDays, genres) : []
+  const vague = Boolean(prompt) && understoodNothing(prompt, keywordSlots, today)
+  const names = vague ? artistNames(data, prompt) : null
+  if (prompt && (/^https?:\/\//i.test(prompt) || names)) {
+    const input = names ? names.join('\n') : prompt
+    await recordAdeStats(data, { search: { kind: 'daytime', source: 'daytime', query: `ask (artists): ${prompt}`.slice(0, 600), resultCount: 0 } })
+    return { source: 'rules', route: 'artists', input, groups: [] }
+  }
 
   let slots: Slot[] = []
   let source: 'ai' | 'rules' = 'rules'
@@ -68,14 +101,14 @@ export default defineEventHandler(async (event) => {
     const parsed = await askGemini<{ slots?: unknown }>(parsePrompt(prompt, today), started + PARSE_MS)
     slots = sanitizeSlots(parsed?.slots, today)
     if (slots.length) source = 'ai'
-    else {
-      const genres = [...new Set(data.events.flatMap(item => item.genres ?? []).map(genre => genre.toLowerCase()))]
-      slots = heuristicSlots(prompt, today, ADE_DAYS.map(day => day.date), genres)
-    }
+    else if (vague) {
+      // Neither Gemini nor the rules could read it: say so rather than list random events.
+      return { source, unclear: true, groups: [] }
+    } else slots = keywordSlots
   }
   slots = applyFilters(slots, filters, today)
 
-  const picks = prompt ? PROMPT_PICKS : FILTER_PICKS
+  const picks = limit || (prompt ? PROMPT_PICKS : FILTER_PICKS)
   const groups = slots.map((slot, index) => {
     const all = selectEvents(data.events, slot)
     return {

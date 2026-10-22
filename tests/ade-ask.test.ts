@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFilters, heuristicSlots, sanitizeSlots, selectEvents, startMinutes, type Slot } from '../server/utils/ade-planner/shortlist'
+import { applyFilters, heuristicSlots, sanitizeSlots, selectEvents, startMinutes, understoodNothing, type Slot } from '../server/utils/ade-planner/shortlist'
 import type { AdeEvent } from '../server/types/ade-planner'
 
 const ADE_DAYS = ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25']
@@ -38,6 +38,17 @@ describe('heuristicSlots', () => {
 
   it('keeps one request together when only one day is named', () => {
     expect(heuristicSlots('talks and demos in the centre from 3pm', TODAY, ADE_DAYS)).toHaveLength(1)
+  })
+
+  it('reads dates like "the 24th of October"', () => {
+    expect(heuristicSlots('are there events throughout the day on the 24th of october', TODAY, ADE_DAYS)[0]).toMatchObject({ day: '2026-10-24', from: 9 * 60, to: 18 * 60 })
+    expect(heuristicSlots('oct 23 lab', TODAY, ADE_DAYS)[0]).toMatchObject({ day: '2026-10-23', what: ['lab'] })
+  })
+
+  it('knows when it understood nothing', () => {
+    expect(understoodNothing('Silva bumpa', heuristicSlots('Silva bumpa', TODAY, ADE_DAYS), TODAY)).toBe(true)
+    expect(understoodNothing('techno tonight', heuristicSlots('techno tonight', TODAY, ADE_DAYS), TODAY)).toBe(false)
+    expect(understoodNothing('the 24th of october', heuristicSlots('the 24th of october', TODAY, ADE_DAYS), TODAY)).toBe(false)
   })
 
   it('maps free and cheap, and a named ADE day', () => {
@@ -114,16 +125,34 @@ describe('selectEvents', () => {
     expect(ids(slot({ from: 9 * 60, to: 18 * 60 }))).not.toContain('party')
   })
 
-  it('puts the best taste match first', () => {
+  it('keeps only taste matches when there are any', () => {
     const list = [
       event({ id: 'disco', title: 'Disco night', genres: ['Disco'] }),
       event({ id: 'techno', title: 'Warehouse', genres: ['Techno'] }),
     ]
-    expect(selectEvents(list, slot({ taste: 'techno' }), before).map(e => e.id)).toEqual(['techno', 'disco'])
+    expect(selectEvents(list, slot({ taste: 'techno' }), before).map(e => e.id)).toEqual(['techno'])
+    expect(selectEvents(list, slot({ taste: 'footwork' }), before)).toHaveLength(2)
+  })
+
+  it('finds ADE Lab events', () => {
+    const list = [
+      event({ id: 'lab', title: 'Gear Test Lab', isParty: false, tags: ['ADE Lab'], startsAt: '2026-10-22T12:00:00+02:00', endsAt: '2026-10-22T13:00:00+02:00' }),
+      event({ id: 'party', title: 'Party' }),
+    ]
+    expect(selectEvents(list, slot({ what: ['lab'] }), before).map(e => e.id)).toEqual(['lab'])
   })
 
   it('leaves out events that are over', () => {
     const late = new Date('2026-10-22T17:30:00+02:00')
     expect(selectEvents(events, slot({ what: ['talks'] }), late)).toEqual([])
+  })
+})
+
+describe('areaFromAddress', () => {
+  it('places Westergas venues whose geocoding failed', async () => {
+    const { areaFromAddress } = await import('../server/utils/ade-planner/venues')
+    expect(areaFromAddress('WestWeelde - Lab Village Klönneplein 4-6, Amsterdam')).toBe('West')
+    expect(areaFromAddress('Gashouder Klönneplein 1, Amsterdam')).toBe('West')
+    expect(areaFromAddress('Somewhere 1, Amsterdam')).toBeNull()
   })
 })

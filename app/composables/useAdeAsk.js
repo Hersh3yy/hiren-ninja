@@ -26,6 +26,7 @@ export const AREA_OPTIONS = [
 
 export const WHAT_OPTIONS = [
   { value: 'parties', label: 'Parties' },
+  { value: 'lab', label: 'ADE Lab' },
   { value: 'talks', label: 'Talks & interviews' },
   { value: 'demos', label: 'Demos & gear' },
   { value: 'listening', label: 'Listening' },
@@ -38,8 +39,9 @@ export const BUDGET_OPTIONS = [
 ]
 
 export const EXAMPLES = [
-  'Demos in West tomorrow, techno tonight from 8pm',
-  'Something free in the centre this evening'
+  'ADE Lab in West tomorrow',
+  'Techno tonight from 10pm, something free',
+  'Silva Bumpa'
 ]
 
 /** Today, tomorrow, then each remaining ADE day: [{ value: 'YYYY-MM-DD', label }]. */
@@ -54,8 +56,12 @@ export function dayOptions(now = new Date()) {
   return options
 }
 
-/** Ask for events by typing what you want, picking filters, or both. */
-export function useAdeAsk() {
+/**
+ * Ask for events by typing what you want, picking filters, or both.
+ * `limit` asks for a longer list (Schedule mode); `onRoute` gets a playlist link or artist
+ * names the server says belong in Your artists.
+ */
+export function useAdeAsk({ limit = 0, onRoute = null, source = 'ask' } = {}) {
   const prompt = ref('')
   const filters = reactive({ day: '', period: '', areas: [], what: [], budget: '' })
   const isLoading = ref(false)
@@ -65,16 +71,24 @@ export function useAdeAsk() {
   const activeFilters = computed(() => [filters.day, filters.period, filters.budget].filter(Boolean).length + filters.areas.length + filters.what.length)
   const canSend = computed(() => Boolean(prompt.value.trim()) || activeFilters.value > 0)
 
+  // A tap while a search runs searches again when it's done, so the list matches the chips.
+  let again = false
+
   async function run() {
-    if (!canSend.value || isLoading.value) return
+    if (!canSend.value) return
+    if (isLoading.value) {
+      again = true
+      return
+    }
     isLoading.value = true
     error.value = ''
     const kind = prompt.value.trim() && activeFilters.value ? 'both' : prompt.value.trim() ? 'prompt' : 'filters'
-    track('ade-ask-search', { kind })
+    track(`ade-${source}-search`, { kind })
     try {
       result.value = await $fetch('/api/ade-planner/ask', {
         method: 'POST',
         body: {
+          limit: limit || undefined,
           prompt: prompt.value.trim(),
           filters: {
             day: filters.day || undefined,
@@ -85,8 +99,14 @@ export function useAdeAsk() {
           }
         }
       })
+      if (result.value.route === 'artists') {
+        track(`ade-${source}-result`, { result: 'artists' })
+        onRoute?.(result.value.input)
+        result.value = null
+        return
+      }
       const empty = result.value.groups.every(group => group.items.length === 0)
-      track('ade-ask-result', { result: empty ? 'empty' : result.value.source })
+      track(`ade-${source}-result`, { result: result.value.unclear ? 'unclear' : empty ? 'empty' : result.value.source })
     } catch (caught) {
       result.value = null
       error.value = caught?.statusCode === 429
@@ -94,9 +114,13 @@ export function useAdeAsk() {
         : caught?.statusCode === 400
           ? 'Type what you are after, or pick a day, place or kind of event.'
           : 'Could not search right now. Try again in a moment.'
-      track('ade-ask-result', { result: 'error' })
+      track(`ade-${source}-result`, { result: 'error' })
     } finally {
       isLoading.value = false
+      if (again) {
+        again = false
+        run()
+      }
     }
   }
 

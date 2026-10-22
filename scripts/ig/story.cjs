@@ -1,4 +1,5 @@
 // 6-second Instagram story (1080x1920, 3 slides x 2 s) for the Find events box.
+/* eslint-disable no-console -- a terminal tool */
 //   node scripts/ig/story.cjs <out-dir>
 // Screenshots the live planner on a phone-sized page, draws the slides on a canvas in
 // the site's colours and fonts, and records them in Chrome (MediaRecorder, H.264 MP4),

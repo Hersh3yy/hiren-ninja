@@ -34,37 +34,39 @@
       <AdePlannerMapView v-if="nearOpen" id="ade-map" @close="nearOpen = false" />
     </ClientOnly>
 
-    <!-- The quickest way in: type what you want or pick filters, no playlist needed. -->
-    <AdePlannerAskPanel />
+    <!-- Three ways in, one on screen at a time: say it, pick it, or match your music. -->
+    <MoleculesSegmentedTabs
+      :model-value="mode"
+      :items="MODES"
+      label="How do you want to search?"
+      id-prefix="ade"
+      @update:model-value="selectMode"
+    />
 
-    <div class="space-y-3 border-t border-border-subtle pt-6">
-      <p class="text-xs font-bold uppercase tracking-widest text-content-muted">Or plan from your playlist</p>
-      <MoleculesSegmentedTabs
-        :model-value="tab"
-        :items="TABS"
-        label="ADE Planner"
-        id-prefix="ade"
-        @update:model-value="selectTab"
-      />
+    <div v-show="mode === 'ask'" id="ade-panel-ask" role="tabpanel" aria-labelledby="ade-tab-ask">
+      <AdePlannerAskPanel @use-artists="useArtists" @show-schedule="selectMode('schedule')" />
     </div>
 
-    <div
-      v-show="tab === 'parties'"
-      id="ade-panel-parties"
-      role="tabpanel"
-      aria-labelledby="ade-tab-parties"
-    >
+    <div v-if="visited.schedule" v-show="mode === 'schedule'" id="ade-panel-schedule" role="tabpanel" aria-labelledby="ade-tab-schedule" class="space-y-6">
+      <AdePlannerSchedulePanel />
+      <!-- The older daytime search (by speaker, label or topic), kept out of the way. -->
+      <div class="border-t border-border-subtle pt-4">
+        <AtomsButton
+          variant="link-muted"
+          :text="daytimeOpen ? 'Hide search by speaker or topic' : 'Search talks by speaker, label or topic'"
+          :aria-expanded="daytimeOpen"
+          aria-controls="ade-daytime-search"
+          @click="daytimeOpen = !daytimeOpen"
+        />
+        <div v-if="daytimeOpen" id="ade-daytime-search" class="mt-4">
+          <AdePlannerDaytimePanel :initial-query="daytimeQuery" @show-parties="useArtists" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Always rendered: its intro and form are what search engines read for "ADE playlist". -->
+    <div v-show="mode === 'artists'" id="ade-panel-artists" role="tabpanel" aria-labelledby="ade-tab-artists">
       <AdePlannerPartiesPanel :prefill="partiesPrefill" @show-daytime="showDaytime" />
-    </div>
-
-    <div
-      v-if="daytimeVisited"
-      v-show="tab === 'daytime'"
-      id="ade-panel-daytime"
-      role="tabpanel"
-      aria-labelledby="ade-tab-daytime"
-    >
-      <AdePlannerDaytimePanel :initial-query="daytimeQuery" @show-parties="showParties" />
     </div>
   </div>
 </template>
@@ -73,18 +75,23 @@
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { track } from '~/utils/track'
 
-const TABS = [
-  { id: 'parties', label: 'Parties & concerts', shortLabel: 'Parties' },
-  { id: 'daytime', label: 'Daytime & networking', shortLabel: 'Daytime' }
+const MODES = [
+  { id: 'ask', label: 'Ask' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'artists', label: 'Your artists', shortLabel: 'Artists' }
 ]
+// Old links: ?tab=daytime was the daytime search, now part of Schedule.
+const LEGACY = { daytime: 'schedule', parties: 'artists' }
 
 const route = useRoute()
 const router = useRouter()
 const { favorites } = useAdeFavorites()
 
-const tab = ref(route.query.tab === 'daytime' ? 'daytime' : 'parties')
-// Mount the daytime panel on first visit, then keep it (and its filters) alive.
-const daytimeVisited = ref(tab.value === 'daytime')
+const initial = MODES.some(item => item.id === route.query.mode) ? route.query.mode : LEGACY[route.query.tab] ?? 'ask'
+const mode = ref(initial)
+// Mount a mode on its first visit, then keep it (and its filters) alive.
+const visited = reactive({ [initial]: true })
+const daytimeOpen = ref(false)
 const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
@@ -96,20 +103,22 @@ function closeSharedPlan() {
   router.replace({ query: { ...route.query, plan: undefined } })
 }
 
-function selectTab(id) {
-  if (tab.value !== id) track('ade-tab', { tab: id })
-  tab.value = id
-  if (id === 'daytime') daytimeVisited.value = true
-  router.replace({ query: { ...route.query, tab: id === 'parties' ? undefined : id } })
+function selectMode(id) {
+  if (mode.value !== id) track('ade-mode', { tab: id })
+  mode.value = id
+  visited[id] = true
+  router.replace({ query: { ...route.query, tab: undefined, mode: id === 'ask' ? undefined : id } })
 }
 
-function showParties(names) {
-  partiesPrefill.value = names
-  selectTab('parties')
+// From Ask (a link or artist names) or the daytime search: run them in Your artists.
+function useArtists(input) {
+  partiesPrefill.value = Array.isArray(input) ? input : String(input).split('\n')
+  selectMode('artists')
 }
 
 function showDaytime(query) {
   daytimeQuery.value = query
-  selectTab('daytime')
+  daytimeOpen.value = true
+  selectMode('schedule')
 }
 </script>
