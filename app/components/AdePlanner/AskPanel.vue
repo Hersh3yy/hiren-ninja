@@ -1,5 +1,6 @@
 <template>
-  <section class="space-y-4 rounded-xl border border-accent-muted p-4" aria-labelledby="ade-ask-heading">
+  <!-- No box of its own on phones: it already sits in the planner card, and a box in a box costs ~40px of width. -->
+  <section class="space-y-4 sm:rounded-xl sm:border sm:border-accent-muted sm:p-4" aria-labelledby="ade-ask-heading">
     <div class="space-y-1">
       <AtomsHeading id="ade-ask-heading" text="Find events" :level="2" size="lg" class="uppercase tracking-wide" />
       <p class="text-sm text-content-muted">Say what you want, in your own words, or pick from the filters.</p>

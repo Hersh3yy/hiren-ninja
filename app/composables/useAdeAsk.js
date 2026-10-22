@@ -38,9 +38,8 @@ export const BUDGET_OPTIONS = [
 ]
 
 export const EXAMPLES = [
-  'Interviews and demos in West tomorrow afternoon, and a techno night around 8pm tonight',
-  'Something free and relaxed this evening in the centre',
-  'Talks from 3pm in the centre'
+  'Demos in West tomorrow, techno tonight from 8pm',
+  'Something free in the centre this evening'
 ]
 
 /** Today, tomorrow, then each remaining ADE day: [{ value: 'YYYY-MM-DD', label }]. */

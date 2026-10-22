@@ -26,7 +26,8 @@ const props = defineProps({
 defineEmits(['click'])
 
 const classes = computed(() => [
-  'inline-flex items-center rounded-full border transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent',
+  // pointer-coarse: a 44px tap target on touch screens (Apple HIG / WCAG 2.5.5), desktop unchanged.
+  'inline-flex items-center rounded-full border transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent pointer-coarse:min-h-11',
   props.size === 'sm' ? 'px-3 py-1 text-sm' : 'px-4 py-1.5 text-sm font-bold uppercase tracking-wide',
   props.pressed || props.removable
     ? 'border-accent bg-accent text-ink font-bold'
