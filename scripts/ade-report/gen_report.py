@@ -1,4 +1,4 @@
-import json, html, datetime as D, os, sys, collections
+import json, html, datetime as D, os, sys, collections, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gen_rows import playlist_row, event_row, SRC
 
@@ -70,6 +70,7 @@ DAILY_COLS = [
     ('Event opened', lambda day, c: sum(v for k, v in c.items() if k.startswith('ade-event-details'))),
     ('Ticket clicks', lambda day, c: sum(v for k, v in c.items() if k.startswith('ade-ticket-click'))),
     ('Starred', lambda day, c: c.get('ade-favorite:add', 0)),
+    ('Find events', lambda day, c: sum(v for k, v in c.items() if k.startswith('ade-ask-search'))),
     ('Daytime tab', lambda day, c: c.get('ade-tab:daytime', 0)),
     ('My plan', lambda day, c: c.get('ade-plan-open', 0)),
     ('On a budget', lambda day, c: c.get('ade-budget-open', 0) + c.get('ade-free-open', 0)),
@@ -92,6 +93,15 @@ for counters in usage_days.values():
 feature_list = ''.join('<li><span class="name">%s</span><span class="n">%d</span></li>' % (e(k), v) for k, v in features.most_common(24))
 sources = ' · '.join('%s %d' % (SRC[s], src.get(s, 0)) for s in ['spotify', 'apple-music', 'youtube-music', 'tidal', 'deezer'])
 
+# Find events: what people typed, and whether Gemini or the keyword fallback answered.
+asks = r.get('asks', [])
+LINK = re.compile(r'^https?://')
+FILTERS = re.compile(r'^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w+ \d+ \w+ · ')
+typed_asks = [a for a in asks if not FILTERS.match(a['query'])]
+ask_kinds = collections.Counter('link' if LINK.match(a['query']) else 'filters' if FILTERS.match(a['query']) else 'typed' for a in asks)
+ask_rows = ''.join('<tr><td class="nowrap">%s</td><td>%s</td><td>%s</td><td class="n">%d</td></tr>' % (
+    e(a['at'][5:]), e(a['query'][:90]), 'Gemini' if a['ai'] else 'keywords', a['results']) for a in reversed(asks))
+
 values = {
     'CSS': open(os.path.join(SP, 'report.css')).read(),
     'TOTAL': str(total), 'PLAYLISTS': str(r['uniquePlaylists']), 'TRACKS': format(r['tracksScanned'], ','),
@@ -111,6 +121,8 @@ values = {
     'TYPED': ''.join('<li><span class="name">%s</span><span class="n">%d</span></li>' % (e(n), c) for n, c in r['topTyped'][:12]),
     'GENRES': ''.join('<li><span class="name">%s</span><span class="track"><span style="width:%s"></span></span></li>' % (e(n), pct(c, maxg)) for n, c in g),
     'WANTED': ''.join('<span class="chip">%s<b>%d</b></span>' % (e(display_name(n)), c) for n, c in r['wanted'][:22]),
+    'ASK_N': str(len(asks)), 'ASK_AI': str(sum(1 for a in asks if a['ai'])), 'ASK_TYPED': str(ask_kinds.get('typed', 0)),
+    'ASK_FILTERS': str(ask_kinds.get('filters', 0)), 'ASK_LINKS': str(ask_kinds.get('link', 0)), 'ASK_ROWS': ask_rows or '<tr><td colspan="4">None yet</td></tr>',
     'FUNNEL': funnel, 'STARS_TOTAL': str(tot['stars']),
     'OPENED': ''.join('<li><span class="name">%s</span><span class="n">%d open · %d tickets · %d ★</span></li>' % (e(o['title']), o['opens'], o['tickets'], o['stars']) for o in r['opened'][:12]),
 }

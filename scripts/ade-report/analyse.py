@@ -3,6 +3,10 @@ SP = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(SP, 'out')
 d = json.load(open(os.path.join(OUT, 'ade-all.json')))
 S = d['searches']; names = d['artistNames']; ev = {e['id']: e for e in d['events']}
+# Find events ("ask") searches are logged as kind 'daytime' with an 'ask (ai|rules): ' query.
+for s in S:
+    if s.get('kind') == 'daytime' and str(s.get('query', '')).startswith('ask'):
+        s['kind'] = 'ask'
 real = [s for s in S if not s.get('example')]
 def pid(u):
     m = re.search(r'(?:playlist|pl\.)[/]?([A-Za-z0-9.-]+)', u or '')
@@ -55,6 +59,7 @@ out = {
     'genres': g.most_common(12), 'wanted': w.most_common(24),
     'typedZero': [s.get('query', '').replace('\n', ' / ')[:50] for s in real if s['kind'] == 'names' and not s.get('matchedCount')],
     'daytime': [s.get('query') for s in real if s['kind'] == 'daytime'],
+    'asks': [{'at': s['at'], 'ai': s.get('query', '').startswith('ask (ai)'), 'query': re.sub(r'^ask(?: \((?:ai|rules)\))?: ', '', s.get('query', '')), 'results': s.get('resultCount', 0)} for s in real if s['kind'] == 'ask'],
 }
 out['usage'] = d.get('usage', [])
 out['searchesPerDay'] = {day: n for day, n in out['perDay']}

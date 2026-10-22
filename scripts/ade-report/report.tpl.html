@@ -38,6 +38,18 @@
 </section>
 
 <section>
+  <div class="head"><h2>Find events (new Thu 22 Oct)</h2><p>The type-it-or-pick-filters box. Gemini reads a typed request; when it's busy or slow the keyword fallback answers instead. Filter taps search on their own.</p></div>
+  <div class="kpis">
+    <div class="kpi hot"><b>{{ASK_N}}</b><span>Find events searches</span></div>
+    <div class="kpi"><b>{{ASK_TYPED}}</b><span>typed requests</span></div>
+    <div class="kpi"><b>{{ASK_FILTERS}}</b><span>filters only</span></div>
+    <div class="kpi"><b>{{ASK_LINKS}}</b><span>playlist links pasted here</span></div>
+    <div class="kpi"><b>{{ASK_AI}}</b><span>read by Gemini</span></div>
+  </div>
+  <div class="scroll"><table><thead><tr><th>When</th><th>Typed or picked</th><th>Read by</th><th class="n">Results</th></tr></thead><tbody>{{ASK_ROWS}}</tbody></table></div>
+</section>
+
+<section>
   <div class="head"><h2>Every day</h2><p>Searches from the search log; everything else is counted per feature in VAMS since Tue 13 Oct (– before that). Newest day first, today is partial.</p></div>
   <div class="scroll"><table><thead><tr><th>Day</th>{{DAILY_HEAD}}</tr></thead><tbody>{{DAILY_ROWS}}</tbody></table></div>
   <details class="panel"><summary class="meta" style="cursor:pointer">Every feature counter since 13 Oct</summary><ul class="plain">{{FEATURES}}</ul></details>
@@ -99,6 +111,8 @@
     <div class="finding"><h3>Daytime searches are genres</h3><p>"Acid", "Hardstyle" and "House" found nothing. Daytime search now reads ADE's tags and genres, says when a genre is night-only, and has 16 topics.</p><span class="status">Fixed</span></div>
     <div class="finding"><h3>Stars barely got used</h3><p>2 stars in five days. With a "Save to my plan" button, a week timetable, a map and a story image, stars went to {{STARS_TOTAL}}.</p><span class="status">Fixed</span></div>
     <div class="finding"><h3>Tickets are expensive</h3><p>ADE publishes no prices. "On a budget" lists free parties and tickets under €25 or €50 (prices read from Weeztix and Resident Advisor on each sync), with a club or laid-back vibe and venue size.</p><span class="status">Fixed</span></div>
+    <div class="finding"><h3>Find events is used as a search for everything</h3><p>On its first day people typed artist names ("Silva bumpa" four times, "Polygonia"), genres ("psy trance", "footwork") and pasted Spotify and YouTube playlists into it. It answered those with 10 popular events, not with that artist or playlist. One box should send a link or a name to artist match, and say so when nothing fits.</p><span class="status next">Next</span></div>
+    <div class="finding"><h3>Gemini rarely answered</h3><p>Almost every typed request fell back to keywords: Gemini 3.8 Flash was slow or busy inside the 6 s budget. Keyword reading also missed dates like "the 24th of October".</p><span class="status next">Next</span></div>
     <div class="finding"><h3>Big names missing</h3><p>Chris Lake, Bicep, Fred again.. and Fisher are the most wanted acts not on the lineup: a ready-made "missing from ADE" post.</p><span class="status idea">Idea</span></div>
   </div>
 </section>
