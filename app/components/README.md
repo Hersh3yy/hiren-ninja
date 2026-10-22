@@ -39,6 +39,8 @@ level is visible at every call site:
 | `MoleculesSegmentedTabs`   | Tab bars and day pickers (`role="tablist"`, v-model)              |
 | `MoleculesEventCard`       | Compact event row: time, title, one line, one badge, star. Details belong one level up |
 | `MoleculesIconButton`      | Icon-only buttons; `pressed` turns accent, `filled` for a solid icon |
+| `MoleculesChipGroup`       | A labelled row of `AtomsChip` toggles, single (tap again clears) or `multiple`, v-model |
+| `MoleculesPromptBox`       | Textarea plus one send button; Enter sends, Shift+Enter is a new line |
 
 Text colour rule: body text `text-content`, secondary text `text-content-muted`, interactive or highlighted text `text-accent`.
 

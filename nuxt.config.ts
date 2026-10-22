@@ -72,6 +72,8 @@ export default defineNuxtConfig({
     clickupListId: process.env.CLICKUP_LIST_ID ?? '',
     vamsApiUrl: process.env.VAMS_API_URL ?? '',
     vamsApiKey: process.env.VAMS_API_KEY ?? '',
+    geminiApiKey: process.env.GEMINI_API_KEY ?? '',
+    geminiModel: process.env.GEMINI_MODEL ?? 'gemini-3.8-flash',
   },
   nitro: {
     preset: 'netlify',

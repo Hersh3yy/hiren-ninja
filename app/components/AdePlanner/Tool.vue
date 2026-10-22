@@ -32,6 +32,9 @@
       </div>
     </div>
 
+    <!-- Type what you want or pick filters: the quickest way in, no playlist needed. -->
+    <AdePlannerAskPanel />
+
     <!-- Casual visitors: straight to free or cheap nights, no playlist needed. -->
     <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Parties by ticket price">
       <span class="text-xs font-bold uppercase tracking-wide text-content-muted">On a budget</span>
