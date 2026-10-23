@@ -29,7 +29,7 @@ const WHAT_KINDS: Record<Exclude<WhatKey, 'parties' | 'lab'>, string[]> = {
 
 /** One thing to look for: a day, a window of start times, and what / where / how much. */
 export interface Slot {
-  /** YYYY-MM-DD, the planning day (a 01:00 party belongs to the night before) */
+  /** YYYY-MM-DD, the planning day (a 01:00 party belongs to the night before); '' is every day */
   day: string
   /** minutes into the planning day; 1440+ is after midnight. A start time must fall in [from, to). */
   from?: number
@@ -42,6 +42,7 @@ export interface Slot {
 }
 
 export interface AskFilters {
+  /** YYYY-MM-DD, or '' for every day */
   day?: string
   period?: 'daytime' | 'evening' | 'late'
   what?: WhatKey[]
@@ -237,7 +238,7 @@ export function selectEvents(events: AdeEvent[], slot: Slot, now: Date = new Dat
   return events
     .filter((event) => {
       if (event.soldOut || event.format === 'tba') return false
-      if (planningDate(event) !== slot.day) return false
+      if (slot.day && planningDate(event) !== slot.day) return false
       const end = new Date(event.endsAt ?? new Date(event.startsAt).getTime() + 2 * 3_600_000)
       if (end <= now) return false
       if (event.durationMinutes && event.durationMinutes >= MAX_EVENT_MINUTES) return false
@@ -267,7 +268,7 @@ const WHAT_LABELS: Record<WhatKey, string> = { parties: 'parties', lab: 'ADE Lab
 
 /** "Tonight, from 18:00, West: talks and interviews" for the heading above a slot's results. */
 export function describeSlot(slot: Slot, today: string): { label: string, summary: string } {
-  const when = slot.day === today ? 'Today' : slot.day === addDays(today, 1) ? 'Tomorrow' : weekday.format(new Date(`${slot.day}T12:00:00Z`))
+  const when = !slot.day ? 'All days' : slot.day === today ? 'Today' : slot.day === addDays(today, 1) ? 'Tomorrow' : weekday.format(new Date(`${slot.day}T12:00:00Z`))
   const time = slot.from !== undefined && slot.to !== undefined ? `${formatMinutes(slot.from)}-${formatMinutes(slot.to)}`
     : slot.from !== undefined ? `from ${formatMinutes(slot.from)}`
       : slot.to !== undefined ? `before ${formatMinutes(slot.to)}` : ''
@@ -281,7 +282,7 @@ export function describeSlot(slot: Slot, today: string): { label: string, summar
   ].filter(Boolean)
   return {
     label: `${when}${time ? `, ${time}` : ''}`,
-    summary: `${dayLabel.format(new Date(`${slot.day}T12:00:00Z`))} · ${parts.slice(1).join(' · ') || 'everything'}`,
+    summary: `${slot.day ? dayLabel.format(new Date(`${slot.day}T12:00:00Z`)) : 'All days'} · ${parts.slice(1).join(' · ') || 'everything'}`,
   }
 }
 
@@ -289,4 +290,15 @@ export function describeSlot(slot: Slot, today: string): { label: string, summar
 export function understoodNothing(prompt: string, slots: Slot[], today: string): boolean {
   if (DAY_WORD.test(prompt.toLowerCase())) return false
   return slots.every(slot => slot.day === today && slot.from === undefined && slot.to === undefined && !slot.what.length && !slot.areas.length && !slot.budget && !slot.taste)
+}
+
+/** Events whose title, venue, description or lineup mentions the text ("Ketelhuis", "Djrum"). */
+export function matchingText(events: AdeEvent[], text: string, artistName: (id: string) => string | undefined): AdeEvent[] {
+  const plain = (value: string): string => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  const words = plain(text).split(/\s+/).filter(Boolean)
+  if (!words.length) return events
+  return events.filter((event) => {
+    const haystack = plain([event.title, event.venue ?? '', event.subtitle ?? '', ...event.lineup.map(id => artistName(id) ?? '')].join(' '))
+    return words.every(word => haystack.includes(word))
+  })
 }

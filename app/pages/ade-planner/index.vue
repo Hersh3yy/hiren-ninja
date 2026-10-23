@@ -4,7 +4,7 @@
       <p class="text-sm font-bold uppercase tracking-widest text-accent">ADE · 21–25 Oct 2026</p>
       <AtomsHeading text="ADE Planner" :level="1" size="2xl" variant="page" class="uppercase tracking-tight" />
       <p class="mb-4 max-w-2xl text-sm text-content-muted">
-        What's on at Amsterdam Dance Event, without the scroll. Ask in your own words, pick a day and place in Schedule, or paste a playlist to see where your artists play.
+        What's on at Amsterdam Dance Event, without the scroll. Paste a playlist to see where your artists play, ask in your own words, or pick a day and place in Schedule.
       </p>
       <MoleculesCard :blur="false">
         <AdePlannerTool />

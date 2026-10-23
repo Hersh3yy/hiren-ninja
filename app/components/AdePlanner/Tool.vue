@@ -34,7 +34,7 @@
       <AdePlannerMapView v-if="nearOpen" id="ade-map" @close="nearOpen = false" />
     </ClientOnly>
 
-    <!-- Three ways in, one on screen at a time: say it, pick it, or match your music. -->
+    <!-- Three ways in, one on screen at a time: match your music, say it, or pick it. -->
     <MoleculesSegmentedTabs
       :model-value="mode"
       :items="MODES"
@@ -42,6 +42,11 @@
       id-prefix="ade"
       @update:model-value="selectMode"
     />
+
+    <!-- Always rendered: its intro and form are what search engines read for "ADE playlist". -->
+    <div v-show="mode === 'artists'" id="ade-panel-artists" role="tabpanel" aria-labelledby="ade-tab-artists">
+      <AdePlannerPartiesPanel :prefill="partiesPrefill" @show-daytime="showDaytime" />
+    </div>
 
     <div v-show="mode === 'ask'" id="ade-panel-ask" role="tabpanel" aria-labelledby="ade-tab-ask">
       <AdePlannerAskPanel @use-artists="useArtists" @show-schedule="selectMode('schedule')" />
@@ -63,11 +68,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Always rendered: its intro and form are what search engines read for "ADE playlist". -->
-    <div v-show="mode === 'artists'" id="ade-panel-artists" role="tabpanel" aria-labelledby="ade-tab-artists">
-      <AdePlannerPartiesPanel :prefill="partiesPrefill" @show-daytime="showDaytime" />
-    </div>
   </div>
 </template>
 
@@ -75,10 +75,11 @@
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { track } from '~/utils/track'
 
+// Your artists first: matching your music is what the planner is for.
 const MODES = [
+  { id: 'artists', label: 'Your artists', shortLabel: 'Artists' },
   { id: 'ask', label: 'Ask' },
-  { id: 'schedule', label: 'Schedule' },
-  { id: 'artists', label: 'Your artists', shortLabel: 'Artists' }
+  { id: 'schedule', label: 'Schedule' }
 ]
 // Old links: ?tab=daytime was the daytime search, now part of Schedule.
 const LEGACY = { daytime: 'schedule', parties: 'artists' }
@@ -87,7 +88,7 @@ const route = useRoute()
 const router = useRouter()
 const { favorites } = useAdeFavorites()
 
-const initial = MODES.some(item => item.id === route.query.mode) ? route.query.mode : LEGACY[route.query.tab] ?? 'ask'
+const initial = MODES.some(item => item.id === route.query.mode) ? route.query.mode : LEGACY[route.query.tab] ?? 'artists'
 const mode = ref(initial)
 // Mount a mode on its first visit, then keep it (and its filters) alive.
 const visited = reactive({ [initial]: true })
@@ -107,7 +108,7 @@ function selectMode(id) {
   if (mode.value !== id) track('ade-mode', { tab: id })
   mode.value = id
   visited[id] = true
-  router.replace({ query: { ...route.query, tab: undefined, mode: id === 'ask' ? undefined : id } })
+  router.replace({ query: { ...route.query, tab: undefined, mode: id === 'artists' ? undefined : id } })
 }
 
 // From Ask (a link or artist names) or the daytime search: run them in Your artists.

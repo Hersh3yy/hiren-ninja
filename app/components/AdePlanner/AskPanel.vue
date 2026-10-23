@@ -31,7 +31,6 @@
         type an artist's name, or
         <AtomsButton variant="link" text="pick from the schedule" @click="$emit('show-schedule')" />.
       </p>
-      <MoleculesStatusAlert v-else-if="result.source === 'rules'" message="Read with simple keyword matching: the AI helper is busy. Check the headings below match what you meant." />
 
       <div v-for="group in result.groups" :key="group.key" class="space-y-3">
         <div>

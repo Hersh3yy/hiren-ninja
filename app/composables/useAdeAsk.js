@@ -53,6 +53,7 @@ export function dayOptions(now = new Date()) {
     if (value > ADE_LAST_DAY) break
     options.push({ value, label: offset === 0 ? 'Today' : offset === 1 ? 'Tomorrow' : weekday.format(date) })
   }
+  if (options.length) options.push({ value: 'all', label: 'All days' })
   return options
 }
 
@@ -63,12 +64,12 @@ export function dayOptions(now = new Date()) {
  */
 export function useAdeAsk({ limit = 0, onRoute = null, source = 'ask' } = {}) {
   const prompt = ref('')
-  const filters = reactive({ day: '', period: '', areas: [], what: [], budget: '' })
+  const filters = reactive({ day: '', q: '', period: '', areas: [], what: [], budget: '' })
   const isLoading = ref(false)
   const error = ref('')
   const result = ref(null)
 
-  const activeFilters = computed(() => [filters.day, filters.period, filters.budget].filter(Boolean).length + filters.areas.length + filters.what.length)
+  const activeFilters = computed(() => [filters.day, filters.q.trim(), filters.period, filters.budget].filter(Boolean).length + filters.areas.length + filters.what.length)
   const canSend = computed(() => Boolean(prompt.value.trim()) || activeFilters.value > 0)
 
   // A tap while a search runs searches again when it's done, so the list matches the chips.
@@ -92,6 +93,7 @@ export function useAdeAsk({ limit = 0, onRoute = null, source = 'ask' } = {}) {
           prompt: prompt.value.trim(),
           filters: {
             day: filters.day || undefined,
+            q: filters.q.trim() || undefined,
             period: filters.period || undefined,
             areas: filters.areas,
             what: filters.what,
@@ -132,7 +134,7 @@ export function useAdeAsk({ limit = 0, onRoute = null, source = 'ask' } = {}) {
 
   function clear() {
     prompt.value = ''
-    Object.assign(filters, { day: '', period: '', areas: [], what: [], budget: '' })
+    Object.assign(filters, { day: '', q: '', period: '', areas: [], what: [], budget: '' })
     result.value = null
     error.value = ''
   }

@@ -1,29 +1,30 @@
 import type { AdeData } from '../../types/ade-planner'
 import { loadAdeData } from '../../utils/ade-planner/data'
-import { getEventsForArtist } from '../../utils/ade-planner/match'
+import { buildIndex, getEventsForArtist } from '../../utils/ade-planner/match'
 import { closestName } from '../../utils/ade-planner/normalize'
 import { askGemini } from '../../utils/ade-planner/gemini'
 import { ADE_DAYS, withLineupNames } from '../../utils/ade-planner/seo'
 import {
-  applyFilters, describeSlot, heuristicSlots, PERIODS, sanitizeSlots, selectEvents, todayInAmsterdam, understoodNothing,
+  applyFilters, describeSlot, heuristicSlots, matchingText, PERIODS, sanitizeSlots, selectEvents, todayInAmsterdam, understoodNothing,
   type AskFilters, type Slot,
 } from '../../utils/ade-planner/shortlist'
 import { recordAdeStats } from '../../utils/ade-planner/stats'
 
-// Netlify stops a function after ~10 s. Gemini 3.8 Flash takes 2-10 s and is often busy,
-// so it gets one call (reading the request) and everything after it is plain code.
-const PARSE_MS = 6_000
+// Netlify stops a function after ~10 s, and Gemini gets at most 4 of them.
+const PARSE_MS = 4_000
 const PROMPT_PICKS = 10 // per slot, when someone typed what they want
 const FILTER_PICKS = 25 // per slot, filters only
 const MAX_LIMIT = 120 // Schedule mode asks for a longer, time-ordered list
 
 const text = (value: unknown, max: number): string => (typeof value === 'string' ? value.trim().slice(0, max) : '')
 
-function readFilters(value: unknown, today: string): AskFilters {
+function readFilters(value: unknown, today: string): AskFilters & { q?: string } {
   const raw = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
   const [slot] = sanitizeSlots([{ day: raw.day, what: raw.what, areas: raw.areas, budget: raw.budget }], today)
   return {
-    day: typeof raw.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.day) ? raw.day : undefined,
+    // 'all' searches every day (Schedule's name search).
+    day: raw.day === 'all' ? '' : typeof raw.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.day) ? raw.day : undefined,
+    q: text(raw.q, 80) || undefined,
     period: typeof raw.period === 'string' && raw.period in PERIODS ? raw.period as AskFilters['period'] : undefined,
     what: slot?.what.length ? slot.what : undefined,
     areas: slot?.areas.length ? slot.areas : undefined,
@@ -31,7 +32,7 @@ function readFilters(value: unknown, today: string): AskFilters {
   }
 }
 
-const hasFilters = (filters: AskFilters): boolean => Boolean(filters.day || filters.period || filters.what || filters.areas || filters.budget)
+const hasFilters = (filters: AskFilters & { q?: string }): boolean => Boolean(filters.day !== undefined || filters.q || filters.period || filters.what || filters.areas || filters.budget)
 
 function parsePrompt(prompt: string, today: string): string {
   const now = new Date()
@@ -95,22 +96,23 @@ export default defineEventHandler(async (event) => {
     return { source: 'rules', route: 'artists', input, groups: [] }
   }
 
-  let slots: Slot[] = []
+  // Keywords answer at once. Gemini 3.8 Flash is often busy or takes 10 s+, so it's only
+  // asked when the keywords found nothing to go on ("something chill by the water").
+  let slots: Slot[] = keywordSlots
   let source: 'ai' | 'rules' = 'rules'
-  if (prompt) {
+  if (vague) {
     const parsed = await askGemini<{ slots?: unknown }>(parsePrompt(prompt, today), started + PARSE_MS)
     slots = sanitizeSlots(parsed?.slots, today)
-    if (slots.length) source = 'ai'
-    else if (vague) {
-      // Neither Gemini nor the rules could read it: say so rather than list random events.
-      return { source, unclear: true, groups: [] }
-    } else slots = keywordSlots
+    if (!slots.length) return { source, unclear: true, groups: [] }
+    source = 'ai'
   }
   slots = applyFilters(slots, filters, today)
 
   const picks = limit || (prompt ? PROMPT_PICKS : FILTER_PICKS)
+  const lookup = buildIndex(data)
+  const pool = filters.q ? matchingText(data.events, filters.q, id => lookup.artistNamesById.get(id)) : data.events
   const groups = slots.map((slot, index) => {
-    const all = selectEvents(data.events, slot)
+    const all = selectEvents(pool, slot)
     return {
       key: `slot-${index}`,
       ...describeSlot(slot, today),
@@ -122,7 +124,7 @@ export default defineEventHandler(async (event) => {
   const shown = groups.reduce((sum, group) => sum + group.items.length, 0)
   // What was asked, never who. Kind 'daytime' because VAMS' ade-search log has no kind for this yet.
   await Promise.race([
-    recordAdeStats(data, { search: { kind: 'daytime', source: 'daytime', query: `ask (${source}): ${prompt || groups.map(group => group.summary).join(' | ')}`.slice(0, 600), resultCount: shown } }),
+    recordAdeStats(data, { search: { kind: 'daytime', source: 'daytime', query: `ask (${source}): ${prompt || [filters.q && `"${filters.q}"`, ...groups.map(group => group.summary)].filter(Boolean).join(' | ')}`.slice(0, 600), resultCount: shown } }),
     new Promise(resolve => setTimeout(resolve, 1_200)),
   ])
 

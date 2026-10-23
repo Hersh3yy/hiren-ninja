@@ -1,6 +1,15 @@
 <template>
   <section class="space-y-4" aria-label="Schedule">
-    <p class="text-sm text-content-muted">Pick a day, then narrow it down. The list updates as you tap.</p>
+    <p class="text-sm text-content-muted">Pick a day, then narrow it down, or search by name. The list updates as you go.</p>
+
+    <MoleculesFormField
+      id="ade-schedule-search"
+      v-model="filters.q"
+      label="Search by artist, venue or event"
+      placeholder="e.g. Ketelhuis, Djrum, Demopitches"
+      autocomplete="off"
+      @update:model-value="typed"
+    />
 
     <div class="space-y-3">
       <MoleculesChipGroup :model-value="filters.day" label="Day" :options="days" @update:model-value="pickDay" />
@@ -40,10 +49,25 @@ const { filters, isLoading, error, result, run } = useAdeAsk({ limit: 120, sourc
 const days = ref([])
 const group = computed(() => result.value?.groups?.[0] ?? null)
 
+// Whether the visitor picked a day themselves; a name search otherwise covers all days.
+let dayPicked = false
+
 function pickDay(value) {
   // There is always a day; tapping the picked one again keeps it.
   filters.day = value || filters.day
+  dayPicked = true
   picked('day', filters.day)
+}
+
+let typing = null
+function typed(value) {
+  if (!dayPicked) filters.day = value.trim() ? 'all' : days.value[0]?.value ?? ''
+  clearTimeout(typing)
+  // Search once typing pauses; the list itself is the autocomplete.
+  typing = setTimeout(() => {
+    if (value.trim().length >= 3) track('ade-schedule-filter', { group: 'name-search' })
+    run()
+  }, 300)
 }
 
 function picked(name, value) {

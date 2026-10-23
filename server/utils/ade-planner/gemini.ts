@@ -4,14 +4,23 @@
 
 export const isGeminiConfigured = (): boolean => Boolean(useRuntimeConfig().geminiApiKey)
 
+// After a timeout or a busy answer, skip Gemini for a while (per server instance), so the
+// next visitors don't each wait for it to fail too.
+const PAUSE_MS = 2 * 60_000
+let pausedUntil = 0
+const pause = (): void => { pausedUntil = Date.now() + PAUSE_MS }
+
 /** Ask for JSON and parse it; one retry on a busy model if the deadline allows. */
 export async function askGemini<T>(prompt: string, deadline: number): Promise<T | null> {
   const { geminiApiKey, geminiModel } = useRuntimeConfig()
-  if (!geminiApiKey) return null
+  if (!geminiApiKey || Date.now() < pausedUntil) return null
 
   for (let attempt = 0; attempt < 2; attempt++) {
     const left = deadline - Date.now()
-    if (left < 1_500) return null
+    if (left < 1_500) {
+      pause()
+      return null
+    }
     try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`, {
         method: 'POST',
@@ -23,7 +32,10 @@ export async function askGemini<T>(prompt: string, deadline: number): Promise<T 
         }),
         signal: AbortSignal.timeout(left),
       })
-      if (response.status === 503 || response.status === 429) continue
+      if (response.status === 503 || response.status === 429) {
+        pause()
+        continue
+      }
       if (!response.ok) {
         console.warn(`[ade-planner] Gemini ${response.status}`)
         return null
@@ -33,6 +45,7 @@ export async function askGemini<T>(prompt: string, deadline: number): Promise<T 
       return JSON.parse(text) as T
     } catch (error) {
       console.warn('[ade-planner] Gemini failed:', (error as Error).message)
+      if ((error as Error).name === 'TimeoutError') pause()
       return null
     }
   }

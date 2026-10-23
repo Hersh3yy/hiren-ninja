@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFilters, heuristicSlots, sanitizeSlots, selectEvents, startMinutes, understoodNothing, type Slot } from '../server/utils/ade-planner/shortlist'
+import { applyFilters, heuristicSlots, matchingText, sanitizeSlots, selectEvents, startMinutes, understoodNothing, type Slot } from '../server/utils/ade-planner/shortlist'
 import type { AdeEvent } from '../server/types/ade-planner'
 
 const ADE_DAYS = ['2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25']
@@ -154,5 +154,24 @@ describe('areaFromAddress', () => {
     expect(areaFromAddress('WestWeelde - Lab Village Klönneplein 4-6, Amsterdam')).toBe('West')
     expect(areaFromAddress('Gashouder Klönneplein 1, Amsterdam')).toBe('West')
     expect(areaFromAddress('Somewhere 1, Amsterdam')).toBeNull()
+  })
+})
+
+describe('name search', () => {
+  const list = [
+    event({ id: 'a', title: 'Mentor Lab', venue: 'Het Ketelhuis', lineup: ['1'] }),
+    event({ id: 'b', title: 'Warehouse', venue: 'NDSM', lineup: ['2'], startsAt: '2026-10-24T22:00:00+02:00', endsAt: '2026-10-25T05:00:00+02:00' }),
+  ]
+  const names = (id: string) => ({ 1: 'Djrum', 2: 'Adam Beyer' } as Record<string, string>)[id]
+
+  it('matches title, venue and lineup names, accents and case ignored', () => {
+    expect(matchingText(list, 'ketelhuis', names).map(e => e.id)).toEqual(['a'])
+    expect(matchingText(list, 'adam beyer', names).map(e => e.id)).toEqual(['b'])
+    expect(matchingText(list, '', names)).toHaveLength(2)
+  })
+
+  it('searches every day when the day is empty', () => {
+    expect(selectEvents(list, slot({ day: '' }), before).map(e => e.id).sort()).toEqual(['a', 'b'])
+    expect(applyFilters([], { day: '' }, TODAY)[0].day).toBe('')
   })
 })
