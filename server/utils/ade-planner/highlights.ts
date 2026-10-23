@@ -45,7 +45,10 @@ export function whatsLeft(data: AdeData, day: string, budget: LeftBudget, now: D
     day,
     total: ranked.length,
     counts,
-    events: withLineupNames(data, kept.map(({ event }) => event)).map(event => ({ ...event, score: scores.get(event.id) ?? 0 })),
+    // withLineupNames sorts by start time; put the most wanted back on top.
+    events: withLineupNames(data, kept.map(({ event }) => event))
+      .map(event => ({ ...event, score: scores.get(event.id) ?? 0 }))
+      .sort((a, b) => b.score - a.score || a.startsAt.localeCompare(b.startsAt)),
   }
 }
 

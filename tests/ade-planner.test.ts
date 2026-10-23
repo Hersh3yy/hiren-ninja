@@ -489,7 +489,7 @@ describe("What's left", () => {
     venues: [],
     events: [
       { ...base, id: 'sold', title: 'Sold', ticketStatus: 'sold out', soldOut: true },
-      { ...base, id: 'cheap', title: 'Cheap', ticketStatus: 'available', priceFrom: 15 },
+      { ...base, id: 'cheap', title: 'Cheap', ticketStatus: 'available', priceFrom: 15, startsAt: '2026-10-24T20:00:00+02:00' },
       { ...base, id: 'hot', title: 'Hot', ticketStatus: 'available', priceFrom: 45, favorites: 5, lineup: ['a1'] },
       { ...base, id: 'free', title: 'Free', ticketStatus: 'free' },
       { ...base, id: 'talk', title: 'Talk', ticketStatus: 'free', isParty: false },
