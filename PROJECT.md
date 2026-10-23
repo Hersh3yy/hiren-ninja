@@ -138,6 +138,18 @@ flowchart LR
 
 ## Diary
 
+### 2026-10-23 — daytime dropped (with learnings), What's left, map that works
+- **Daytime is gone** (talks, ADE Lab, ADE Pro): search, panels, topic chips, Lab/Pro SEO pages (301 to /ade-planner); Ask, Schedule and the map list parties only.
+- **Why, in numbers (13–21 Oct counters):** the daytime tab was opened 45 times, but only 7 of 335 searches were daytime searches (2%); 4 daytime events were opened against 301 parties, 4 ticket clicks against 111; 0 "show more" in the Lab or Pro sections; topic chips used 4 times.
+- **Learnings:**
+  1. Curiosity isn't use: a tab gets clicks; only actions (opens, ticket clicks) show intent. Look at actions before investing.
+  2. Pass holders plan in ADE's own app; our audience is fans planning nights. The core job (playlist → parties) carried everything.
+  3. Daytime cost the most for the least: three rounds of topic classification (~300 events), a venue timetable, Lab/Pro sections, its own SEO pages.
+  4. Next time: ship one cheap entry point (a chip or a link), wait a few days of counters, then build. The per-feature counters (`ade-usage`) are what made this call easy.
+- **What's left** (first tab until 26 Oct): one remaining day at a time, parties with tickets left (on sale or free), Tickets left / Under €50 / Under €25 / Free with counts, ranked by stars, ticket clicks, opens and playlist hits on the lineup (`server/utils/ade-planner/highlights.ts`, `/api/ade-planner/left`). Needs a snapshot exported after VAMS e0011f3+ (`ade:export` now includes the counters); until then it ranks by lineup size.
+- **Map audit and fix:** pins were 6–14 px circles (too small to tap) with a text-only popup; location could be shared once and then nothing could move it; every update refit the map. Now 40 px pins with party counts, tap a venue to list its parties under the map, "Search this area" after you move the map, "Near me"/"Update my location" always there, zoom only on area changes, fling speed capped.
+- Tests 64 (ask tests updated to parties-only). Build green. DB unreachable from the new network (217.122.225.156 not yet a trusted source), so no resync or counter export this sitting.
+
 ### 2026-10-21 — ADE day 1: failed searches fixed, map, mobile, IG carousel
 - 8 of 10 searches this morning failed. Likely cause: cold Netlify starts first fetched the whole program from VAMS (3 calls, up to 4 s each) near the 10 s function limit; a live match took 7.3 s. The site now reads the bundled snapshot first; failures are counted with their reason (`ade-search-failed:playlist-504`).
 - "Near me" became **Map**: every event with a place, one marker per venue, On now & next 3h / Tonight / Today, within 1/2/5 km (2 km default) or anywhere, list by distance; location stays in the browser.
