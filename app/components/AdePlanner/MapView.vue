@@ -6,46 +6,55 @@
     </div>
 
     <div class="space-y-3">
-      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="When">
-        <span class="w-14 text-xs uppercase tracking-wide text-content-muted">When</span>
-        <AtomsChip v-for="option in WINDOWS" :key="option.value" size="sm" :text="option.label" :pressed="when === option.value" @click="when = option.value" />
+      <MoleculesChipGroup :model-value="when" label="When" :options="WINDOWS" @update:model-value="value => when = value || when" />
+      <MoleculesChipGroup :model-value="String(radius)" label="Within" :options="RADII" @update:model-value="value => radius = Number(value || radius)" />
+      <div class="flex flex-wrap items-center gap-2">
+        <AtomsButton size="sm" variant="outline" :text="centreMode === 'you' ? 'Update my location' : 'Near me'" :loading="locating" @click="locate" />
+        <span class="text-xs text-content-muted">{{ centreText }}</span>
       </div>
-      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Distance from you">
-        <span class="w-14 text-xs uppercase tracking-wide text-content-muted">Within</span>
-        <AtomsChip v-for="option in RADII" :key="option.value" size="sm" :text="option.label" :pressed="radius === option.value" @click="radius = option.value" />
-        <AtomsButton v-if="!here" size="sm" variant="outline" text="Use my location" :loading="locating" @click="locate" />
-      </div>
-      <p class="text-xs text-content-muted">
-        {{ here ? (here.preview ? 'Preview from Centraal Station.' : 'Around you.') : 'Share your location to see what is close; until then the map centres on Centraal Station.' }}
-        {{ !duringAde ? `ADE runs 21–25 October; showing ${previewLabel}.` : '' }}
-        Your location stays on your phone.
-      </p>
+      <p v-if="!duringAde" class="text-xs text-content-muted">ADE runs 21–25 October; showing {{ previewLabel }}.</p>
       <MoleculesStatusAlert :message="error" type="error" />
     </div>
 
-    <div ref="mapEl" class="h-[360px] w-full overflow-hidden rounded-lg border border-border-subtle bg-ink sm:h-[460px]" role="region" aria-label="Map of ADE events" />
+    <div class="relative">
+      <div ref="mapEl" class="h-[380px] w-full overflow-hidden rounded-lg border border-border-subtle bg-ink sm:h-[460px]" role="region" aria-label="Map of ADE parties: tap a venue to see what's on there" />
+      <!-- After you move the map: look around that spot instead (like a maps app). -->
+      <AtomsButton
+        v-if="moved"
+        size="sm"
+        text="Search this area"
+        class="absolute left-1/2 top-3 z-[500] -translate-x-1/2 shadow-lg"
+        @click="searchArea"
+      />
+    </div>
     <p class="text-xs text-content-muted">
-      <span class="inline-block size-2.5 rounded-full bg-accent align-middle" /> parties ·
-      <span class="inline-block size-2.5 rounded-full align-middle" style="background:#6c9cf0" /> daytime ·
-      {{ shown.length }} {{ shown.length === 1 ? 'event' : 'events' }}{{ radius ? ` within ${radius} km` : '' }}
+      Tap a dot to see that venue's parties. The number is how many.
+      {{ shown.length }} {{ shown.length === 1 ? 'party' : 'parties' }}{{ radius ? ` within ${radius} km` : '' }} {{ windowLabel.toLowerCase() }}.
     </p>
 
     <AtomsLoader v-if="loading" type="spinner" size="md" color="accent" text="Loading the map" />
-    <p v-else-if="!shown.length" class="text-sm text-content-muted">Nothing on {{ radius ? `within ${radius} km` : '' }} {{ windowLabel.toLowerCase() }}. Try a bigger distance.</p>
-    <AdePlannerDayGroups v-else :days="listDays" :show-day-headings="false" />
+    <template v-else>
+      <div v-if="selected" ref="listTop" class="flex flex-wrap items-baseline justify-between gap-2 border-t border-border-subtle pt-3">
+        <p class="text-sm"><span class="font-bold text-accent">{{ selected.venue }}</span> <span class="text-content-muted">· {{ selectedItems.length }} {{ selectedItems.length === 1 ? 'party' : 'parties' }} · {{ selected.trip }}</span></p>
+        <AtomsButton variant="link" text="Show all nearby" @click="selectVenue(null)" />
+      </div>
+      <p v-if="!listItems.length" class="text-sm text-content-muted">Nothing on {{ radius ? `within ${radius} km` : '' }} {{ windowLabel.toLowerCase() }}. Try a bigger distance or another time.</p>
+      <AdePlannerDayGroups v-else :days="listDays" :show-day-headings="false" />
+    </template>
   </section>
 </template>
 
 <script setup>
-// Every event on a map, filtered by time and by distance from you (2 km by default).
-// Leaflet loads only when the map opens. Distances are worked out here, in the
-// browser: the location is never sent anywhere.
+// Every party on a map, filtered by time and distance (2 km by default) from Centraal,
+// from you, or from wherever you moved the map. Tap a venue to list its parties.
+// Leaflet loads only when the map opens. Distances are worked out here, in the browser:
+// the location is never sent anywhere.
 import { describeTrip, distanceKm, travel } from '../../../server/utils/ade-planner/travel'
 import { track } from '~/utils/track'
 
 defineEmits(['close'])
 
-const CENTRAAL = { lat: 52.3791, lng: 4.9003, preview: true }
+const CENTRAAL = { lat: 52.3791, lng: 4.9003 }
 const ADE_START = new Date('2026-10-21T00:00:00+02:00')
 const ADE_END = new Date('2026-10-26T08:00:00+01:00')
 const HOUR = 3_600_000
@@ -61,20 +70,31 @@ const WINDOWS = [
   { value: 'today', label: 'Today' },
 ]
 const RADII = [
-  { value: 1, label: '1 km' },
-  { value: 2, label: '2 km' },
-  { value: 5, label: '5 km' },
-  { value: 0, label: 'Anywhere' },
+  { value: '1', label: '1 km' },
+  { value: '2', label: '2 km' },
+  { value: '5', label: '5 km' },
+  { value: '0', label: 'Anywhere' },
 ]
 
 const when = ref('soon')
 const radius = ref(2)
-const here = ref(null)
+// 'centraal' (default), 'you' (shared location) or 'area' (where you moved the map)
+const centreMode = ref('centraal')
+const centre = ref({ ...CENTRAAL })
 const locating = ref(false)
 const loading = ref(false)
 const error = ref('')
 const events = ref([])
+const selectedKey = ref('')
+const moved = ref(false)
 const mapEl = ref(null)
+const listTop = ref(null)
+
+const centreText = computed(() => ({
+  centraal: 'Distances from Centraal Station. Your location stays on your phone.',
+  you: 'Around you.',
+  area: 'Around the spot you picked on the map.',
+}[centreMode.value]))
 
 const amsterdamDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' })
 const amsterdamHour = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hourCycle: 'h23' })
@@ -92,17 +112,30 @@ function windowFor(value) {
 }
 const windowLabel = computed(() => WINDOWS.find(option => option.value === when.value)?.label ?? '')
 
-const centre = computed(() => here.value ?? CENTRAAL)
+const venueKey = event => `${event.place.lat},${event.place.lng}`
+
 const withDistance = computed(() => events.value
   .map(event => ({ event, km: distanceKm(centre.value, event.place), trip: travel(centre.value, event.place) }))
   .sort((a, b) => a.km - b.km || a.event.startsAt.localeCompare(b.event.startsAt)))
 const shown = computed(() => withDistance.value.filter(item => !radius.value || item.km <= radius.value))
 
-const clock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit' })
+const venues = computed(() => {
+  const byVenue = new Map()
+  for (const item of shown.value) {
+    const key = venueKey(item.event)
+    const venue = byVenue.get(key) ?? { key, venue: item.event.venue || 'Venue', place: item.event.place, items: [], trip: describeTrip(item.trip) }
+    venue.items.push(item)
+    byVenue.set(key, venue)
+  }
+  return byVenue
+})
+const selected = computed(() => venues.value.get(selectedKey.value) ?? null)
+const selectedItems = computed(() => selected.value?.items ?? [])
+const listItems = computed(() => (selected.value ? selectedItems.value : shown.value).slice(0, 60))
 const listDays = computed(() => [{
   key: 'map',
   label: '',
-  items: shown.value.slice(0, 60).map(({ event, trip }) => ({ event, artists: [], note: describeTrip(trip) }))
+  items: listItems.value.map(({ event, trip }) => ({ event, artists: [], note: selected.value ? '' : `${event.venue} · ${describeTrip(trip)}` }))
 }])
 
 async function load() {
@@ -120,90 +153,142 @@ async function load() {
 
 function locate() {
   if (!navigator.geolocation) {
-    error.value = 'Your browser has no location.'
+    error.value = 'Your browser has no location. Move the map to your spot and tap "Search this area".'
     return
   }
   locating.value = true
+  error.value = ''
   navigator.geolocation.getCurrentPosition(
     (result) => {
-      here.value = { lat: result.coords.latitude, lng: result.coords.longitude }
+      centre.value = { lat: result.coords.latitude, lng: result.coords.longitude }
+      centreMode.value = 'you'
       locating.value = false
+      selectedKey.value = ''
+      fitArea()
       track('ade-map-locate', { result: 'shared' })
     },
     () => {
-      error.value = 'Location was not shared. Allow it for this site, or use the map from Centraal Station.'
+      // Common in Instagram's and TikTok's in-app browsers.
+      error.value = 'Location was not shared. Allow it for this site, or move the map to where you are and tap "Search this area".'
       locating.value = false
       track('ade-map-locate', { result: 'denied' })
     },
-    { enableHighAccuracy: false, timeout: 10_000, maximumAge: 120_000 }
+    { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 }
   )
+}
+
+function searchArea() {
+  if (!map) return
+  const point = map.getCenter()
+  centre.value = { lat: point.lat, lng: point.lng }
+  centreMode.value = 'area'
+  moved.value = false
+  selectedKey.value = ''
+  drawArea()
+  track('ade-map-area', { result: String(radius.value) })
+}
+
+function selectVenue(key) {
+  selectedKey.value = key ?? ''
+  if (key) {
+    track('ade-map-venue', { result: String(selectedItems.value.length) })
+    nextTick(() => listTop.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+  drawMarkers()
 }
 
 let L = null
 let map = null
-let layer = null
+let markerLayer = null
+let areaLayer = null
+// Our own fitBounds also fires move events; only a person moving the map counts.
+let programmatic = false
 
-async function draw() {
-  if (!mapEl.value) return
-  if (!L) {
-    L = (await import('leaflet')).default
-    await import('leaflet/dist/leaflet.css')
-  }
-  if (!map) {
-    map = L.map(mapEl.value, { scrollWheelZoom: false })
-    // OpenStreetMap's own tiles (no key), darkened with a CSS filter to match the site.
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
-      className: 'ade-map-tiles'
-    }).addTo(map)
-  }
-  layer?.remove()
-  layer = L.layerGroup().addTo(map)
+const escape = text => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 
-  // One marker per venue, listing what's on there.
-  const byVenue = new Map()
-  for (const item of shown.value) {
-    const key = `${item.event.place.lat},${item.event.place.lng}`
-    byVenue.set(key, [...(byVenue.get(key) ?? []), item.event])
-  }
-  const escape = text => String(text).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-  for (const venueEvents of byVenue.values()) {
-    const { place, venue } = venueEvents[0]
-    const party = venueEvents.some(event => event.isParty !== false)
-    L.circleMarker([place.lat, place.lng], {
-      radius: Math.min(14, 6 + venueEvents.length),
-      color: '#0d0d0d',
-      weight: 2,
-      fillColor: party ? '#ffff07' : '#6c9cf0',
-      fillOpacity: 0.9
-    }).bindPopup(`<strong>${escape(venue || 'Venue')}</strong><br>${venueEvents.slice(0, 8)
-      .map(event => `${clock.format(new Date(event.startsAt))} ${escape(event.title)}`).join('<br>')}${venueEvents.length > 8 ? `<br>+${venueEvents.length - 8} more` : ''}`)
-      .addTo(layer)
-  }
-  if (here.value && !here.value.preview) {
-    L.circleMarker([here.value.lat, here.value.lng], { radius: 7, color: '#ffffff', weight: 3, fillColor: '#ff7a6b', fillOpacity: 1 }).bindTooltip('You').addTo(layer)
-  }
-  if (radius.value) {
-    L.circle([centre.value.lat, centre.value.lng], { radius: radius.value * 1000, color: '#ffff07', weight: 1, fillOpacity: 0.04, dashArray: '4 6' }).addTo(layer)
-    map.fitBounds(L.latLng(centre.value.lat, centre.value.lng).toBounds(radius.value * 2000), { padding: [8, 8] })
-  } else if (shown.value.length) {
-    map.fitBounds(shown.value.map(item => [item.event.place.lat, item.event.place.lng]), { padding: [24, 24], maxZoom: 15 })
-  } else {
-    map.setView([centre.value.lat, centre.value.lng], 13)
+function drawMarkers() {
+  if (!map) return
+  markerLayer?.remove()
+  markerLayer = L.layerGroup().addTo(map)
+  for (const venue of venues.value.values()) {
+    const count = venue.items.length
+    const size = Math.min(30, 18 + count * 2)
+    const active = venue.key === selectedKey.value
+    L.marker([venue.place.lat, venue.place.lng], {
+      // A 40px tap target around a dot that grows with the number of parties.
+      icon: L.divIcon({
+        className: 'ade-pin',
+        html: `<span class="ade-pin__dot${active ? ' is-active' : ''}" style="width:${size}px;height:${size}px">${count > 1 ? count : ''}</span>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      }),
+      title: `${venue.venue}: ${count} ${count === 1 ? 'party' : 'parties'}`,
+      keyboard: true,
+      riseOnHover: true,
+      zIndexOffset: active ? 1000 : count,
+    })
+      .bindTooltip(escape(venue.venue), { direction: 'top', offset: [0, -14] })
+      .on('click', () => selectVenue(venue.key))
+      .addTo(markerLayer)
   }
 }
 
+function drawArea() {
+  if (!map) return
+  areaLayer?.remove()
+  areaLayer = L.layerGroup().addTo(map)
+  if (centreMode.value === 'you') {
+    L.circleMarker([centre.value.lat, centre.value.lng], { radius: 8, color: '#ffffff', weight: 3, fillColor: '#ff7a6b', fillOpacity: 1, interactive: false }).addTo(areaLayer)
+  }
+  if (radius.value) {
+    L.circle([centre.value.lat, centre.value.lng], { radius: radius.value * 1000, color: '#ffff07', weight: 1, fillOpacity: 0.04, dashArray: '4 6', interactive: false }).addTo(areaLayer)
+  }
+  fitArea()
+}
+
+function fitArea() {
+  if (!map) return
+  programmatic = true
+  if (radius.value) map.fitBounds(L.latLng(centre.value.lat, centre.value.lng).toBounds(radius.value * 2000), { padding: [8, 8] })
+  else if (shown.value.length) map.fitBounds(shown.value.map(item => [item.event.place.lat, item.event.place.lng]), { padding: [24, 24], maxZoom: 15 })
+  else map.setView([centre.value.lat, centre.value.lng], 13)
+  setTimeout(() => { programmatic = false }, 400)
+}
+
+async function setup() {
+  if (!mapEl.value) return
+  L = (await import('leaflet')).default
+  await import('leaflet/dist/leaflet.css')
+  map = L.map(mapEl.value, { scrollWheelZoom: false, inertiaMaxSpeed: 1200 })
+  // OpenStreetMap's own tiles (no key), darkened with a CSS filter to match the site.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+    className: 'ade-map-tiles'
+  }).addTo(map)
+  map.on('movestart', () => {
+    if (!programmatic) moved.value = true
+  })
+  drawArea()
+  drawMarkers()
+}
+
 watch(when, async () => {
+  selectedKey.value = ''
   await load()
   track('ade-map-window', { result: when.value })
 })
-watch([shown, radius, here], draw)
+watch(radius, () => {
+  selectedKey.value = ''
+  drawArea()
+})
+watch(venues, drawMarkers)
+watch(centre, drawArea)
 
 onMounted(async () => {
   track('ade-map-open', { result: duringAde ? 'live' : 'preview' })
   await load()
-  await draw()
+  await setup()
 })
 onBeforeUnmount(() => {
   map?.remove()

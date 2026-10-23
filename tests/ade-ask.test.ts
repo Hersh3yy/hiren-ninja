@@ -101,6 +101,7 @@ describe('selectEvents', () => {
     event({ id: 'after-midnight', title: 'Late', startsAt: '2026-10-23T01:00:00+02:00', endsAt: '2026-10-23T05:00:00+02:00' }),
     event({ id: 'talk', title: 'Talk', isParty: false, kinds: ['interviews'], startsAt: '2026-10-22T16:00:00+02:00', endsAt: '2026-10-22T17:00:00+02:00' }),
     event({ id: 'centre', title: 'Centre talk', area: 'Centre', isParty: false, kinds: ['talks'], startsAt: '2026-10-22T16:00:00+02:00', endsAt: '2026-10-22T17:00:00+02:00' }),
+    event({ id: 'afternoon', title: 'Afternoon party', area: 'Centre', startsAt: '2026-10-22T15:00:00+02:00', endsAt: '2026-10-22T19:00:00+02:00' }),
     event({ id: 'sold', title: 'Sold', soldOut: true }),
     event({ id: 'allday', title: 'Installation', isParty: false, durationMinutes: 1020, startsAt: '2026-10-22T10:00:00+02:00', endsAt: '2026-10-22T23:00:00+02:00' }),
     event({ id: 'tomorrow', title: 'Tomorrow', startsAt: '2026-10-23T20:00:00+02:00', endsAt: '2026-10-23T23:00:00+02:00' }),
@@ -113,15 +114,16 @@ describe('selectEvents', () => {
     expect(ids(slot({ from: 20 * 60 }))).not.toContain('tomorrow')
   })
 
-  it('filters by kind and area, and drops sold-out and all-day events', () => {
-    expect(ids(slot({ what: ['talks'], areas: ['west'] }))).toEqual(['talk'])
-    expect(ids(slot({ what: ['talks'], areas: ['centre'] }))).toEqual(['centre'])
+  it('only lists parties (daytime dropped 23 Oct), by area, without sold-out and all-day events', () => {
+    expect(ids(slot({}))).not.toContain('talk')
+    expect(ids(slot({ what: ['talks'] }))).not.toContain('talk')
+    expect(ids(slot({ areas: ['centre'] }))).toEqual(['afternoon'])
     expect(ids(slot({}))).not.toContain('sold')
     expect(ids(slot({}))).not.toContain('allday')
   })
 
   it('applies the start window', () => {
-    expect(ids(slot({ from: 9 * 60, to: 18 * 60 }))).toEqual(expect.arrayContaining(['talk', 'centre']))
+    expect(ids(slot({ from: 9 * 60, to: 18 * 60 }))).toEqual(['afternoon'])
     expect(ids(slot({ from: 9 * 60, to: 18 * 60 }))).not.toContain('party')
   })
 
@@ -134,17 +136,9 @@ describe('selectEvents', () => {
     expect(selectEvents(list, slot({ taste: 'footwork' }), before)).toHaveLength(2)
   })
 
-  it('finds ADE Lab events', () => {
-    const list = [
-      event({ id: 'lab', title: 'Gear Test Lab', isParty: false, tags: ['ADE Lab'], startsAt: '2026-10-22T12:00:00+02:00', endsAt: '2026-10-22T13:00:00+02:00' }),
-      event({ id: 'party', title: 'Party' }),
-    ]
-    expect(selectEvents(list, slot({ what: ['lab'] }), before).map(e => e.id)).toEqual(['lab'])
-  })
-
   it('leaves out events that are over', () => {
-    const late = new Date('2026-10-22T17:30:00+02:00')
-    expect(selectEvents(events, slot({ what: ['talks'] }), late)).toEqual([])
+    const late = new Date('2026-10-22T19:30:00+02:00')
+    expect(selectEvents(events, slot({ areas: ['centre'] }), late)).toEqual([])
   })
 })
 

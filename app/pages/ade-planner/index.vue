@@ -36,15 +36,15 @@ const FAQ = [
   { q: 'When is ADE 2026?', a: 'Amsterdam Dance Event 2026 runs Wednesday 21 to Sunday 25 October: about 1,800 parties, concerts, talks and sessions across Amsterdam.' },
   { q: 'Which of my artists play ADE?', a: 'Paste a Spotify, Apple Music, YouTube Music, Tidal or Deezer playlist (or type names) in Your artists above and the planner lists every show of your artists, by day.' },
   { q: 'Are there free ADE parties?', a: 'Yes, around 70 parties and concerts are free, and many more have tickets under €25. See Free & cheap parties, or pick Free in Schedule above.' },
-  { q: 'What is the difference between ADE Pro and ADE Lab?', a: 'ADE Pro is the conference, mostly in the city centre (Felix Meritis, Andaz, Rosewood), and needs a Pro pass. ADE Lab is for new artists and producers, around Westergas in Westerpark, and is often free.' },
-  { q: 'Is there an ADE timetable per day?', a: 'Yes: every day has its own page with all parties and concerts, from the afternoon until the next morning, and the daytime tab shows talks and sessions as a timetable.' },
+  { q: 'Are there still tickets for ADE parties?', a: 'Yes: open What\'s left for the parties that still have tickets on Friday, Saturday and Sunday, under €50, under €25 or free.' },
+  { q: 'Is there an ADE timetable per day?', a: 'Yes: every day has its own page with all parties and concerts, from the afternoon until the next morning.' },
   { q: 'Can I add ADE events to my calendar?', a: 'Save events to My plan, then export them as a calendar file (.ics), share your plan as a link, or download it as a story image.' },
 ]
 
 useSeoMeta({
   title: 'ADE 2026 Timetable & Planner: Find Your Artists at Amsterdam Dance Event',
   ogTitle: 'ADE 2026 Timetable & Planner: Find Your Artists at Amsterdam Dance Event',
-  description: 'The ADE 2026 timetable, searchable: paste a playlist to see which of your artists play Amsterdam Dance Event, when and where. Free parties, ADE Lab, ADE Pro, by day.',
+  description: 'The ADE 2026 timetable, searchable: paste a playlist to see which of your artists play Amsterdam Dance Event, when and where. Free parties, tickets left, by day.',
   ogDescription: 'Paste a playlist. See which of your artists play ADE 2026, when and where.',
   ogImage: 'https://hiren.ninja/og/og-ade.png',
   ogImageAlt: 'ADE Planner: paste a playlist, see which of your artists play ADE 2026',

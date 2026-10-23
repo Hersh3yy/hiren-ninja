@@ -6,8 +6,6 @@
         <AtomsButton variant="link" :to="`/ade-planner/${day.slug}`" :text="day.label" />
       </li>
       <li><AtomsButton variant="link" to="/ade-planner/free-parties" text="Free & cheap parties" /></li>
-      <li><AtomsButton variant="link" to="/ade-planner/lab" text="ADE Lab" /></li>
-      <li><AtomsButton variant="link" to="/ade-planner/pro" text="ADE Pro" /></li>
       <li v-if="showPlanner"><AtomsButton variant="link" to="/ade-planner" text="Plan from your playlist" /></li>
     </ul>
     <ul class="flex flex-wrap gap-x-4 gap-y-1 text-sm" aria-label="Parties by genre">

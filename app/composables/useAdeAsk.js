@@ -9,7 +9,7 @@ const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numer
 const weekday = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, weekday: 'short', day: 'numeric' })
 
 export const PERIOD_OPTIONS = [
-  { value: 'daytime', label: 'Daytime' },
+  { value: 'daytime', label: 'Afternoon' },
   { value: 'evening', label: 'Evening' },
   { value: 'late', label: 'Late night' }
 ]
@@ -25,21 +25,18 @@ export const AREA_OPTIONS = [
 ]
 
 export const WHAT_OPTIONS = [
-  { value: 'parties', label: 'Parties' },
-  { value: 'lab', label: 'ADE Lab' },
-  { value: 'talks', label: 'Talks & interviews' },
-  { value: 'demos', label: 'Demos & gear' },
-  { value: 'listening', label: 'Listening' },
-  { value: 'networking', label: 'Networking' }
+  // Parties only since 23 Oct: the daytime programme (talks, Lab, demos) is over.
+  { value: 'parties', label: 'Parties' }
 ]
 
 export const BUDGET_OPTIONS = [
   { value: 'free', label: 'Free' },
-  { value: '25', label: 'Under €25' }
+  { value: '25', label: 'Under €25' },
+  { value: '50', label: 'Under €50' }
 ]
 
 export const EXAMPLES = [
-  'ADE Lab in West tomorrow',
+  'House in West tomorrow',
   'Techno tonight from 10pm, something free',
   'Silva Bumpa'
 ]

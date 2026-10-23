@@ -1,7 +1,7 @@
 import { loadAdeData } from '../../../../utils/ade-planner/data'
 import { type ListingKind, listing } from '../../../../utils/ade-planner/seo'
 
-const KINDS: ListingKind[] = ['genre', 'venue', 'lab', 'pro']
+const KINDS: ListingKind[] = ['genre', 'venue']
 
 /** Data for the genre, venue, ADE Lab and ADE Pro pages: /listing/genre?slug=techno */
 export default defineEventHandler(async (event) => {

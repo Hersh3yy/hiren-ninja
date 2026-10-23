@@ -63,12 +63,6 @@
       @use-suggestion="useSuggestion"
     />
 
-    <p v-if="daytimeWithYourArtists" class="text-sm text-content-muted">
-      Your artists also have {{ daytimeWithYourArtists }} daytime {{ daytimeWithYourArtists === 1 ? 'event' : 'events' }}
-      (talks, signings, showcases).
-      <AtomsButton variant="link" text="See them in Daytime & networking" @click="$emit('show-daytime', daytimeQuery)" />
-    </p>
-
     <AdePlannerSuggestions
       v-if="result"
       :suggestions="suggestions"
@@ -85,18 +79,16 @@ import { EXAMPLE_INPUT, useAdePlanner } from '~/composables/useAdePlanner.js'
 import { track } from '~/utils/track'
 
 const props = defineProps({
-  // Artist names handed over from the daytime tab: fill in and search right away.
+  // Artist names handed over from Ask: fill in and search right away.
   prefill: { type: Array, default: () => [] }
 })
 
-defineEmits(['show-daytime'])
 
 const EXAMPLE = EXAMPLE_INPUT
 
 const {
   input, isLoading, error, playlist, result, days, sound, genreFilter, budget, budgetCounts,
-  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run, matchedEventCount,
-  daytimeWithYourArtists, daytimeQuery
+  suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run, matchedEventCount
 } = useAdePlanner()
 
 const matchedEventIds = computed(() => (result.value?.matches ?? []).flatMap(match => match.events.map(event => event.id)))

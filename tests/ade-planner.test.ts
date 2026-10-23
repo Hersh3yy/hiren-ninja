@@ -9,6 +9,7 @@ import { priceLabel, withinBudget } from '../server/utils/ade-planner/price'
 import { usageKey } from '../app/utils/track.js'
 import { vibeLabel } from '../server/utils/ade-planner/vibe'
 import { planningDate, slugify } from '../server/utils/ade-planner/seo'
+import { whatsLeft } from '../server/utils/ade-planner/highlights'
 import { describeTrip, travel } from '../server/utils/ade-planner/travel'
 import { withVenues } from '../server/utils/ade-planner/venues'
 import { eventsNearby } from '../server/utils/ade-planner/nearby'
@@ -477,5 +478,31 @@ describe('ADE SEO pages', () => {
   it('puts after-midnight parties on the night before', () => {
     expect(planningDate({ startsAt: '2026-10-24T02:00:00+02:00', isParty: true })).toBe('2026-10-23')
     expect(planningDate({ startsAt: '2026-10-24T02:00:00+02:00', isParty: false })).toBe('2026-10-24')
+  })
+})
+
+describe("What's left", () => {
+  const base = { lineup: [], isParty: true, format: 'session', startsAt: '2026-10-24T23:00:00+02:00', endsAt: '2026-10-25T05:00:00+02:00' }
+  const data = {
+    source: 'snapshot',
+    artists: [{ id: 'a1', name: 'A', eventIds: [], hits: 30 }],
+    venues: [],
+    events: [
+      { ...base, id: 'sold', title: 'Sold', ticketStatus: 'sold out', soldOut: true },
+      { ...base, id: 'cheap', title: 'Cheap', ticketStatus: 'available', priceFrom: 15 },
+      { ...base, id: 'hot', title: 'Hot', ticketStatus: 'available', priceFrom: 45, favorites: 5, lineup: ['a1'] },
+      { ...base, id: 'free', title: 'Free', ticketStatus: 'free' },
+      { ...base, id: 'talk', title: 'Talk', ticketStatus: 'free', isParty: false },
+      { ...base, id: 'unknown', title: 'Door', ticketStatus: 'unknown' },
+    ],
+  }
+  it('keeps parties with tickets left, most wanted first, and counts each price', () => {
+    const left = whatsLeft(data, '2026-10-24', '', new Date('2026-10-24T12:00:00+02:00'))
+    expect(left.events.map(event => event.id)).toEqual(['hot', 'cheap', 'free'])
+    expect(left.counts).toEqual({ any: 3, 50: 3, 25: 2, free: 1 })
+    expect(whatsLeft(data, '2026-10-24', '25', new Date('2026-10-24T12:00:00+02:00')).events.map(event => event.id)).toEqual(['cheap', 'free'])
+  })
+  it('drops parties that are already over', () => {
+    expect(whatsLeft(data, '2026-10-24', '', new Date('2026-10-25T06:00:00+02:00')).total).toBe(0)
   })
 })

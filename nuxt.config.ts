@@ -98,6 +98,9 @@ export default defineNuxtConfig({
     '/ade-planner/*': { isr: 3600 },
     '/ade-planner/artist/**': { isr: 3600 },
     '/ade-planner/genre/**': { isr: 3600 },
+    // The daytime programme (ADE Lab, ADE Pro) was dropped on 23 Oct; keep old links working.
+    '/ade-planner/lab': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/pro': { redirect: { to: '/ade-planner', statusCode: 301 } },
     '/ade-planner/venue/**': { isr: 3600 },
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },

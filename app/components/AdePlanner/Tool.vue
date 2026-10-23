@@ -45,7 +45,11 @@
 
     <!-- Always rendered: its intro and form are what search engines read for "ADE playlist". -->
     <div v-show="mode === 'artists'" id="ade-panel-artists" role="tabpanel" aria-labelledby="ade-tab-artists">
-      <AdePlannerPartiesPanel :prefill="partiesPrefill" @show-daytime="showDaytime" />
+      <AdePlannerPartiesPanel :prefill="partiesPrefill" />
+    </div>
+
+    <div v-if="visited.left" v-show="mode === 'left'" id="ade-panel-left" role="tabpanel" aria-labelledby="ade-tab-left">
+      <AdePlannerLeftPanel />
     </div>
 
     <div v-show="mode === 'ask'" id="ade-panel-ask" role="tabpanel" aria-labelledby="ade-tab-ask">
@@ -54,19 +58,6 @@
 
     <div v-if="visited.schedule" v-show="mode === 'schedule'" id="ade-panel-schedule" role="tabpanel" aria-labelledby="ade-tab-schedule" class="space-y-6">
       <AdePlannerSchedulePanel />
-      <!-- The older daytime search (by speaker, label or topic), kept out of the way. -->
-      <div class="border-t border-border-subtle pt-4">
-        <AtomsButton
-          variant="link-muted"
-          :text="daytimeOpen ? 'Hide search by speaker or topic' : 'Search talks by speaker, label or topic'"
-          :aria-expanded="daytimeOpen"
-          aria-controls="ade-daytime-search"
-          @click="daytimeOpen = !daytimeOpen"
-        />
-        <div v-if="daytimeOpen" id="ade-daytime-search" class="mt-4">
-          <AdePlannerDaytimePanel :initial-query="daytimeQuery" @show-parties="useArtists" />
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -74,26 +65,27 @@
 <script setup>
 import { useAdeFavorites } from '~/composables/useAdeFavorites.js'
 import { track } from '~/utils/track'
+import { adeSpotlightOn } from '~/utils/adeSpotlight'
 
-// Your artists first: matching your music is what the planner is for.
+// Your artists is what the planner is for; in the last ADE days "What's left" opens first.
+const LEFT_FIRST = adeSpotlightOn()
 const MODES = [
+  ...(LEFT_FIRST ? [{ id: 'left', label: "What's left", shortLabel: 'Left' }] : []),
   { id: 'artists', label: 'Your artists', shortLabel: 'Artists' },
   { id: 'ask', label: 'Ask' },
   { id: 'schedule', label: 'Schedule' }
 ]
-// Old links: ?tab=daytime was the daytime search, now part of Schedule.
-const LEGACY = { daytime: 'schedule', parties: 'artists' }
+// Old links: ?tab=daytime was the daytime search (dropped 23 Oct).
+const LEGACY = { daytime: LEFT_FIRST ? 'left' : 'schedule', parties: 'artists' }
 
 const route = useRoute()
 const router = useRouter()
 const { favorites } = useAdeFavorites()
 
-const initial = MODES.some(item => item.id === route.query.mode) ? route.query.mode : LEGACY[route.query.tab] ?? 'artists'
+const initial = MODES.some(item => item.id === route.query.mode) ? route.query.mode : LEGACY[route.query.tab] ?? MODES[0].id
 const mode = ref(initial)
 // Mount a mode on its first visit, then keep it (and its filters) alive.
 const visited = reactive({ [initial]: true })
-const daytimeOpen = ref(false)
-const daytimeQuery = ref('')
 const planOpen = ref(false)
 const partiesPrefill = ref([])
 const nearOpen = ref(false)
@@ -108,7 +100,7 @@ function selectMode(id) {
   if (mode.value !== id) track('ade-mode', { tab: id })
   mode.value = id
   visited[id] = true
-  router.replace({ query: { ...route.query, tab: undefined, mode: id === 'artists' ? undefined : id } })
+  router.replace({ query: { ...route.query, tab: undefined, mode: id === MODES[0].id ? undefined : id } })
 }
 
 // From Ask (a link or artist names) or the daytime search: run them in Your artists.
@@ -117,9 +109,4 @@ function useArtists(input) {
   selectMode('artists')
 }
 
-function showDaytime(query) {
-  daytimeQuery.value = query
-  daytimeOpen.value = true
-  selectMode('schedule')
-}
 </script>

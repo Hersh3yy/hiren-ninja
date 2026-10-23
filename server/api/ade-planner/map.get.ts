@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
   }
   const data = await loadAdeData()
   const onNow = data.events.filter((item) => {
-    if (!item.place || item.format === 'tba') return false
+    // Parties and concerts only: the daytime programme is over (removed 23 Oct).
+    if (item.isParty === false || !item.place || item.format === 'tba') return false
     const start = Date.parse(item.startsAt)
     const end = item.endsAt ? Date.parse(item.endsAt) : start + 2 * HOUR
     // Week-long exhibitions would fill every map: drop-ins only while they're on, sessions as planned.

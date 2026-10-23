@@ -6,7 +6,7 @@
       id="ade-schedule-search"
       v-model="filters.q"
       label="Search by artist, venue or event"
-      placeholder="e.g. Ketelhuis, Djrum, Demopitches"
+      placeholder="e.g. Paradiso, Djrum, Awakenings"
       autocomplete="off"
       @update:model-value="typed"
     />
@@ -15,7 +15,6 @@
       <MoleculesChipGroup :model-value="filters.day" label="Day" :options="days" @update:model-value="pickDay" />
       <MoleculesChipGroup v-model="filters.period" label="Time" :options="PERIOD_OPTIONS" @update:model-value="picked('period', $event)" />
       <MoleculesChipGroup v-model="filters.areas" multiple label="Where" :options="AREA_OPTIONS" @update:model-value="picked('area', $event)" />
-      <MoleculesChipGroup v-model="filters.what" multiple label="What" :options="WHAT_OPTIONS" @update:model-value="picked('what', $event)" />
       <MoleculesChipGroup v-model="filters.budget" label="Price" :options="BUDGET_OPTIONS" @update:model-value="picked('budget', $event)" />
     </div>
 
@@ -40,7 +39,7 @@
 </template>
 
 <script setup>
-import { AREA_OPTIONS, BUDGET_OPTIONS, PERIOD_OPTIONS, WHAT_OPTIONS, dayOptions, useAdeAsk } from '~/composables/useAdeAsk.js'
+import { AREA_OPTIONS, BUDGET_OPTIONS, PERIOD_OPTIONS, dayOptions, useAdeAsk } from '~/composables/useAdeAsk.js'
 import { track } from '~/utils/track'
 
 // Filters only, no AI: the same rules as Ask, a longer list, in time order.

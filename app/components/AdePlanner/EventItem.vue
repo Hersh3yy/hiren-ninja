@@ -89,7 +89,6 @@
 </template>
 
 <script setup>
-import { TOPIC_LABELS } from '~/composables/useDaytimeBrowse.js'
 import { track } from '~/utils/track'
 import { isFreeEntry, priceLabel } from '../../../server/utils/ade-planner/price'
 import { vibeLabel } from '../../../server/utils/ade-planner/vibe'
@@ -180,7 +179,6 @@ const lineup = computed(() => [
 const people = computed(() => lineup.value.map(name => ({ name, highlight: props.artists.includes(name) })))
 
 const tags = computed(() => [
-  ...(props.event.isParty === false ? (props.event.topics ?? []).map(topic => TOPIC_LABELS[topic]).filter(Boolean) : []),
   ...(props.event.genres ?? [])
 ])
 

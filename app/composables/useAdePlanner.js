@@ -98,11 +98,8 @@ export function useAdePlanner() {
   const firstLine = computed(() => input.value.trim().split('\n')[0].trim())
   const isPlaylistLink = computed(() => PLAYLIST_URL.test(firstLine.value))
   const allMatchedEvents = computed(() => (result.value ? eventsFromMatches(result.value.matches) : []))
-  // This tab is for parties; daytime sessions of your artists live in the other tab.
+  // Parties and concerts only: the daytime programme was dropped on 23 Oct.
   const matchedEvents = computed(() => allMatchedEvents.value.filter(({ event }) => event.isParty !== false))
-  const daytimeEvents = computed(() => allMatchedEvents.value.filter(({ event }) => event.isParty === false))
-  const daytimeWithYourArtists = computed(() => daytimeEvents.value.length)
-  const daytimeQuery = computed(() => [...new Set(daytimeEvents.value.flatMap(({ artists }) => artists))].join(', '))
   const sound = computed(() => genreProfile(matchedEvents.value))
   const inGenre = computed(() => (genreFilter.value
     ? matchedEvents.value.filter(({ event }) => event.genres?.includes(genreFilter.value))
@@ -201,6 +198,5 @@ export function useAdePlanner() {
     input, isLoading, error, playlist, result, days, sound, genreFilter, budget, budgetCounts,
     suggestions, suggestionsLoading, artistsWithoutEvents, isPlaylistLink, run,
     matchedEventCount: computed(() => matchedEvents.value.length),
-    daytimeWithYourArtists, daytimeQuery,
   }
 }

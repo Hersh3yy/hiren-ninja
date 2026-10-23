@@ -9,7 +9,6 @@
             All {{ data.parties.length }} Amsterdam Dance Event parties and concerts on {{ data.day.label }}, from afternoon
             to the next morning, with times, venues, lineups and tickets.
             {{ freeCount }} are free{{ cheapCount ? `, ${cheapCount} more under €25` : '' }}.
-            Daytime: {{ data.daytimeCount }} talks, demos and sessions ({{ data.proCount }} ADE Pro).
           </p>
           <p class="text-sm text-content-muted">
             Want only your artists? <AtomsButton variant="link" to="/ade-planner" text="Paste your playlist in the ADE Planner" />.

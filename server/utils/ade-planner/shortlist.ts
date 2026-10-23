@@ -237,7 +237,8 @@ export function selectEvents(events: AdeEvent[], slot: Slot, now: Date = new Dat
   const seen = new Set<string>()
   return events
     .filter((event) => {
-      if (event.soldOut || event.format === 'tba') return false
+      // Parties and concerts only: the daytime programme (talks, Lab, Pro) was dropped on 23 Oct.
+      if (event.isParty === false || event.soldOut || event.format === 'tba') return false
       if (slot.day && planningDate(event) !== slot.day) return false
       const end = new Date(event.endsAt ?? new Date(event.startsAt).getTime() + 2 * 3_600_000)
       if (end <= now) return false
@@ -247,7 +248,7 @@ export function selectEvents(events: AdeEvent[], slot: Slot, now: Date = new Dat
       if (slot.to !== undefined && start >= slot.to) return false
       if (areas.size && !areas.has(event.area ?? '')) return false
       if (slot.budget && !withinBudget(event, slot.budget)) return false
-      return matchesWhat(event, slot.what)
+      return matchesWhat(event, slot.what.filter(key => key === 'parties'))
     })
     .filter((event) => {
       const key = `${event.title}|${event.venue}|${event.startsAt}`

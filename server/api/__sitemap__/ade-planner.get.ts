@@ -7,8 +7,6 @@ export default defineEventHandler(async () => {
   return [
     { loc: '/ade-planner/free-parties', changefreq: 'daily', priority: 0.8 },
     ...ADE_DAYS.map(day => ({ loc: `/ade-planner/${day.slug}`, changefreq: 'daily', priority: 0.8 })),
-    { loc: '/ade-planner/lab', changefreq: 'daily', priority: 0.7 },
-    { loc: '/ade-planner/pro', changefreq: 'daily', priority: 0.7 },
     ...[...genresBySlug(data).keys()].map(slug => ({ loc: `/ade-planner/genre/${slug}`, changefreq: 'daily', priority: 0.7 })),
     ...[...venuesBySlug(data).keys()].map(slug => ({ loc: `/ade-planner/venue/${slug}`, changefreq: 'daily', priority: 0.5 })),
     ...[...artistsBySlug(data).keys()].map(slug => ({ loc: `/ade-planner/artist/${slug}`, changefreq: 'daily', priority: 0.5 })),
