@@ -138,6 +138,11 @@ flowchart LR
 
 ## Diary
 
+### 2026-10-28 — /ade-planner is now the ADE 2026 recap
+- ADE is over, so `/ade-planner` became an interactive recap ("ADE 2026 in numbers"): headline numbers, day-by-day (searches / events opened / ticket clicks), searches by hour, how people searched, top artists, "Was my artist searched?" lookup (found / wanted / none), most-wanted acts not at ADE, where searches led, genres, feature use per day, learnings, and a pointer to the coming city event planner.
+- Data: `scripts/ade-report/recap.py` → `app/data/ade-2026-recap.json` (22 KB, counts only: no typed searches, no playlist titles). Built from data up to Fri 23 Oct 18:51; the weekend is missing until the DB accepts this network again (rerun `run.sh` + `recap.py`).
+- The old program pages (day, free-parties, ~4,700 artist, genre, venue) 301 to `/ade-planner`; the ADE sitemap source is gone; nav says "ADE 2026". The planner components stay in the repo for the general event planner (plan: phases P0–P5, see the 28 Oct chat).
+
 ### 2026-10-23 — daytime dropped (with learnings), What's left, map that works
 - **Daytime is gone** (talks, ADE Lab, ADE Pro): search, panels, topic chips, Lab/Pro SEO pages (301 to /ade-planner); Ask, Schedule and the map list parties only.
 - **Why, in numbers (13–21 Oct counters):** the daytime tab was opened 45 times, but only 7 of 335 searches were daytime searches (2%); 4 daytime events were opened against 301 parties, 4 ticket clicks against 111; 0 "show more" in the Lab or Pro sections; topic chips used 4 times.

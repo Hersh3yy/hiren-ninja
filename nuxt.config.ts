@@ -81,10 +81,7 @@ export default defineNuxtConfig({
   site: {
     url: 'https://hiren.ninja'
   },
-  sitemap: {
-    // ADE Planner day, budget and artist pages (thousands, from the live program).
-    sources: ['/api/__sitemap__/ade-planner']
-  },
+
   routeRules: {
     // Served from Netlify's CDN cache, rebuilt at most hourly: no cold server start for
     // a first visitor (the SEO audit measured 1.5s). Not /ade-planner: its ?tab= query
@@ -94,14 +91,20 @@ export default defineNuxtConfig({
     '/services': { isr: 3600 },
     '/projects': { isr: 3600 },
     '/contact': { isr: 3600 },
-    // ADE Planner pages for search: no query dependence, so CDN-cached like the rest.
-    '/ade-planner/*': { isr: 3600 },
-    '/ade-planner/artist/**': { isr: 3600 },
-    '/ade-planner/genre/**': { isr: 3600 },
+    // ADE 2026 is over: /ade-planner is the recap, the old program pages point to it.
+    '/ade-planner': { isr: 3600 },
+    '/ade-planner/artist/**': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/genre/**': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/venue/**': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/free-parties': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/wednesday': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/thursday': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/friday': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/saturday': { redirect: { to: '/ade-planner', statusCode: 301 } },
+    '/ade-planner/sunday': { redirect: { to: '/ade-planner', statusCode: 301 } },
     // The daytime programme (ADE Lab, ADE Pro) was dropped on 23 Oct; keep old links working.
     '/ade-planner/lab': { redirect: { to: '/ade-planner', statusCode: 301 } },
     '/ade-planner/pro': { redirect: { to: '/ade-planner', statusCode: 301 } },
-    '/ade-planner/venue/**': { isr: 3600 },
     '/admin/**': { robots: false },
     '/dashboard/**': { robots: false },
     '/profile/**': { robots: false },

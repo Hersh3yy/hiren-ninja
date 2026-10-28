@@ -80,7 +80,7 @@ const links = Object.freeze([
   { to: '/about', text: 'About' },
   { to: '/projects', text: 'Projects' },
   { to: '/services', text: 'Services' },
-  { to: '/ade-planner', text: 'ADE Planner' }
+  { to: '/ade-planner', text: 'ADE 2026' }
 ])
 
 // Client-side navigation doesn't reload the page, so close the menu ourselves.
