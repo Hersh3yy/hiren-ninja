@@ -31,7 +31,9 @@ const props = defineProps({
 
 const cardClasses = computed(() => {
   return [
-    'rounded-xl border border-border-subtle transition-all',
+    // min-w-0: a card in a grid or flex row never grows wider than its column (a wide
+    // table or chart row inside scrolls instead of pushing the page sideways).
+    'min-w-0 max-w-full rounded-xl border border-border-subtle transition-all',
     props.blur ? 'bg-surface/80 backdrop-blur-xl' : 'bg-surface/95',
     props.padded ? 'p-4 sm:p-6' : '',
     props.interactive ? 'hover:border-accent-muted cursor-pointer' : ''

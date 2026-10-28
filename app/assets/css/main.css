@@ -48,6 +48,23 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 
+  /* The site is always dark: every element inherits light text on the ink background,
+     so a component without its own colour class can never end up black on black. The
+     background is on html too, so overscroll / rubber-banding shows ink, not white. */
+  html,
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-content);
+    color-scheme: dark;
+  }
+
+  /* Nothing may make the page wider than the screen (a stray wide element otherwise
+     lets you swipe the whole site sideways). clip, unlike hidden, keeps position: sticky working. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   /* v4 dropped these v3 defaults: pointer cursor on buttons, grey placeholders. */
   button:not(:disabled),
   [role="button"]:not(:disabled) {
